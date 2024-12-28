@@ -26,6 +26,11 @@ export const Customers: CollectionConfig = {
       type: 'relationship',
       relationTo: 'blocks', // Link to Blocks collection
       required: true,
+      filterOptions: ({ data }) => {
+        return {
+          area: { equals: data.area || '' },
+        }
+      },
     },
     {
       name: 'rate', // Add rate for the customer
