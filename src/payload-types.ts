@@ -114,8 +114,15 @@ export interface Customer {
   id: string;
   name: string;
   address?: string | null;
-  area?: (string | null) | Area;
+  area: string | Area;
   block: string | Block;
+  rate: number;
+  contactNumbers?:
+    | {
+        contactNumber: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -259,6 +266,13 @@ export interface CustomersSelect<T extends boolean = true> {
   address?: T;
   area?: T;
   block?: T;
+  rate?: T;
+  contactNumbers?:
+    | T
+    | {
+        contactNumber?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
