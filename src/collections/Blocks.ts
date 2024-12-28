@@ -17,5 +17,11 @@ export const Blocks: CollectionConfig = {
       relationTo: 'areas', // Link to the Areas collection
       required: true,
     },
+    {
+      name: 'customers', // Relationship to customers
+      type: 'join',
+      on: 'block',
+      collection: 'customers', // Specify the collection being related to
+    },
   ],
 }

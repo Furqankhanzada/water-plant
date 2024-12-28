@@ -32,7 +32,7 @@ export const Customers: CollectionConfig = {
       name: 'block', // Relate each customer to a block
       type: 'relationship',
       relationTo: 'blocks', // Link to Blocks collection
-      required: true, // Make this field mandatory if needed
+      required: true,
     },
   ],
 }

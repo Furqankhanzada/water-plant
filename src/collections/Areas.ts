@@ -11,22 +11,11 @@ export const Areas: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    // {
-    //   name: 'blocks', // Field for adding multiple blocks
-    //   type: 'array',
-    //   fields: [
-    //     {
-    //       name: 'name', // Block name
-    //       type: 'text',
-    //       required: true,
-    //     },
-    //   ],
-    // },
     {
       name: 'customers', // Relationship to customers
-      type: 'relationship',
-      relationTo: 'customers', // Specify the collection being related to
-      // hasMany: true, // An area can have multiple customers
+      type: 'join',
+      on: 'area',
+      collection: 'customers', // Specify the collection being related to
     },
   ],
 }

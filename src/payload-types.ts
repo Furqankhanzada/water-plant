@@ -20,7 +20,14 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    areas: {
+      customers: 'customers';
+    };
+    blocks: {
+      customers: 'customers';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -119,7 +126,10 @@ export interface Customer {
 export interface Area {
   id: string;
   name: string;
-  customers?: (string | null) | Customer;
+  customers?: {
+    docs?: (string | Customer)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -131,6 +141,10 @@ export interface Block {
   id: string;
   name: string;
   area: string | Area;
+  customers?: {
+    docs?: (string | Customer)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -265,6 +279,7 @@ export interface AreasSelect<T extends boolean = true> {
 export interface BlocksSelect<T extends boolean = true> {
   name?: T;
   area?: T;
+  customers?: T;
   updatedAt?: T;
   createdAt?: T;
 }
