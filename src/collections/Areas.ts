@@ -5,6 +5,7 @@ export const Areas: CollectionConfig = {
   admin: {
     useAsTitle: 'name', // This ensures the 'name' field is displayed instead of the ID
   },
+
   fields: [
     {
       name: 'name', // Name of the area
@@ -12,10 +13,10 @@ export const Areas: CollectionConfig = {
       required: true,
     },
     {
-      name: 'customers', // Relationship to customers
+      name: 'block', // Relationship to customers
       type: 'join',
       on: 'area',
-      collection: 'customers', // Specify the collection being related to
+      collection: 'blocks', // Specify the collection being related to
     },
   ],
 }

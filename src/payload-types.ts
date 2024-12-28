@@ -22,7 +22,7 @@ export interface Config {
   };
   collectionsJoins: {
     areas: {
-      customers: 'customers';
+      block: 'blocks';
     };
     blocks: {
       customers: 'customers';
@@ -133,8 +133,8 @@ export interface Customer {
 export interface Area {
   id: string;
   name: string;
-  customers?: {
-    docs?: (string | Customer)[] | null;
+  block?: {
+    docs?: (string | Block)[] | null;
     hasNextPage?: boolean | null;
   } | null;
   updatedAt: string;
@@ -282,7 +282,7 @@ export interface CustomersSelect<T extends boolean = true> {
  */
 export interface AreasSelect<T extends boolean = true> {
   name?: T;
-  customers?: T;
+  block?: T;
   updatedAt?: T;
   createdAt?: T;
 }
