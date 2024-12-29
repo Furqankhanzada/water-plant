@@ -33,13 +33,38 @@ export const Customers: CollectionConfig = {
       },
     },
     {
-      name: 'rate', // Add rate for the customer
-      type: 'number',
-      required: true,
-      admin: {
-        placeholder: 'Enter rate per bottel rate',
-      },
+      type: 'row',
+      fields: [
+        {
+          name: 'rate', // Add rate for the customer
+          type: 'number',
+          required: true,
+          admin: {
+            placeholder: 'Enter rate per bottel rate',
+          },
+        },
+        {
+          name: 'status', // New field for Active/Archive status
+          type: 'select',
+          required: true,
+          options: [
+            {
+              label: 'Active',
+              value: 'active',
+            },
+            {
+              label: 'Archive',
+              value: 'archive',
+            },
+          ],
+          defaultValue: 'active',
+          admin: {
+            description: 'Set the user status to Active or Archive.',
+          },
+        },
+      ],
     },
+
     {
       name: 'contactNumbers', // Add multiple contact numbers
       type: 'array', // Use array to allow multiple entries

@@ -12,7 +12,6 @@ export interface Config {
   };
   collections: {
     users: User;
-    media: Media;
     customers: Customer;
     areas: Area;
     blocks: Block;
@@ -30,7 +29,6 @@ export interface Config {
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     areas: AreasSelect<false> | AreasSelect<true>;
     blocks: BlocksSelect<false> | BlocksSelect<true>;
@@ -89,25 +87,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers".
  */
 export interface Customer {
@@ -117,6 +96,7 @@ export interface Customer {
   area: string | Area;
   block: string | Block;
   rate: number;
+  status: 'active' | 'archive';
   contactNumbers?:
     | {
         contactNumber: string;
@@ -165,10 +145,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: string | Media;
       } | null)
     | ({
         relationTo: 'customers';
@@ -241,24 +217,6 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers_select".
  */
 export interface CustomersSelect<T extends boolean = true> {
@@ -267,6 +225,7 @@ export interface CustomersSelect<T extends boolean = true> {
   area?: T;
   block?: T;
   rate?: T;
+  status?: T;
   contactNumbers?:
     | T
     | {
