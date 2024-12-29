@@ -96,6 +96,7 @@ export interface Customer {
   area: string | Area;
   block: string | Block;
   rate: number;
+  status: 'active' | 'archive';
   contactNumbers?:
     | {
         contactNumber: string;
@@ -224,6 +225,7 @@ export interface CustomersSelect<T extends boolean = true> {
   area?: T;
   block?: T;
   rate?: T;
+  status?: T;
   contactNumbers?:
     | T
     | {

@@ -41,6 +41,26 @@ export const Customers: CollectionConfig = {
       },
     },
     {
+      name: 'status', // New field for Active/Archive status
+      type: 'select',
+      required: true,
+      options: [
+        {
+          label: 'Active',
+          value: 'active',
+        },
+        {
+          label: 'Archive',
+          value: 'archive',
+        },
+      ],
+      defaultValue: 'active',
+      admin: {
+        description: 'Set the user status to Active or Archive.',
+      },
+    },
+
+    {
       name: 'contactNumbers', // Add multiple contact numbers
       type: 'array', // Use array to allow multiple entries
       labels: {
@@ -68,15 +88,15 @@ export const Customers: CollectionConfig = {
           },
           validate: (value: string | null | undefined) => {
             if (!value || typeof value !== 'string') {
-              return 'Contact number is required.'; // If value is null, undefined, or not a string
+              return 'Contact number is required.' // If value is null, undefined, or not a string
             }
-          
-            const pattern = /^\+92[0-9]{10}$/;
+
+            const pattern = /^\+92[0-9]{10}$/
             if (!pattern.test(value)) {
-              return 'Contact number must start with "+92" and contain 13 digits.'; // Pattern mismatch
+              return 'Contact number must start with "+92" and contain 13 digits.' // Pattern mismatch
             }
-          
-            return true; // Validation passed
+
+            return true // Validation passed
           },
         },
       ],
