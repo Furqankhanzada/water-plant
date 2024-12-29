@@ -47,6 +47,11 @@ export const Customers: CollectionConfig = {
         singular: 'Contact Number',
         plural: 'Contact Numbers',
       },
+      admin: {
+        components: {
+          Cell: '/components/Customers#ContactNumberCell',
+        },
+      },
       fields: [
         {
           name: 'contactNumber',
@@ -68,15 +73,15 @@ export const Customers: CollectionConfig = {
           },
           validate: (value: string | null | undefined) => {
             if (!value || typeof value !== 'string') {
-              return 'Contact number is required.'; // If value is null, undefined, or not a string
+              return 'Contact number is required.' // If value is null, undefined, or not a string
             }
-          
-            const pattern = /^\+92[0-9]{10}$/;
+
+            const pattern = /^\+92[0-9]{10}$/
             if (!pattern.test(value)) {
-              return 'Contact number must start with "+92" and contain 13 digits.'; // Pattern mismatch
+              return 'Contact number must start with "+92" and contain 13 digits.' // Pattern mismatch
             }
-          
-            return true; // Validation passed
+
+            return true // Validation passed
           },
         },
       ],
