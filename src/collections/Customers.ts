@@ -66,19 +66,17 @@ export const Customers: CollectionConfig = {
               },
             ],
           },
-          validate: (value: string) => {
-            // Required Check
-            if (!value) {
-              return 'Contact number is required.'
+          validate: (value: string | null | undefined) => {
+            if (!value || typeof value !== 'string') {
+              return 'Contact number is required.'; // If value is null, undefined, or not a string
             }
-
-            // Pattern Check for +92 format
-            const pattern = /^\+92[0-9]{10}$/
+          
+            const pattern = /^\+92[0-9]{10}$/;
             if (!pattern.test(value)) {
-              return 'Contact number must start with "+92" and contain 13 digits.'
+              return 'Contact number must start with "+92" and contain 13 digits.'; // Pattern mismatch
             }
-
-            return true // Pass validation
+          
+            return true; // Validation passed
           },
         },
       ],
