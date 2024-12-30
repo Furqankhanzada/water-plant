@@ -182,9 +182,8 @@ export interface Employee {
  */
 export interface Transaction {
   id: string;
-  trips: string | Trip;
-  customers: string | Customer;
-  employee: string | Employee;
+  trip: string | Trip;
+  customer: string | Customer;
   status: 'paid' | 'unpaid';
   bottleGiven: number;
   bottleTaken: number;
@@ -356,9 +355,8 @@ export interface EmployeeSelect<T extends boolean = true> {
  * via the `definition` "transaction_select".
  */
 export interface TransactionSelect<T extends boolean = true> {
-  trips?: T;
-  customers?: T;
-  employee?: T;
+  trip?: T;
+  customer?: T;
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;

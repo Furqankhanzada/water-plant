@@ -31,6 +31,12 @@ export const Trips: CollectionConfig = {
       type: 'row',
       fields: [
         {
+          admin: {
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'd MMM yyy',
+            },
+          },
           name: 'tripAt',
           type: 'date',
           required: true,
@@ -67,7 +73,7 @@ export const Trips: CollectionConfig = {
     {
       name: 'transaction',
       type: 'join',
-      on: 'trips',
+      on: 'trip',
       collection: 'transaction',
     },
   ],

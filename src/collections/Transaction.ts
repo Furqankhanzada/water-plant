@@ -2,27 +2,22 @@ import type { CollectionConfig } from 'payload'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
+  admin: {
+    defaultColumns: ['trip', 'customer', 'bottleGiven', 'bottleTaken', 'status'],
+  },
   fields: [
     {
-      name: 'trips',
+      name: 'trip',
       type: 'relationship',
       relationTo: 'trips',
       required: true,
     },
     {
-      name: 'customers',
+      name: 'customer',
       type: 'relationship',
       relationTo: 'customers',
       required: true,
     },
-    {
-      name: 'employee',
-      label: 'Delivered by',
-      type: 'relationship',
-      relationTo: 'employee',
-      required: true,
-    },
-
     {
       name: 'status',
       label: 'Transaction Status',
