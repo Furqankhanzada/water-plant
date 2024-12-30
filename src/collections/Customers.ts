@@ -3,28 +3,28 @@ import type { CollectionConfig } from 'payload'
 export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
-    useAsTitle: 'name', // Display customer name in admin panel
+    useAsTitle: 'name',
   },
   fields: [
     {
       name: 'name',
       type: 'text',
-      required: true, // Customer name is required
+      required: true,
     },
     {
       name: 'address',
       type: 'text',
     },
     {
-      name: 'area', // Relate each customer to an area
+      name: 'area',
       type: 'relationship',
-      relationTo: 'areas', // Link to Areas collection
+      relationTo: 'areas',
       required: true,
     },
     {
-      name: 'block', // Relate each customer to a block
+      name: 'block',
       type: 'relationship',
-      relationTo: 'blocks', // Link to Blocks collection
+      relationTo: 'blocks',
       required: true,
       filterOptions: ({ data }) => {
         return {
@@ -36,7 +36,7 @@ export const Customers: CollectionConfig = {
       type: 'row',
       fields: [
         {
-          name: 'rate', // Add rate for the customer
+          name: 'rate',
           type: 'number',
           required: true,
           admin: {
@@ -44,7 +44,7 @@ export const Customers: CollectionConfig = {
           },
         },
         {
-          name: 'status', // New field for Active/Archive status
+          name: 'status',
           type: 'select',
           required: true,
           options: [
@@ -64,10 +64,9 @@ export const Customers: CollectionConfig = {
         },
       ],
     },
-
     {
-      name: 'contactNumbers', // Add multiple contact numbers
-      type: 'array', // Use array to allow multiple entries
+      name: 'contactNumbers',
+      type: 'array',
       labels: {
         singular: 'Contact Number',
         plural: 'Contact Numbers',
@@ -100,12 +99,10 @@ export const Customers: CollectionConfig = {
             if (!value || typeof value !== 'string') {
               return 'Contact number is required.' // If value is null, undefined, or not a string
             }
-
             const pattern = /^\+92[0-9]{10}$/
             if (!pattern.test(value)) {
               return 'Contact number must start with "+92" and contain 13 digits.' // Pattern mismatch
             }
-
             return true // Validation passed
           },
         },

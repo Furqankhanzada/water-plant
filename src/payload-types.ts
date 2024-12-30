@@ -29,6 +29,9 @@ export interface Config {
     blocks: {
       customers: 'customers';
     };
+    trips: {
+      transaction: 'transaction';
+    };
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
@@ -149,10 +152,14 @@ export interface Trip {
   id: string;
   From: string;
   Areas: string | Area;
-  employee: (string | Employee)[];
-  bottel: number;
+  bottles: number;
   tripAt: string;
-  status: 'inProgress' | 'complete';
+  employee: (string | Employee)[];
+  status: 'inprogress' | 'complete';
+  transaction?: {
+    docs?: (string | Transaction)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -324,10 +331,11 @@ export interface BlocksSelect<T extends boolean = true> {
 export interface TripsSelect<T extends boolean = true> {
   From?: T;
   Areas?: T;
-  employee?: T;
-  bottel?: T;
+  bottles?: T;
   tripAt?: T;
+  employee?: T;
   status?: T;
+  transaction?: T;
   updatedAt?: T;
   createdAt?: T;
 }

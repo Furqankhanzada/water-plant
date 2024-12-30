@@ -3,62 +3,77 @@ import type { CollectionConfig } from 'payload'
 export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
-    useAsTitle: 'tripAt', // Display customer name in admin panel
+    useAsTitle: 'tripAt',
   },
   fields: [
     {
-      name: 'From',
-      type: 'text',
-      required: true, // Destination is required
-    },
-    {
-      name: 'Areas', // Relate each trip to an employee
-      type: 'relationship',
-      relationTo: 'areas', // Link to Employees collection
-      required: true,
-    },
-    {
-      name: 'employee', // Relate each trip to an employee
-      type: 'relationship',
-      relationTo: 'employee', // Link to Employees collection
-      hasMany: true, // Allow multiple employees for a single trip
-
-      required: true,
-    },
-    {
-      name: 'bottel',
-      type: 'number',
-      required: true, // Start date is required
-    },
-    {
-      name: 'tripAt',
-      type: 'date',
-      required: true, // Start date is required
-      admin: {
-        date: {
-          pickerAppearance: 'dayOnly', // Show only day picker
-          displayFormat: 'd MMM yyyy', // Display format for the date
+      type: 'row',
+      fields: [
+        {
+          name: 'From',
+          type: 'text',
+          required: true,
         },
-      },
+        {
+          name: 'Areas',
+          type: 'relationship',
+          relationTo: 'areas',
+          required: true,
+        },
+      ],
     },
     {
-      name: 'status', // Field for tracking progress status
+      type: 'row',
+      fields: [
+        {
+          name: 'bottles',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'tripAt',
+          type: 'date',
+          required: true,
+          admin: {
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'd MMM yyyy',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'employee',
+      type: 'relationship',
+      relationTo: 'employee',
+      hasMany: true,
+      required: true,
+    },
+    {
+      name: 'status',
       type: 'select',
       required: true,
       options: [
         {
           label: 'In Progress',
-          value: 'inProgress',
+          value: 'inprogress',
         },
         {
           label: 'Complete',
           value: 'complete',
         },
       ],
-      defaultValue: 'inProgress', // Default value is 'In Progress'
+      defaultValue: 'inprogress',
       admin: {
         description: 'Set the status to In Progress or Complete.',
       },
+    },
+    {
+      name: 'transaction', // Relationship to customers
+      type: 'join',
+      on: 'trips',
+      collection: 'transaction', // Specify the collection being related to
     },
   ],
 }
