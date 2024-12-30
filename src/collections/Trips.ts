@@ -20,60 +20,55 @@ export const Trips: CollectionConfig = {
           relationTo: 'areas',
           required: true,
         },
+        {
+          name: 'bottles',
+          type: 'number',
+          required: true,
+        },
       ],
     },
     {
       type: 'row',
       fields: [
         {
-          name: 'bottles',
-          type: 'number',
-          required: true,
-        },
-        {
           name: 'tripAt',
           type: 'date',
           required: true,
-          admin: {
-            date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
+        },
+        {
+          name: 'employee',
+          type: 'relationship',
+          relationTo: 'employee',
+          hasMany: true,
+          required: true,
+        },
+
+        {
+          name: 'status',
+          type: 'select',
+          required: true,
+          options: [
+            {
+              label: 'In Progress',
+              value: 'inprogress',
             },
+            {
+              label: 'Complete',
+              value: 'complete',
+            },
+          ],
+          defaultValue: 'inprogress',
+          admin: {
+            description: 'Set the status to In Progress or Complete.',
           },
         },
       ],
     },
     {
-      name: 'employee',
-      type: 'relationship',
-      relationTo: 'employee',
-      hasMany: true,
-      required: true,
-    },
-    {
-      name: 'status',
-      type: 'select',
-      required: true,
-      options: [
-        {
-          label: 'In Progress',
-          value: 'inprogress',
-        },
-        {
-          label: 'Complete',
-          value: 'complete',
-        },
-      ],
-      defaultValue: 'inprogress',
-      admin: {
-        description: 'Set the status to In Progress or Complete.',
-      },
-    },
-    {
-      name: 'transaction', // Relationship to customers
+      name: 'transaction',
       type: 'join',
       on: 'trips',
-      collection: 'transaction', // Specify the collection being related to
+      collection: 'transaction',
     },
   ],
 }

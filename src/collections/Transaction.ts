@@ -4,27 +4,27 @@ export const Transaction: CollectionConfig = {
   slug: 'transaction',
   fields: [
     {
-      name: 'trips', // Relate each trip to an employee
+      name: 'trips',
       type: 'relationship',
-      relationTo: 'trips', // Link to Employees collection
+      relationTo: 'trips',
       required: true,
     },
     {
-      name: 'customers', // Relate each trip to an employee
+      name: 'customers',
       type: 'relationship',
-      relationTo: 'customers', // Link to Employees collection
+      relationTo: 'customers',
       required: true,
     },
     {
-      name: 'employee', // Relate each trip to an employee
+      name: 'employee',
       label: 'Delivered by',
       type: 'relationship',
-      relationTo: 'employee', // Link to Employees collection
+      relationTo: 'employee',
       required: true,
     },
 
     {
-      name: 'status', // Field for transaction status
+      name: 'status',
       label: 'Transaction Status',
       type: 'select',
       required: true,
@@ -40,20 +40,20 @@ export const Transaction: CollectionConfig = {
       ],
     },
     {
-      name: 'bottleGiven', // Field for tracking bottles given
-      type: 'number', // Field type set to number
-      required: true, // Make it a required field (if necessary)
+      name: 'bottleGiven',
+      type: 'number',
+      required: true,
       admin: {
-        placeholder: 'Enter the number of bottles given', // Optional admin UI hint
+        placeholder: 'Enter the number of bottles given',
       },
     },
 
     {
-      name: 'bottleTaken', // Field for tracking bottles taken
-      type: 'number', // Field type set to number
-      required: true, // Make it a required field (if necessary)
+      name: 'bottleTaken',
+      type: 'number',
+      required: true,
       admin: {
-        placeholder: 'Enter the number of bottles taken', // Optional admin UI hint
+        placeholder: 'Enter the number of bottles taken',
       },
     },
   ],
