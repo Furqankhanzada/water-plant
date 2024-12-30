@@ -17,6 +17,7 @@ export interface Config {
     blocks: Block;
     trips: Trip;
     employee: Employee;
+    transaction: Transaction;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -36,6 +37,7 @@ export interface Config {
     blocks: BlocksSelect<false> | BlocksSelect<true>;
     trips: TripsSelect<false> | TripsSelect<true>;
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
+    transaction: TransactionSelect<false> | TransactionSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -145,11 +147,12 @@ export interface Block {
  */
 export interface Trip {
   id: string;
-  Areas: string | Area;
   From: string;
+  Areas: string | Area;
   employee: (string | Employee)[];
   bottel: number;
   tripAt: string;
+  status: 'inProgress' | 'complete';
   updatedAt: string;
   createdAt: string;
 }
@@ -163,6 +166,21 @@ export interface Employee {
   address: string;
   contactNumber: string;
   nicNumber: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transaction".
+ */
+export interface Transaction {
+  id: string;
+  trips: string | Trip;
+  customers: string | Customer;
+  employee: string | Employee;
+  status: 'paid' | 'unpaid';
+  bottleGiven: number;
+  bottleTaken: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -196,6 +214,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'employee';
         value: string | Employee;
+      } | null)
+    | ({
+        relationTo: 'transaction';
+        value: string | Transaction;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -300,11 +322,12 @@ export interface BlocksSelect<T extends boolean = true> {
  * via the `definition` "trips_select".
  */
 export interface TripsSelect<T extends boolean = true> {
-  Areas?: T;
   From?: T;
+  Areas?: T;
   employee?: T;
   bottel?: T;
   tripAt?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -317,6 +340,20 @@ export interface EmployeeSelect<T extends boolean = true> {
   address?: T;
   contactNumber?: T;
   nicNumber?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transaction_select".
+ */
+export interface TransactionSelect<T extends boolean = true> {
+  trips?: T;
+  customers?: T;
+  employee?: T;
+  status?: T;
+  bottleGiven?: T;
+  bottleTaken?: T;
   updatedAt?: T;
   createdAt?: T;
 }
