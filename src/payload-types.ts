@@ -12,15 +12,26 @@ export interface Config {
   };
   collections: {
     users: User;
-    media: Media;
+    customers: Customer;
+    areas: Area;
+    blocks: Block;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    areas: {
+      block: 'blocks';
+    };
+    blocks: {
+      customers: 'customers';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    areas: AreasSelect<false> | AreasSelect<true>;
+    blocks: BlocksSelect<false> | BlocksSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -76,22 +87,53 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "customers".
  */
-export interface Media {
+export interface Customer {
   id: string;
-  alt: string;
+  name: string;
+  address?: string | null;
+  area: string | Area;
+  block: string | Block;
+  rate: number;
+  status: 'active' | 'archive';
+  contactNumbers?:
+    | {
+        contactNumber: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas".
+ */
+export interface Area {
+  id: string;
+  name: string;
+  block?: {
+    docs?: (string | Block)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blocks".
+ */
+export interface Block {
+  id: string;
+  name: string;
+  area: string | Area;
+  customers?: {
+    docs?: (string | Customer)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -105,8 +147,16 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
+        relationTo: 'customers';
+        value: string | Customer;
+      } | null)
+    | ({
+        relationTo: 'areas';
+        value: string | Area;
+      } | null)
+    | ({
+        relationTo: 'blocks';
+        value: string | Block;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -167,21 +217,44 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "customers_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+export interface CustomersSelect<T extends boolean = true> {
+  name?: T;
+  address?: T;
+  area?: T;
+  block?: T;
+  rate?: T;
+  status?: T;
+  contactNumbers?:
+    | T
+    | {
+        contactNumber?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas_select".
+ */
+export interface AreasSelect<T extends boolean = true> {
+  name?: T;
+  block?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blocks_select".
+ */
+export interface BlocksSelect<T extends boolean = true> {
+  name?: T;
+  area?: T;
+  customers?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
