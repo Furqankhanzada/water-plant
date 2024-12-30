@@ -15,6 +15,8 @@ export interface Config {
     customers: Customer;
     areas: Area;
     blocks: Block;
+    trips: Trip;
+    employee: Employee;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -32,6 +34,8 @@ export interface Config {
     customers: CustomersSelect<false> | CustomersSelect<true>;
     areas: AreasSelect<false> | AreasSelect<true>;
     blocks: BlocksSelect<false> | BlocksSelect<true>;
+    trips: TripsSelect<false> | TripsSelect<true>;
+    employee: EmployeeSelect<false> | EmployeeSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -137,6 +141,33 @@ export interface Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trips".
+ */
+export interface Trip {
+  id: string;
+  Areas: string | Area;
+  From: string;
+  employee: (string | Employee)[];
+  bottel: number;
+  tripAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employee".
+ */
+export interface Employee {
+  id: string;
+  name: string;
+  address: string;
+  contactNumber: string;
+  nicNumber: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -157,6 +188,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blocks';
         value: string | Block;
+      } | null)
+    | ({
+        relationTo: 'trips';
+        value: string | Trip;
+      } | null)
+    | ({
+        relationTo: 'employee';
+        value: string | Employee;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -253,6 +292,31 @@ export interface BlocksSelect<T extends boolean = true> {
   name?: T;
   area?: T;
   customers?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trips_select".
+ */
+export interface TripsSelect<T extends boolean = true> {
+  Areas?: T;
+  From?: T;
+  employee?: T;
+  bottel?: T;
+  tripAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employee_select".
+ */
+export interface EmployeeSelect<T extends boolean = true> {
+  name?: T;
+  address?: T;
+  contactNumber?: T;
+  nicNumber?: T;
   updatedAt?: T;
   createdAt?: T;
 }

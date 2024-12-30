@@ -11,6 +11,8 @@ import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { Areas } from './collections/Areas'
 import { Blocks } from './collections/Blocks'
+import { Trips } from './collections/Trips'
+import { Employee } from './collections/Employee'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Customers, Areas, Blocks],
+  collections: [Users, Customers, Areas, Blocks, Trips, Employee],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -32,7 +34,5 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: [
-    payloadCloudPlugin(),
-  ],
+  plugins: [payloadCloudPlugin()],
 })
