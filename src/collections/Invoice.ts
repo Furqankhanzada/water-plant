@@ -2,15 +2,20 @@ import type { CollectionConfig } from 'payload'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
-  admin: {
-  },
+  admin: {},
   fields: [
     {
-      name: 'customers',
+      name: 'customer',
       type: 'relationship',
       relationTo: 'customers',
       required: true,
     },
+    // {
+    //   name: 'customers',
+    //   type: 'relationship',
+    //   relationTo: 'customers',
+    //   required: true,
+    // },
     {
       name: 'transaction',
       type: 'relationship',

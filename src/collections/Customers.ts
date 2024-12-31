@@ -7,6 +7,42 @@ export const Customers: CollectionConfig = {
   },
   fields: [
     {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Information',
+          fields: [
+            // Add other fields for information here...
+          ],
+        },
+        {
+          label: 'Transaction',
+          fields: [
+            {
+              name: 'transaction', // Relationship to customers
+              type: 'join',
+              on: 'customer',
+              collection: 'transaction', // Specify the collection being related to
+            },
+            // Add other fields for Transaction here...
+          ],
+        },
+        {
+          label: 'Invoice',
+          fields: [
+            {
+              name: 'invoice', // Relationship to customers
+              type: 'join',
+              on: 'customer',
+              collection: 'invoice', // Specify the collection being related to
+            },
+            // Add oth
+            // er fields for Invoice here...
+          ],
+        },
+      ],
+    },
+    {
       type: 'row',
       fields: [
         {
