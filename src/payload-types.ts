@@ -18,6 +18,7 @@ export interface Config {
     trips: Trip;
     employee: Employee;
     transaction: Transaction;
+    invoice: Invoice;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -41,6 +42,7 @@ export interface Config {
     trips: TripsSelect<false> | TripsSelect<true>;
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
+    invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -105,7 +107,10 @@ export interface Customer {
   area: string | Area;
   block: string | Block;
   rate: number;
+  balance: number;
+  advance: number;
   status: 'active' | 'archive';
+  bottlesAtHome: number;
   contactNumbers?:
     | {
         contactNumber: string;
@@ -172,7 +177,7 @@ export interface Employee {
   name: string;
   address: string;
   contactNumber: string;
-  nicNumber: string;
+  NICNumber: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -187,6 +192,19 @@ export interface Transaction {
   status: 'paid' | 'unpaid';
   bottleGiven: number;
   bottleTaken: number;
+  transactionAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice".
+ */
+export interface Invoice {
+  id: string;
+  customers: string | Customer;
+  transaction: (string | Transaction)[];
+  status: 'paid' | 'unpaid' | 'partially-paid';
   updatedAt: string;
   createdAt: string;
 }
@@ -224,6 +242,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'transaction';
         value: string | Transaction;
+      } | null)
+    | ({
+        relationTo: 'invoice';
+        value: string | Invoice;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -292,7 +314,10 @@ export interface CustomersSelect<T extends boolean = true> {
   area?: T;
   block?: T;
   rate?: T;
+  balance?: T;
+  advance?: T;
   status?: T;
+  bottlesAtHome?: T;
   contactNumbers?:
     | T
     | {
@@ -346,7 +371,7 @@ export interface EmployeeSelect<T extends boolean = true> {
   name?: T;
   address?: T;
   contactNumber?: T;
-  nicNumber?: T;
+  NICNumber?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -360,6 +385,18 @@ export interface TransactionSelect<T extends boolean = true> {
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;
+  transactionAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice_select".
+ */
+export interface InvoiceSelect<T extends boolean = true> {
+  customers?: T;
+  transaction?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

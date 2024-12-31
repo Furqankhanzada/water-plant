@@ -7,30 +7,41 @@ export const Customers: CollectionConfig = {
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+      ],
     },
+
     {
-      name: 'address',
-      type: 'text',
-    },
-    {
-      name: 'area',
-      type: 'relationship',
-      relationTo: 'areas',
-      required: true,
-    },
-    {
-      name: 'block',
-      type: 'relationship',
-      relationTo: 'blocks',
-      required: true,
-      filterOptions: ({ data }) => {
-        return {
-          area: { equals: data.area || '' },
-        }
-      },
+      type: 'row',
+      fields: [
+        {
+          name: 'address',
+          type: 'text',
+        },
+        {
+          name: 'area',
+          type: 'relationship',
+          relationTo: 'areas',
+          required: true,
+        },
+        {
+          name: 'block',
+          type: 'relationship',
+          relationTo: 'blocks',
+          required: true,
+          filterOptions: ({ data }) => {
+            return {
+              area: { equals: data.area || '' },
+            }
+          },
+        },
+      ],
     },
     {
       type: 'row',
@@ -43,6 +54,30 @@ export const Customers: CollectionConfig = {
             placeholder: 'Enter rate per bottel rate',
           },
         },
+
+        {
+          name: 'balance',
+          type: 'number',
+          required: true,
+          admin: {
+            placeholder: 'Enter the balance amount',
+            description: 'Enter the current balance amount available.',
+          },
+        },
+        {
+          name: 'advance',
+          type: 'number',
+          required: true,
+          admin: {
+            placeholder: 'Enter advance payment amount',
+            description: 'Enter the amount of advance payment made for the product or service.',
+          },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
         {
           name: 'status',
           type: 'select',
@@ -60,6 +95,15 @@ export const Customers: CollectionConfig = {
           defaultValue: 'active',
           admin: {
             description: 'Set the user status to Active or Archive.',
+          },
+        },
+        {
+          name: 'bottlesAtHome',
+          type: 'number',
+          required: true,
+          admin: {
+            placeholder: 'Enter number of bottles at home',
+            description: 'Enter the total number of bottles currently available at home.',
           },
         },
       ],

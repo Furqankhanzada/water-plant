@@ -31,15 +31,15 @@ export const Trips: CollectionConfig = {
       type: 'row',
       fields: [
         {
+          name: 'tripAt',
+          type: 'date',
+          required: true,
           admin: {
             date: {
               pickerAppearance: 'dayOnly',
               displayFormat: 'd MMM yyy',
             },
           },
-          name: 'tripAt',
-          type: 'date',
-          required: true,
         },
         {
           name: 'employee',
@@ -48,7 +48,6 @@ export const Trips: CollectionConfig = {
           hasMany: true,
           required: true,
         },
-
         {
           name: 'status',
           type: 'select',

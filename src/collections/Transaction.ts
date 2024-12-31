@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
   admin: {
+    useAsTitle: 'transactionAt',
     defaultColumns: ['trip', 'customer', 'bottleGiven', 'bottleTaken', 'status'],
   },
   fields: [
@@ -42,13 +43,23 @@ export const Transaction: CollectionConfig = {
         placeholder: 'Enter the number of bottles given',
       },
     },
-
     {
       name: 'bottleTaken',
       type: 'number',
       required: true,
       admin: {
         placeholder: 'Enter the number of bottles taken',
+      },
+    },
+    {
+      name: 'transactionAt',
+      type: 'date',
+      required: true,
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly', // Only show date picker (no time)
+          displayFormat: 'd MMM yyyy', // Display date in "29 Dec 2024" format
+        },
       },
     },
   ],

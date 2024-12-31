@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Employee: CollectionConfig = {
   slug: 'employee',
   admin: {
-    useAsTitle: 'name', // This ensures the 'name' field is displayed instead of the ID
+    useAsTitle: 'name',
   },
 
   fields: [
@@ -31,29 +31,30 @@ export const Employee: CollectionConfig = {
               // Replace "03" with "+92"
               return `+92${value.slice(1)}`
             }
-            return value // Return the original value if no transformation is needed
+            return value
           },
         ],
       },
       validate: (value: string | null | undefined) => {
         if (!value || typeof value !== 'string') {
-          return 'Contact number is required.' // If value is null, undefined, or not a string
+          return 'Contact number is required.'
         }
 
         const pattern = /^\+92[0-9]{10}$/
         if (!pattern.test(value)) {
-          return 'Contact number must start with "+92" and contain 13 digits.' // Pattern mismatch
+          return 'Contact number must start with "+92" and contain 13 digits.'
         }
 
-        return true // Validation passed
+        return true
       },
     },
     {
-      name: 'nicNumber', // Field name for NIC
+      name: 'NICNumber',
       type: 'text',
-      required: true, // NIC is required
+      required: true,
+      maxLength: 13,
       admin: {
-        placeholder: 'Enter NIC number without dashes', // Placeholder to guide the user
+        placeholder: 'Enter NIC number without dashes',
       },
       hooks: {
         beforeValidate: [
@@ -61,7 +62,6 @@ export const Employee: CollectionConfig = {
             if (typeof value === 'string') {
               // Remove any existing dashes
               const cleanedValue = value.replace(/-/g, '')
-
               // Add dashes in the correct format: 12345-1234567-1
               if (cleanedValue.length === 13) {
                 return `${cleanedValue.slice(0, 5)}-${cleanedValue.slice(5, 12)}-${cleanedValue.slice(12)}`
