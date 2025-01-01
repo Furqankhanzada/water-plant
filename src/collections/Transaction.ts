@@ -33,6 +33,10 @@ export const Transaction: CollectionConfig = {
           label: 'Unpaid',
           value: 'unpaid',
         },
+        {
+          label: 'Pending',
+          value: 'pending',
+        },
       ],
     },
     {

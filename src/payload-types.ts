@@ -169,7 +169,7 @@ export interface Transaction {
   id: string;
   trip: string | Trip;
   customer: string | Customer;
-  status: 'paid' | 'unpaid';
+  status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
   transactionAt: string;
