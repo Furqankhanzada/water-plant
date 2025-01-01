@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
+import { afterOperationHook } from '@/hooks/trips'
+
 export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
     useAsTitle: 'tripAt',
+  },
+  hooks: {
+    afterOperation: [afterOperationHook],
   },
   fields: [
     {
