@@ -16,6 +16,12 @@ export const Invoice: CollectionConfig = {
       relationTo: 'transaction',
       hasMany: true,
       required: true,
+      filterOptions: ({ data }) => {
+        return {
+          customer: { equals: data.customer },
+          status: { equals: 'unpaid' },
+        }
+      },
     },
     {
       name: 'status',
@@ -35,6 +41,7 @@ export const Invoice: CollectionConfig = {
           value: 'partially-paid',
         },
       ],
+
       defaultValue: 'inprogress',
       admin: {
         description: 'Set the status to In Progress or Complete.',
