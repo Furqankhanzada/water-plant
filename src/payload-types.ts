@@ -204,7 +204,7 @@ export interface Employee {
   name: string;
   address: string;
   contactNumber: string;
-  NICNumber: string;
+  nic: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -385,7 +385,7 @@ export interface EmployeeSelect<T extends boolean = true> {
   name?: T;
   address?: T;
   contactNumber?: T;
-  NICNumber?: T;
+  nic?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -49,7 +49,7 @@ export const Employee: CollectionConfig = {
       },
     },
     {
-      name: 'NICNumber',
+      name: 'nic',
       type: 'text',
       label: 'NIC Number',
       required: true,
