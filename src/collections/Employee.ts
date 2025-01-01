@@ -51,6 +51,7 @@ export const Employee: CollectionConfig = {
     {
       name: 'NICNumber',
       type: 'text',
+      label: 'NIC Number',
       required: true,
       maxLength: 13,
       admin: {
