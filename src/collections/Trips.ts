@@ -6,6 +6,7 @@ export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
     useAsTitle: 'tripAt',
+    defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status'],
   },
   hooks: {
     afterOperation: [afterOperationHook],

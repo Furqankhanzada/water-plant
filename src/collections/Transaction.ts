@@ -24,6 +24,7 @@ export const Transaction: CollectionConfig = {
       label: 'Transaction Status',
       type: 'select',
       required: true,
+      defaultValue: 'unpaid',
       options: [
         {
           label: 'Paid',
@@ -43,6 +44,7 @@ export const Transaction: CollectionConfig = {
       name: 'bottleGiven',
       type: 'number',
       required: true,
+      defaultValue: 0,
       admin: {
         placeholder: 'Enter the number of bottles given',
       },
@@ -51,6 +53,7 @@ export const Transaction: CollectionConfig = {
       name: 'bottleTaken',
       type: 'number',
       required: true,
+      defaultValue: 0,
       admin: {
         placeholder: 'Enter the number of bottles taken',
       },
@@ -59,6 +62,7 @@ export const Transaction: CollectionConfig = {
       name: 'transactionAt',
       type: 'date',
       required: true,
+      defaultValue: () => new Date(),
       admin: {
         date: {
           pickerAppearance: 'dayOnly', // Only show date picker (no time)
