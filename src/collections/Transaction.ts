@@ -1,10 +1,22 @@
 import type { CollectionConfig } from 'payload'
 
+import { afterChangeHook } from '@/hooks/transactions'
+
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
   admin: {
     useAsTitle: 'transactionAt',
-    defaultColumns: ['trip', 'customer', 'bottleGiven', 'bottleTaken', 'status'],
+    defaultColumns: [
+      'trip',
+      'customer',
+      'bottleGiven',
+      'bottleTaken',
+      'remainingBottles',
+      'status',
+    ],
+  },
+  hooks: {
+    afterChange: [afterChangeHook],
   },
   fields: [
     {
@@ -68,6 +80,13 @@ export const Transaction: CollectionConfig = {
           pickerAppearance: 'dayOnly', // Only show date picker (no time)
           displayFormat: 'd MMM yyyy', // Display date in "29 Dec 2024" format
         },
+      },
+    },
+    {
+      name: 'remainingBottles',
+      type: 'number',
+      admin: {
+        hidden: true,
       },
     },
   ],
