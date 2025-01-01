@@ -10,12 +10,6 @@ export const Invoice: CollectionConfig = {
       relationTo: 'customers',
       required: true,
     },
-    // {
-    //   name: 'customers',
-    //   type: 'relationship',
-    //   relationTo: 'customers',
-    //   required: true,
-    // },
     {
       name: 'transaction',
       type: 'relationship',
@@ -31,10 +25,6 @@ export const Invoice: CollectionConfig = {
         {
           label: 'Paid',
           value: 'paid',
-        },
-        {
-          label: 'unpaid',
-          value: 'unpaid',
         },
         {
           label: 'Unpaid',

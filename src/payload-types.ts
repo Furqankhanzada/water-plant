@@ -106,14 +106,6 @@ export interface User {
  */
 export interface Customer {
   id: string;
-  transaction?: {
-    docs?: (string | Transaction)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  invoice?: {
-    docs?: (string | Invoice)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
   name: string;
   address?: string | null;
   area: string | Area;
@@ -129,6 +121,43 @@ export interface Customer {
         id?: string | null;
       }[]
     | null;
+  transaction?: {
+    docs?: (string | Transaction)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  invoice?: {
+    docs?: (string | Invoice)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas".
+ */
+export interface Area {
+  id: string;
+  name: string;
+  block?: {
+    docs?: (string | Block)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blocks".
+ */
+export interface Block {
+  id: string;
+  name: string;
+  area: string | Area;
+  customers?: {
+    docs?: (string | Customer)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -161,35 +190,6 @@ export interface Trip {
   status: 'inprogress' | 'complete';
   transaction?: {
     docs?: (string | Transaction)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "areas".
- */
-export interface Area {
-  id: string;
-  name: string;
-  block?: {
-    docs?: (string | Block)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blocks".
- */
-export interface Block {
-  id: string;
-  name: string;
-  area: string | Area;
-  customers?: {
-    docs?: (string | Customer)[] | null;
     hasNextPage?: boolean | null;
   } | null;
   updatedAt: string;
@@ -321,8 +321,6 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "customers_select".
  */
 export interface CustomersSelect<T extends boolean = true> {
-  transaction?: T;
-  invoice?: T;
   name?: T;
   address?: T;
   area?: T;
@@ -338,6 +336,8 @@ export interface CustomersSelect<T extends boolean = true> {
         contactNumber?: T;
         id?: T;
       };
+  transaction?: T;
+  invoice?: T;
   updatedAt?: T;
   createdAt?: T;
 }
