@@ -111,10 +111,10 @@ export interface Customer {
   area: string | Area;
   block: string | Block;
   rate: number;
-  balance: number;
-  advance: number;
+  balance?: number | null;
+  advance?: number | null;
   status: 'active' | 'archive';
-  bottlesAtHome: number;
+  bottlesAtHome?: number | null;
   contactNumbers?:
     | {
         contactNumber: string;

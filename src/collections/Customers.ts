@@ -4,6 +4,7 @@ export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
     useAsTitle: 'name',
+    defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
   },
   fields: [
     {
@@ -56,6 +57,7 @@ export const Customers: CollectionConfig = {
                   name: 'rate',
                   type: 'number',
                   required: true,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter rate per bottel rate',
                   },
@@ -64,20 +66,17 @@ export const Customers: CollectionConfig = {
                 {
                   name: 'balance',
                   type: 'number',
-                  required: true,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter the balance amount',
-                    description: 'Enter the current balance amount available.',
                   },
                 },
                 {
                   name: 'advance',
                   type: 'number',
-                  required: true,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter advance payment amount',
-                    description:
-                      'Enter the amount of advance payment made for the product or service.',
                   },
                 },
               ],
@@ -100,17 +99,13 @@ export const Customers: CollectionConfig = {
                     },
                   ],
                   defaultValue: 'active',
-                  admin: {
-                    description: 'Set the user status to Active or Archive.',
-                  },
                 },
                 {
                   name: 'bottlesAtHome',
                   type: 'number',
-                  required: true,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter number of bottles at home',
-                    description: 'Enter the total number of bottles currently available at home.',
                   },
                 },
               ],
@@ -132,6 +127,7 @@ export const Customers: CollectionConfig = {
                   name: 'contactNumber',
                   type: 'text',
                   required: true,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter contact number',
                   },
@@ -182,8 +178,6 @@ export const Customers: CollectionConfig = {
               on: 'customer',
               collection: 'invoice', // Specify the collection being related to
             },
-            // Add oth
-            // er fields for Invoice here...
           ],
         },
       ],
