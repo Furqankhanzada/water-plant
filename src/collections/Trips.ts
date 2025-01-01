@@ -15,7 +15,8 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
-          name: 'areas',
+          name: 'area',
+          label: 'Area',
           type: 'relationship',
           relationTo: 'areas',
           required: true,

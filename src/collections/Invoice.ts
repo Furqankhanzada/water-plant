@@ -18,7 +18,8 @@ export const Invoice: CollectionConfig = {
       required: true,
       filterOptions: ({ data }) => {
         return {
-          customer: { equals: data.customer || '' },
+          customer: { equals: data.customer },
+          status: { equals: 'unpaid' },
         }
       },
     },
