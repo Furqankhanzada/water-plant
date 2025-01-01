@@ -10,12 +10,12 @@ export const Trips: CollectionConfig = {
       type: 'row',
       fields: [
         {
-          name: 'From',
+          name: 'from',
           type: 'text',
           required: true,
         },
         {
-          name: 'Areas',
+          name: 'areas',
           type: 'relationship',
           relationTo: 'areas',
           required: true,
