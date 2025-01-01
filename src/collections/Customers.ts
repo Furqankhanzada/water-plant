@@ -158,7 +158,7 @@ export const Customers: CollectionConfig = {
           ],
         },
         {
-          label: 'Transaction',
+          label: 'Transactions',
           fields: [
             {
               name: 'transaction', // Relationship to customers
@@ -170,7 +170,7 @@ export const Customers: CollectionConfig = {
           ],
         },
         {
-          label: 'Invoice',
+          label: 'Invoices',
           fields: [
             {
               name: 'invoice', // Relationship to customers
