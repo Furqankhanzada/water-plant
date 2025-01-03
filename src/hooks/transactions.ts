@@ -39,7 +39,12 @@ export const afterChangeHook: CollectionAfterChangeHook = async ({
     doc.remainingBottles = transactions.docs[0].remainingBottles + doc.bottleGiven - doc.bottleTaken
   }
 
-  payload.update({
+  // Ensure remainingBottles never goes negative
+  if (doc.remainingBottles < 0) {
+    doc.remainingBottles = 0
+  }
+
+  await payload.update({
     collection: 'transaction',
     where: {
       id: {
