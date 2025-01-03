@@ -15,16 +15,27 @@ export interface Config {
     customers: Customer;
     areas: Area;
     blocks: Block;
+    trips: Trip;
+    employee: Employee;
+    transaction: Transaction;
+    invoice: Invoice;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    customers: {
+      transaction: 'transaction';
+      invoice: 'invoice';
+    };
     areas: {
       block: 'blocks';
     };
     blocks: {
       customers: 'customers';
+    };
+    trips: {
+      transaction: 'transaction';
     };
   };
   collectionsSelect: {
@@ -32,6 +43,10 @@ export interface Config {
     customers: CustomersSelect<false> | CustomersSelect<true>;
     areas: AreasSelect<false> | AreasSelect<true>;
     blocks: BlocksSelect<false> | BlocksSelect<true>;
+    trips: TripsSelect<false> | TripsSelect<true>;
+    employee: EmployeeSelect<false> | EmployeeSelect<true>;
+    transaction: TransactionSelect<false> | TransactionSelect<true>;
+    invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -96,13 +111,24 @@ export interface Customer {
   area: string | Area;
   block: string | Block;
   rate: number;
+  balance?: number | null;
+  advance?: number | null;
   status: 'active' | 'archive';
+  bottlesAtHome?: number | null;
   contactNumbers?:
     | {
         contactNumber: string;
         id?: string | null;
       }[]
     | null;
+  transaction?: {
+    docs?: (string | Transaction)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  invoice?: {
+    docs?: (string | Invoice)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -137,6 +163,66 @@ export interface Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transaction".
+ */
+export interface Transaction {
+  id: string;
+  trip: string | Trip;
+  customer: string | Customer;
+  status: 'paid' | 'unpaid' | 'pending';
+  bottleGiven: number;
+  bottleTaken: number;
+  transactionAt: string;
+  remainingBottles?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trips".
+ */
+export interface Trip {
+  id: string;
+  from: string;
+  area: string | Area;
+  bottles: number;
+  tripAt: string;
+  employee: (string | Employee)[];
+  status: 'inprogress' | 'complete';
+  transaction?: {
+    docs?: (string | Transaction)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employee".
+ */
+export interface Employee {
+  id: string;
+  name: string;
+  address: string;
+  contactNumber: string;
+  nic: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice".
+ */
+export interface Invoice {
+  id: string;
+  customer: string | Customer;
+  transaction: (string | Transaction)[];
+  status: 'paid' | 'unpaid' | 'partially-paid';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -157,6 +243,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blocks';
         value: string | Block;
+      } | null)
+    | ({
+        relationTo: 'trips';
+        value: string | Trip;
+      } | null)
+    | ({
+        relationTo: 'employee';
+        value: string | Employee;
+      } | null)
+    | ({
+        relationTo: 'transaction';
+        value: string | Transaction;
+      } | null)
+    | ({
+        relationTo: 'invoice';
+        value: string | Invoice;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -225,13 +327,18 @@ export interface CustomersSelect<T extends boolean = true> {
   area?: T;
   block?: T;
   rate?: T;
+  balance?: T;
+  advance?: T;
   status?: T;
+  bottlesAtHome?: T;
   contactNumbers?:
     | T
     | {
         contactNumber?: T;
         id?: T;
       };
+  transaction?: T;
+  invoice?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -253,6 +360,59 @@ export interface BlocksSelect<T extends boolean = true> {
   name?: T;
   area?: T;
   customers?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trips_select".
+ */
+export interface TripsSelect<T extends boolean = true> {
+  from?: T;
+  area?: T;
+  bottles?: T;
+  tripAt?: T;
+  employee?: T;
+  status?: T;
+  transaction?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employee_select".
+ */
+export interface EmployeeSelect<T extends boolean = true> {
+  name?: T;
+  address?: T;
+  contactNumber?: T;
+  nic?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transaction_select".
+ */
+export interface TransactionSelect<T extends boolean = true> {
+  trip?: T;
+  customer?: T;
+  status?: T;
+  bottleGiven?: T;
+  bottleTaken?: T;
+  transactionAt?: T;
+  remainingBottles?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice_select".
+ */
+export interface InvoiceSelect<T extends boolean = true> {
+  customer?: T;
+  transaction?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
