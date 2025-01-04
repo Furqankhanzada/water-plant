@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+// import { afterChangeHook } from '@/hooks/invoices'
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   admin: {},
