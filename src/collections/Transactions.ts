@@ -89,5 +89,12 @@ export const Transaction: CollectionConfig = {
         hidden: true,
       },
     },
+    {
+      name: 'total',
+      type: 'number',
+      admin: {
+        hidden: true,
+      },
+    },
   ],
 }

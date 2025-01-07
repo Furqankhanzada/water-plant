@@ -174,6 +174,7 @@ export interface Transaction {
   bottleTaken: number;
   transactionAt: string;
   remainingBottles?: number | null;
+  total?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -402,6 +403,7 @@ export interface TransactionSelect<T extends boolean = true> {
   bottleTaken?: T;
   transactionAt?: T;
   remainingBottles?: T;
+  total?: T;
   updatedAt?: T;
   createdAt?: T;
 }
