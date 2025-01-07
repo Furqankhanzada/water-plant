@@ -10,6 +10,7 @@ export const Invoice: CollectionConfig = {
       relationTo: 'customers',
       required: true,
     },
+
     {
       name: 'transaction',
       type: 'relationship',
@@ -46,6 +47,12 @@ export const Invoice: CollectionConfig = {
       admin: {
         description: 'Set the status to In Progress or Complete.',
       },
+    },
+    {
+      name: 'transactionAt',
+      type: 'join',
+      on: 'invoice',
+      collection: 'transaction',
     },
   ],
 }

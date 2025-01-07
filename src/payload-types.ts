@@ -37,6 +37,9 @@ export interface Config {
     trips: {
       transaction: 'transaction';
     };
+    invoice: {
+      transactionAt: 'transaction';
+    };
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
@@ -174,6 +177,7 @@ export interface Transaction {
   bottleTaken: number;
   transactionAt: string;
   remainingBottles?: number | null;
+  invoice?: (string | null) | Invoice;
   updatedAt: string;
   createdAt: string;
 }
@@ -218,6 +222,10 @@ export interface Invoice {
   customer: string | Customer;
   transaction: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
+  transactionAt?: {
+    docs?: (string | Transaction)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -402,6 +410,7 @@ export interface TransactionSelect<T extends boolean = true> {
   bottleTaken?: T;
   transactionAt?: T;
   remainingBottles?: T;
+  invoice?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -413,6 +422,7 @@ export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
   transaction?: T;
   status?: T;
+  transactionAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

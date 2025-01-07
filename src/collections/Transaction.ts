@@ -89,5 +89,17 @@ export const Transaction: CollectionConfig = {
         hidden: true,
       },
     },
+    {
+      // Defines a "relationship" field to link a transaction to a specific invoice.
+      // The "invoice" field references the "invoice" collection.
+      // This field is hidden from the admin panel but is still accessible in the database and API.
+      name: 'invoice',
+      type: 'relationship', // Specifies the field type as a relationship.
+      relationTo: 'invoice', // Links this field to the "invoice" collection.
+      admin: {
+        hidden: true, // Hides this field from the admin panel interface.
+      },
+    },
+    
   ],
 }
