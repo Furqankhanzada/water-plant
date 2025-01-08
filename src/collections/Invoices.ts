@@ -1,8 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
+import { afterOperationHook } from '@/hooks/invoices'
+
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
-  admin: {},
+  hooks: {
+    afterOperation: [afterOperationHook],
+  },
   fields: [
     {
       name: 'customer',
@@ -11,7 +15,7 @@ export const Invoice: CollectionConfig = {
       required: true,
     },
     {
-      name: 'transaction',
+      name: 'transactions',
       type: 'relationship',
       relationTo: 'transaction',
       hasMany: true,
@@ -22,6 +26,7 @@ export const Invoice: CollectionConfig = {
           status: { equals: 'unpaid' },
         }
       },
+      validate: () => true,
     },
     {
       name: 'status',
@@ -41,8 +46,7 @@ export const Invoice: CollectionConfig = {
           value: 'partially-paid',
         },
       ],
-
-      defaultValue: 'inprogress',
+      defaultValue: 'unpaid',
       admin: {
         description: 'Set the status to In Progress or Complete.',
       },

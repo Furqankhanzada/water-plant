@@ -12,9 +12,9 @@ import { Customers } from './collections/Customers'
 import { Areas } from './collections/Areas'
 import { Blocks } from './collections/Blocks'
 import { Trips } from './collections/Trips'
-import { Employee } from './collections/Employee'
-import { Transaction } from './collections/Transaction'
-import { Invoice } from './collections/Invoice'
+import { Employee } from './collections/Employees'
+import { Transaction } from './collections/Transactions'
+import { Invoice } from './collections/Invoices'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

@@ -217,7 +217,7 @@ export interface Employee {
 export interface Invoice {
   id: string;
   customer: string | Customer;
-  transaction: (string | Transaction)[];
+  transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
   updatedAt: string;
   createdAt: string;
@@ -413,7 +413,7 @@ export interface TransactionSelect<T extends boolean = true> {
  */
 export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
-  transaction?: T;
+  transactions?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
