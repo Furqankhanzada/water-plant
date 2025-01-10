@@ -1,6 +1,6 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-export const afterChangeHook: CollectionAfterChangeHook = async ({
+export const calculateRemainingBottles: CollectionAfterChangeHook = async ({
   doc,
   operation,
   req: { payload },
