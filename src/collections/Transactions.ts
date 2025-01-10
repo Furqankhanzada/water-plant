@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { afterChangeHook } from '@/hooks/transactions'
-import { afterTotalChangeHook } from '@/hooks/total'
+import { calculateRemainingBottles } from '@/hooks/transactions/remainingBottles'
+import { calculateTotalHook } from '@/hooks/transactions/total'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
@@ -17,7 +17,8 @@ export const Transaction: CollectionConfig = {
     ],
   },
   hooks: {
-    afterChange: [afterChangeHook, afterTotalChangeHook],
+    afterChange: [calculateRemainingBottles],
+    beforeChange: [calculateTotalHook],
   },
   fields: [
     {
