@@ -167,7 +167,7 @@ export interface Block {
  */
 export interface Transaction {
   id: string;
-  trip: string | Trip;
+  trip?: (string | null) | Trip;
   customer: string | Customer;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
