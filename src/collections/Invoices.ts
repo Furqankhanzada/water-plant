@@ -51,5 +51,19 @@ export const Invoice: CollectionConfig = {
         description: 'Set the status to In Progress or Complete.',
       },
     },
+    {
+      name: 'paidAmount',
+      type: 'number',
+      label: 'Paid Amount',
+      required: true,
+    },
+    {
+      name: 'dueAmount',
+      type: 'number',
+      label: 'Due Amount',
+      admin: {
+        readOnly: true, // Read-only field in admin
+      },
+    },
   ],
 }

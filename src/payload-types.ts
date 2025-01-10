@@ -219,6 +219,8 @@ export interface Invoice {
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
+  paidAmount: number;
+  dueAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -415,6 +417,8 @@ export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
   transactions?: T;
   status?: T;
+  paidAmount?: T;
+  dueAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
