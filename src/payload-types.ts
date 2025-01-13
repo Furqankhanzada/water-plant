@@ -219,7 +219,7 @@ export interface Invoice {
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
-  paidAmount: number;
+  paidAmount?: number | null;
   dueAmount?: number | null;
   updatedAt: string;
   createdAt: string;

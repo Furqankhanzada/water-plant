@@ -58,7 +58,7 @@ export const Invoice: CollectionConfig = {
       name: 'paidAmount',
       type: 'number',
       label: 'Paid Amount',
-      required: true,
+      defaultValue: 0,
     },
     {
       name: 'dueAmount',
