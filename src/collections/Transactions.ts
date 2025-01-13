@@ -13,6 +13,7 @@ export const Transaction: CollectionConfig = {
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
+      'total',
       'status',
     ],
   },
