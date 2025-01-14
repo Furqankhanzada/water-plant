@@ -8,7 +8,7 @@ export const calculateDueAmountHook: CollectionBeforeChangeHook = async ({
     collection: 'transaction',
     where: {
       id: {
-        in: data.transactions, 
+        in: data.transactions,
       },
     },
   })
@@ -21,7 +21,7 @@ export const calculateDueAmountHook: CollectionBeforeChangeHook = async ({
   }, 0)
 
   // Calculate due amount
-  data.dueAmount = totalAmount - (data.paidAmount || 0)
+  data.dueAmount = totalAmount
 
   // Set status based on due amount and paid amount
   if (data.paidAmount === data.dueAmount) {
