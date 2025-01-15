@@ -94,6 +94,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'total',
       type: 'number',
+      required: true,
       admin: {
         hidden: true,
       },

@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook } from 'payload'
 
-export const calculateDueAmountHook: CollectionBeforeChangeHook = async ({
+export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
   data,
   req: { payload },
 }) => {
@@ -13,11 +13,9 @@ export const calculateDueAmountHook: CollectionBeforeChangeHook = async ({
     },
   })
 
-  console.log('transactions', transactions)
-
   // Calculate total from multiple transactions
   const totalAmount = transactions.docs.reduce((sum, transaction) => {
-    return sum + (transaction.total ?? 0)
+    return sum + transaction.total
   }, 0)
 
   // Calculate due amount

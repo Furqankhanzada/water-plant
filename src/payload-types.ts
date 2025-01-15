@@ -174,7 +174,7 @@ export interface Transaction {
   bottleTaken: number;
   transactionAt: string;
   remainingBottles?: number | null;
-  total?: number | null;
+  total: number;
   updatedAt: string;
   createdAt: string;
 }

@@ -1,13 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
-import { afterOperationHook } from '@/hooks/invoices'
-import { calculateDueAmountHook } from '@/hooks/invoices/calculateAmount'
+import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransactionsStatus'
+import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   hooks: {
-    afterOperation: [afterOperationHook],
-    beforeChange: [calculateDueAmountHook],
+    afterOperation: [changeTransactionsStatusHook],
+    beforeChange: [calculateAmountsHook],
   },
   fields: [
     {
