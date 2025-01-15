@@ -68,5 +68,14 @@ export const Invoice: CollectionConfig = {
         readOnly: true, // Read-only field in admin
       },
     },
+    {
+      name: 'pdf',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Invoices#GeneratePdfButton',
+        },
+      },
+    },
   ],
 }
