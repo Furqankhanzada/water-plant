@@ -13,6 +13,7 @@ export const Transaction: CollectionConfig = {
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
+      'total',
       'status',
     ],
   },
@@ -25,7 +26,6 @@ export const Transaction: CollectionConfig = {
       name: 'trip',
       type: 'relationship',
       relationTo: 'trips',
-      required: true,
     },
     {
       name: 'customer',
@@ -94,6 +94,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'total',
       type: 'number',
+      required: true,
       admin: {
         hidden: true,
       },

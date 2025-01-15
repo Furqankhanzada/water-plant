@@ -167,14 +167,14 @@ export interface Block {
  */
 export interface Transaction {
   id: string;
-  trip: string | Trip;
+  trip?: (string | null) | Trip;
   customer: string | Customer;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
   transactionAt: string;
   remainingBottles?: number | null;
-  total?: number | null;
+  total: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -219,6 +219,8 @@ export interface Invoice {
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
+  paidAmount?: number | null;
+  dueAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -415,6 +417,8 @@ export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
   transactions?: T;
   status?: T;
+  paidAmount?: T;
+  dueAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }

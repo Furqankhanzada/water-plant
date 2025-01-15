@@ -2,7 +2,7 @@ import type { CollectionAfterOperationHook } from 'payload'
 
 import { Invoice } from '@/payload-types'
 
-export const afterOperationHook: CollectionAfterOperationHook = async ({
+export const changeTransactionsStatusHook: CollectionAfterOperationHook = async ({
   result,
   operation,
   req: { payload },

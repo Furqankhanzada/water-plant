@@ -1,11 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
-import { afterOperationHook } from '@/hooks/invoices'
+import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransactionsStatus'
+import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   hooks: {
-    afterOperation: [afterOperationHook],
+    afterOperation: [changeTransactionsStatusHook],
+    beforeChange: [calculateAmountsHook],
   },
   fields: [
     {
@@ -49,6 +51,21 @@ export const Invoice: CollectionConfig = {
       defaultValue: 'unpaid',
       admin: {
         description: 'Set the status to In Progress or Complete.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'paidAmount',
+      type: 'number',
+      label: 'Paid Amount',
+      defaultValue: 0,
+    },
+    {
+      name: 'dueAmount',
+      type: 'number',
+      label: 'Due Amount',
+      admin: {
+        readOnly: true, // Read-only field in admin
       },
     },
   ],
