@@ -1,113 +1,70 @@
-import { Page, Text, View, Document, StyleSheet, renderToStream } from '@react-pdf/renderer'
+import { Page, Document, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
+import configPromise from '@payload-config'
+import { Invoice } from '@/payload-types'
+import { getPayload } from 'payload'
+import { resolve } from 'path'
+import { readFileSync } from 'fs'
+
+import InvoiceNo from './(components)/InvoiceNo'
+import InvoiceTitle from './(components)/InvoiceTitle'
+import BillTo from './(components)/BillTo'
+import InvoiceItemsTable from './(components)/InvoiceItemsTable'
+import InvoiceThankYouMsg from './(components)/InvoiceThankYouMsg'
+const logoPath = resolve('./public/images/logo.jpg')
+
+const logoData = readFileSync(logoPath).toString('base64')
+const logoSrc = `data:image/jpeg;base64,${logoData}`
 
 const styles = StyleSheet.create({
   page: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: 50,
+    fontFamily: 'Helvetica',
+    fontSize: 11,
+    paddingTop: 30,
+    paddingBottom: 30,
+    paddingLeft: 40,
+    paddingRight: 50,
+    lineHeight: 1.5,
+    flexDirection: 'column',
   },
-  section: {
-    marginBottom: 40,
-  },
-  header: {
-    fontSize: 18,
-    marginBottom: 8,
-  },
-  text: {
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  title: {
-    fontSize: 22,
-    marginBottom: 6,
-  },
-  date: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  status: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    width: 50,
-    color: 'white',
-    fontSize: 12,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-    backgroundColor: 'blue',
-    borderRadius: 99,
-  },
-  value: {
-    fontSize: 26,
-    marginBottom: 10,
+  logo: {
+    width: 306.5,
+    height: 106,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 })
 
 interface InvoiceProps {
-  invoice: {
-    id: number
-    name: string
-    dateCreated: number
-    value: number
-    description: string
-    status: string
-    customer: {
-      name: string
-      email: string
-    }
-  }
+  invoice: Invoice
 }
 
-const Invoice = ({ invoice }: InvoiceProps) => {
+const InvoicePDF = ({ invoice }: InvoiceProps) => {
   return (
     <Document>
-      <Page style={styles.page}>
-        <View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Invoice {invoice.id}</Text>
-            <Text style={styles.date}>{new Date(invoice.dateCreated).toLocaleDateString()}</Text>
-            <Text style={styles.status}>{invoice.status.toUpperCase()}</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.value}>${invoice.value / 100}</Text>
-            <Text style={styles.text}>{invoice.description}</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.header}>Billed To</Text>
-            <Text style={styles.text}>Name: {invoice.customer.name}</Text>
-            <Text style={styles.text}>Email: {invoice.customer.email}</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.header}>Payment Details</Text>
-            <Text style={styles.text}>Bank of the Universe</Text>
-            <Text style={styles.text}>1234567890</Text>
-            <Text style={styles.text}>0987654321</Text>
-          </View>
-        </View>
-        <View>
-          <Text style={styles.text}>Colby Fayock</Text>
-          <Text style={styles.text}>hello@colbyfayock.com</Text>
-        </View>
+      <Page size="A4" style={styles.page}>
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
+        <Image style={styles.logo} src={logoSrc} />
+        <InvoiceTitle title="Invoice" />
+        <InvoiceNo invoice={invoice} />
+        <BillTo invoice={invoice} />
+        <InvoiceItemsTable invoice={invoice} />
+        <InvoiceThankYouMsg />
       </Page>
     </Document>
   )
 }
 
-export async function GET(request: Request, { params }: { params: { invoiceId: string } }) {
-  const invoice = {
-    id: 1,
-    name: 'Sample Invoice',
-    dateCreated: Date.now(),
-    value: 1234,
-    description: 'This is a sample invoice.',
-    status: 'open',
-    customer: {
-      name: 'John Smith',
-      email: 'john@smith.com',
-    },
-  }
-  const stream = await renderToStream(<Invoice invoice={invoice} />)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const payload = await getPayload({
+    config: configPromise,
+  })
+
+  const invoice = await payload.findByID({
+    collection: 'invoice',
+    id: params.id,
+  })
+
+  const stream = await renderToStream(<InvoicePDF invoice={invoice} />)
   return new NextResponse(stream as unknown as ReadableStream)
 }

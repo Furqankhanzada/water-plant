@@ -70,10 +70,16 @@ export const Invoice: CollectionConfig = {
     },
     {
       name: 'pdf',
+      label: 'PDF Invoice',
       type: 'ui',
       admin: {
         components: {
           Field: '/components/Invoices#GeneratePdfButton',
+          Cell: {
+            path: '/components/Invoices',
+            exportName: 'GeneratePdfButton',
+            serverProps: { cell: true },
+          },
         },
       },
     },
