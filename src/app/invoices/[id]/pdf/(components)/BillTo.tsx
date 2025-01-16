@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice } from '@/payload-types'
+import { Area, Block, Customer, Invoice } from '@/payload-types'
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -14,14 +14,16 @@ const styles = StyleSheet.create({
 })
 
 const BillTo = ({ invoice }: { invoice: Invoice }) => {
-  if (typeof invoice.customer === 'string') return null
+  const customer = invoice.customer as Customer
+  const block = customer.block as Block
+  const area = customer.area as Area
 
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.billTo}>Bill To:</Text>
-      <Text>{invoice.customer.name}</Text>
-      <Text>{`${invoice.customer.address} ${invoice.customer.block.name} ${invoice.customer.area.name}`}</Text>
-      <Text>{invoice.customer?.contactNumbers?.[0]?.contactNumber}</Text>
+      <Text>{customer.name}</Text>
+      <Text>{`${customer.address} ${block.name} ${area.name}`}</Text>
+      <Text>{customer.contactNumbers?.[0]?.contactNumber}</Text>
       {/* <Text>{invoice.email}</Text> */}
     </View>
   )

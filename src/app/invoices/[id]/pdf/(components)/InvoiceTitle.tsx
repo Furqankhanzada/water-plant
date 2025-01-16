@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const InvoiceTitle = ({ title }) => (
+const InvoiceTitle = ({ title }: { title: string }) => (
   <View style={styles.titleContainer}>
     <Text style={styles.reportTitle}>{title}</Text>
   </View>

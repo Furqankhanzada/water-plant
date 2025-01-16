@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice } from '@/payload-types'
+import { Invoice, Transaction } from '@/payload-types'
 
 const borderColor = '#90e5fc'
 const styles = StyleSheet.create({
@@ -29,13 +29,14 @@ const styles = StyleSheet.create({
 
 const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
   const totalAmount = invoice.transactions.reduce((sum, transaction) => {
+    transaction = transaction as Transaction
     return sum + transaction.total
   }, 0)
 
   return (
     <View style={styles.row}>
       <Text style={styles.description}>TOTAL</Text>
-      <Text style={styles.total}>{Number.parseFloat(totalAmount).toFixed(2)}</Text>
+      <Text style={styles.total}>{Number(totalAmount).toFixed(2)}</Text>
     </View>
   )
 }

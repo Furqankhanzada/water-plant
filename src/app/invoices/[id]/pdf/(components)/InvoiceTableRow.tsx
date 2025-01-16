@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice, Transaction } from '@/payload-types'
+import { Customer, Invoice, Transaction } from '@/payload-types'
 import { format } from 'date-fns'
 
 const borderColor = '#90e5fc'
@@ -42,16 +42,20 @@ const styles = StyleSheet.create({
 })
 
 const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
-  const rows = invoice.transactions.map((item) => (
-    <View style={styles.row} key={item.id}>
-      <Text style={styles.description}>
-        Bottles Delivered on {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
-      </Text>
-      <Text style={styles.qty}>{item.bottleGiven}</Text>
-      <Text style={styles.rate}>{invoice.customer.rate}</Text>
-      <Text style={styles.amount}>{item.total.toFixed(2)}</Text>
-    </View>
-  ))
+  const rows = invoice.transactions.map((item) => {
+    item = item as Transaction
+    const customer = invoice.customer as Customer
+    return (
+      <View style={styles.row} key={item.id}>
+        <Text style={styles.description}>
+          Bottles Delivered on {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
+        </Text>
+        <Text style={styles.qty}>{item.bottleGiven}</Text>
+        <Text style={styles.rate}>{customer.rate}</Text>
+        <Text style={styles.amount}>{item.total.toFixed(2)}</Text>
+      </View>
+    )
+  })
   return <Fragment>{rows}</Fragment>
 }
 

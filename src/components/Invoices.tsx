@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { ServerComponentProps } from 'payload'
 
-export const GeneratePdfButton = async (props: ServerComponentProps) => {
+export const GeneratePdfButton = async (
+  props: ServerComponentProps & { rowData: { id: string } },
+) => {
   // console.log('data', props.data)
   // console.log('id', props.id)
   return (

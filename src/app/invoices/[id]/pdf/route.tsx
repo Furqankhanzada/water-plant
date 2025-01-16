@@ -55,14 +55,14 @@ const InvoicePDF = ({ invoice }: InvoiceProps) => {
   )
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({
     config: configPromise,
   })
 
   const invoice = await payload.findByID({
     collection: 'invoice',
-    id: params.id,
+    id: (await params).id,
   })
 
   const stream = await renderToStream(<InvoicePDF invoice={invoice} />)
