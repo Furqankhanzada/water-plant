@@ -1,10 +1,11 @@
 import React from 'react'
 import { View, StyleSheet } from '@react-pdf/renderer'
+import { Invoice } from '@/payload-types'
+
 import InvoiceTableHeader from './InvoiceTableHeader'
 import InvoiceTableRow from './InvoiceTableRow'
 import InvoiceTableBlankSpace from './InvoiceTableBlankSpace'
 import InvoiceTableFooter from './InvoiceTableFooter'
-import { Invoice } from '@/payload-types'
 
 const tableRowsCount = 11
 

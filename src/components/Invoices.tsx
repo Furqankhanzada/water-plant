@@ -4,8 +4,10 @@ import { ServerComponentProps } from 'payload'
 export const GeneratePdfButton = async (
   props: ServerComponentProps & { rowData: { id: string } },
 ) => {
-  // console.log('data', props.data)
-  // console.log('id', props.id)
+  if (!props.id || !props.rowData) {
+    return null
+  }
+
   return (
     <Link
       target="_blank"
