@@ -18,8 +18,8 @@ export const Transaction: CollectionConfig = {
     ],
   },
   hooks: {
-    afterChange: [calculateRemainingBottles],
-    beforeChange: [calculateTotalHook],
+    afterChange: [],
+    beforeChange: [calculateRemainingBottles, calculateTotalHook],
   },
   fields: [
     {

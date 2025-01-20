@@ -1,15 +1,12 @@
-import type { CollectionAfterChangeHook } from 'payload'
+import type { CollectionBeforeChangeHook } from 'payload'
 
-export const calculateRemainingBottles: CollectionAfterChangeHook = async ({
-  doc,
-  operation,
+export const calculateRemainingBottles: CollectionBeforeChangeHook = async ({
+  data,
   req: { payload },
 }) => {
-  if (operation === 'create') return doc
-
   const customer = await payload.findByID({
     collection: 'customers',
-    id: doc.customer,
+    id: data.customer,
     select: {
       bottlesAtHome: true,
     },
@@ -21,10 +18,7 @@ export const calculateRemainingBottles: CollectionAfterChangeHook = async ({
     sort: '-transactionAt',
     where: {
       customer: {
-        equals: doc.customer,
-      },
-      id: {
-        not_equals: doc.id,
+        equals: data.customer,
       },
     },
     select: {
@@ -34,22 +28,11 @@ export const calculateRemainingBottles: CollectionAfterChangeHook = async ({
   })
 
   if (!transactions.docs.length) {
-    doc.remainingBottles = customer.bottlesAtHome + doc.bottleGiven - doc.bottleTaken
+    data.remainingBottles = customer.bottlesAtHome + data.bottleGiven - data.bottleTaken
   } else {
-    doc.remainingBottles = transactions.docs[0].remainingBottles + doc.bottleGiven - doc.bottleTaken
+    data.remainingBottles =
+      transactions.docs[0].remainingBottles + data.bottleGiven - data.bottleTaken
   }
 
-  payload.update({
-    collection: 'transaction',
-    where: {
-      id: {
-        equals: doc.id,
-      },
-    },
-    data: {
-      remainingBottles: doc.remainingBottles,
-    },
-  })
-
-  return doc
+  return data
 }
