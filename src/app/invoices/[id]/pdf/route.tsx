@@ -11,7 +11,12 @@ import InvoiceTitle from './(components)/InvoiceTitle'
 import BillTo from './(components)/BillTo'
 import InvoiceItemsTable from './(components)/InvoiceItemsTable'
 import InvoiceThankYouMsg from './(components)/InvoiceThankYouMsg'
+
 const logoPath = resolve('./public/images/logo.jpg')
+const paidStamp = resolve('./public/images/paid.png')
+
+const paidStampData = readFileSync(paidStamp).toString('base64')
+const paidStampSrc = `data:image/png;base64,${paidStampData}`
 
 const logoData = readFileSync(logoPath).toString('base64')
 const logoSrc = `data:image/jpeg;base64,${logoData}`
@@ -28,10 +33,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   logo: {
-    width: 306.5,
-    height: 106,
+    width: 229,
+    height: 79,
     marginLeft: 'auto',
     marginRight: 'auto',
+  },
+  paidStamp: {
+    width: 120,
+    height: 120,
+    position: 'absolute',
+    top: 100,
   },
 })
 
@@ -45,6 +56,10 @@ const InvoicePDF = ({ invoice }: InvoiceProps) => {
       <Page size="A4" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <Image style={styles.logo} src={logoSrc} />
+        {invoice.status === 'paid' ? (
+          /* eslint-disable-next-line jsx-a11y/alt-text */
+          <Image style={styles.paidStamp} src={paidStampSrc} />
+        ) : null}
         <InvoiceTitle title="Invoice" />
         <InvoiceNo invoice={invoice} />
         <BillTo invoice={invoice} />
