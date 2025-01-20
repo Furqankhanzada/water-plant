@@ -14,28 +14,28 @@ const styles = StyleSheet.create({
     fontStyle: 'bold',
   },
   description: {
-    width: '60%',
+    width: '50%',
     textAlign: 'left',
     borderRightColor: borderColor,
     borderRightWidth: 1,
     paddingLeft: 8,
   },
   qty: {
-    width: '10%',
+    width: '15%',
     borderRightColor: borderColor,
     borderRightWidth: 1,
     textAlign: 'right',
     paddingRight: 8,
   },
   rate: {
-    width: '15%',
+    width: '12%',
     borderRightColor: borderColor,
     borderRightWidth: 1,
     textAlign: 'right',
     paddingRight: 8,
   },
   amount: {
-    width: '15%',
+    width: '12%',
     textAlign: 'right',
     paddingRight: 8,
   },
@@ -48,9 +48,10 @@ const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
     return (
       <View style={styles.row} key={item.id}>
         <Text style={styles.description}>
-          Bottles Delivered on {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
+          19 Liter Bottles - {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
         </Text>
-        <Text style={styles.qty}>{item.bottleGiven}</Text>
+        <Text style={styles.qty}>-{item.bottleTaken}</Text>
+        <Text style={styles.qty}>+{item.bottleGiven}</Text>
         <Text style={styles.rate}>{customer.rate}</Text>
         <Text style={styles.amount}>{item.total.toFixed(2)}</Text>
       </View>
