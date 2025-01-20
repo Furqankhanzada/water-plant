@@ -10,8 +10,6 @@ export const changeTransactionsStatusOnRemoval: CollectionBeforeChangeHook = asy
       (otId: string) => !data.transactions.includes(otId),
     )
 
-    console.log('deletedTransactions', deletedTransactions)
-
     if (deletedTransactions.length) {
       await payload.update({
         collection: 'transaction',
