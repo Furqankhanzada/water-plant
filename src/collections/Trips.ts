@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { afterOperationHook } from '@/hooks/trips'
+import { filterEmptyTransactions } from '@/hooks/invoices/filterEmptyTransactions'
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
@@ -10,6 +11,7 @@ export const Trips: CollectionConfig = {
   },
   hooks: {
     afterOperation: [afterOperationHook],
+    afterRead : [filterEmptyTransactions]
   },
   fields: [
     {
@@ -76,11 +78,28 @@ export const Trips: CollectionConfig = {
         },
       ],
     },
+    
     {
       name: 'transaction',
       type: 'join',
       on: 'trip',
       collection: 'transaction',
     },
+    {
+      name: 'pdf',
+      label: 'PDF Invoice',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/TripsInvoices#GenerateTripInvoicePdf',
+          Cell: {
+            path: '/components/TripsInvoices',
+            exportName: 'GenerateTripInvoicePdf',
+            serverProps: { cell: true },
+          },
+        },
+      },
+    },
+   
   ],
 }
