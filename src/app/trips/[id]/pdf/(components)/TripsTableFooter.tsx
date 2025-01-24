@@ -1,6 +1,5 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice, Transaction } from '@/payload-types'
 
 
 const borderColor = '#3e85c5'

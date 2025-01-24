@@ -1,6 +1,7 @@
 
 import React, { Fragment } from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Trip } from '@/payload-types'
 
 
 const borderColor = ''
@@ -65,21 +66,24 @@ const styles = StyleSheet.create({
     },
 })
 
-function TripsTableRow({ invoice, customerData }: { invoice: any, customerData: any }) {
+interface TransactionDetail {
+    id: string;
+    trip: string;
+    customer: string;
+    status: string
+    bottleGiven: number;
+    bottleTaken: number;
+    transactionAt: string;
+    remainingBottles: number;
+    total: number;
+    createdAt: string;
+    updatedAt: string;
+}
 
+function TripsTableRow({ invoice, customerData }: { invoice: Trip, customerData: any }) {
 
-
-
-
-    const rows = invoice.transaction?.docs?.map((item: any, i: any) => {
-
-
+    const rows = invoice.transaction?.docs?.map((item: any, i: number) => {
         console.log(customerData.docs[i]?.name);
-
-
-
-
-
         return (
             <View style={styles.row} key={item.id}>
                 <Text style={styles.description}>{customerData.docs[i]?.name || "unkown"}</Text>

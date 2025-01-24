@@ -1,19 +1,13 @@
 import { Page, Document, Image, StyleSheet, renderToStream, View, Text } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
-import { Invoice } from '@/payload-types'
+import { Customer, Invoice, Trip } from '@/payload-types'
 import { getPayload } from 'payload'
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
 
-// import InvoiceNo from './(components)/InvoiceNo'
-// import InvoiceTitle from './(components)/InvoiceTitle'
-// import BillTo from './(components)/BillTo'
-// import InvoiceItemsTable from './(components)/InvoiceItemsTable'
-// import InvoiceThankYouMsg from './(components)/InvoiceThankYouMsg'
-import { log } from 'console'
+
 import TripsTableHeader from './(components)/TripsTableHeader'
-import InvoiveNo from './(components)/InvoiveNo'
 import TripsTableRow from './(components)/TripsTableRow'
 import TripsTableFooter from './(components)/TripsTableFooter'
 import TripDetails from './(components)/TripDetails'
@@ -26,6 +20,8 @@ const paidStampSrc = `data:image/png;base64,${paidStampData}`
 
 const logoData = readFileSync(logoPath).toString('base64')
 const logoSrc = `data:image/jpeg;base64,${logoData}`
+
+
 
 
 
@@ -61,11 +57,9 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
   },
 })
-interface InvoiceProps {
-  invoice: Invoice
-}
 
-const InvoicePDF = ({ invoice, customerData }: any) => {
+
+const InvoicePDF = ({ invoice, customerData }: { invoice: Trip, customerData: any }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -97,24 +91,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const invoice = await payload.findByID({
     collection: 'trips',
     id: (await params).id,
-    populate: ['transaction.customer']
   })
 
-  // const customers = invoice.transaction?.docs?.map(async ({customer}:any) =>{
-  //  return await payload.findByID({
-  //     collection : 'customers',
-  //     id : customer
-  //   })
-  // })   
-
-  // const customer = invoice.transaction?.docs?.map(async (e: any) => {
-  //   return await payload.findByID({
-  //     collection: 'customers',
-  //     id: e.customer
-  //   })
-  // })
-
-  const customers = invoice.transaction?.docs?.map(c => c.customer)
+  const customers = invoice.transaction?.docs?.map((c: any) => c.customer)
 
   console.log(customers);
 
@@ -128,7 +107,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   })
 
 
-  console.log(customerData);
+  console.log(invoice.transaction);
 
 
 
