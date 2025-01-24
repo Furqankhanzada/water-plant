@@ -81,6 +81,19 @@ const InvoicePDF = ({ invoice, customerData }: { invoice: Trip, customerData: an
   )
 }
 
+interface TransactionDetail {
+  id: String;
+  trip: String;
+  customer: String;
+  status: String
+  bottleGiven: Number;
+  bottleTaken: Number;
+  transactionAt: String;
+  remainingBottles: Number;
+  total: Number;
+  createdAt: String;
+  updatedAt: String;
+}
 
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -93,7 +106,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     id: (await params).id,
   })
 
-  const customers = invoice.transaction?.docs?.map((c: any) => c.customer)
+  const customers = invoice.transaction?.docs?.map((c: TransactionDetail) => c.customer)
 
   console.log(customers);
 

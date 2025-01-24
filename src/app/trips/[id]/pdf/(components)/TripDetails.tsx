@@ -1,3 +1,4 @@
+import { Trip } from '@/payload-types'
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
 import { format } from 'date-fns'
 import React from 'react'
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
     }
 })
 
-function TripDetails({ invoice }: { invoice: any }) {
+function TripDetails({ invoice }: { invoice: Trip | any }) {
     return (
         <View style={styles.deatilsWrapper}>
             <Text style={styles.tripDetails}>Trip From <Text style={{ fontWeight: 700 }}>::</Text> <Text style={styles.tripDetailValue}>{invoice.from}</Text> </Text>

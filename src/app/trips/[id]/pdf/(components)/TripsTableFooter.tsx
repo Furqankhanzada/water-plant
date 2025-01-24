@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Transaction, Trip } from '@/payload-types'
 
 
 const borderColor = '#3e85c5'
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
 })
 
 
-function TripsTableFooter({ invoice }: { invoice: any }) {
-    const totalAmount = invoice.transaction.docs?.reduce((sum: any, transaction: any) => {
+function TripsTableFooter({ invoice }: { invoice: Trip | any }) {
+    const totalAmount = invoice.transaction.docs?.reduce((sum: number, transaction: Transaction) => {
         return sum + transaction.total
     }, 0)
 
