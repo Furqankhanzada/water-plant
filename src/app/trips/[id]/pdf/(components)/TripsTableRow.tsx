@@ -66,19 +66,7 @@ const styles = StyleSheet.create({
     },
 })
 
-interface TransactionDetail {
-    id: string;
-    trip: string;
-    customer: string;
-    status: string
-    bottleGiven: number;
-    bottleTaken: number;
-    transactionAt: string;
-    remainingBottles: number;
-    total: number;
-    createdAt: string;
-    updatedAt: string;
-}
+
 
 function TripsTableRow({ invoice, customerData }: { invoice: Trip, customerData: any }) {
 

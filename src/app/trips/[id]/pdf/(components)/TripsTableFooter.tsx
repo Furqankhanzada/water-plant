@@ -37,8 +37,10 @@ const styles = StyleSheet.create({
 })
 
 
-function TripsTableFooter({ invoice }: { invoice: Trip | any }) {
-    const totalAmount = invoice.transaction.docs?.reduce((sum: number, transaction: Transaction) => {
+function TripsTableFooter({ invoice }: { invoice: Trip }) {
+    const totalAmount = invoice.transaction?.docs?.reduce((sum, transaction) => {
+        sum = sum as number
+        transaction = transaction as Transaction
         return sum + transaction.total
     }, 0)
 
