@@ -10,6 +10,9 @@ export const Invoice: CollectionConfig = {
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
   },
+  admin: {
+    defaultColumns: ['customer', 'status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
+  },
   fields: [
     {
       name: 'customer',
@@ -60,6 +63,14 @@ export const Invoice: CollectionConfig = {
       type: 'number',
       label: 'Paid Amount',
       defaultValue: 0,
+    },
+    {
+      name: 'previousBalance',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: 'Previous months balance',
+      },
     },
     {
       name: 'dueAmount',
