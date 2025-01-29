@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
 
 
-const borderColor = '#3e85c5'
+const borderColor = '#fff'
 const bgColor = '#3e85c5'
 const styles = StyleSheet.create({
     container: {
@@ -10,33 +10,35 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         borderBottomColor: '#bff0fd',
-        // backgroundColor: '#bff0fd',
+        backgroundColor: bgColor,
         borderBottomWidth: 1,
         // alignItems: 'center',
         height: 24,
         textAlign: 'center',
         fontStyle: 'bold',
         flexGrow: 1,
+        color: '#fff'
 
 
 
     },
     description: {
-        width: '26.6%',
-        borderRightColor: borderColor,
-        borderRightWidth: 1,
-        backgroundColor: bgColor,
-        color: '#fff',
-        paddingTop: 4,
-        borderTopLeftRadius: 16
-    },
-    qty: {
         width: '12%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        backgroundColor: bgColor,
-        color: 'white',
-        paddingTop: 4
+        color: "#fff",
+        paddingTop: 4,
+        fontSize: 10,
+        paddingLeft: 2,
+
+    },
+    address: {
+        width: '30%',
+        borderRightColor: borderColor,
+        borderRightWidth: 1,
+        color: "#fff",
+        paddingTop: 4,
+
 
 
     },
@@ -44,18 +46,24 @@ const styles = StyleSheet.create({
         width: '16.6%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        backgroundColor: bgColor,
-        color: 'white',
-        paddingTop: 4
+        color: "#fff",
+        paddingTop: 4,
+
 
 
     },
     amount: {
-        width: '20.6%',
-        backgroundColor: bgColor,
-        color: 'white',
+        width: '10.6%',
+        color: "#fff",
         paddingTop: 4,
-        borderTopRightRadius: 16
+        borderRightColor: borderColor,
+        borderRightWidth: 1
+    },
+    amount1: {
+        width: '10.6%',
+        color: "#fff",
+        paddingTop: 4,
+
     },
 })
 
@@ -63,12 +71,14 @@ const styles = StyleSheet.create({
 function TripsTableHeader() {
     return (
         <View style={styles.container}>
-            <Text style={styles.description}>id</Text>
-            <Text style={styles.rate}>status</Text>
-            <Text style={styles.qty}>G/bottels</Text>
-            <Text style={styles.qty}>T/bottels</Text>
-            <Text style={styles.qty}>R/bottles</Text>
-            <Text style={styles.amount}>Total</Text>
+            <Text style={styles.description}>Name</Text>
+            <Text style={styles.rate}>Contact</Text>
+            <Text style={styles.address}>Address</Text>
+            <Text style={styles.amount}>Given Bottles</Text>
+            <Text style={styles.amount}>Taken Bottles</Text>
+            <Text style={styles.amount}>Remain Bottles</Text>
+            <Text style={styles.amount}>Recive Amount</Text>
+            <Text style={styles.amount1}>Due Amount</Text>
         </View>
     )
 }

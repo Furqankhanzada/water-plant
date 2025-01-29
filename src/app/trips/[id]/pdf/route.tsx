@@ -1,25 +1,17 @@
-import { Page, Document, Image, StyleSheet, renderToStream, View, Text } from '@react-pdf/renderer'
+import { Page, Document, Image, StyleSheet, renderToStream, View, } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
-import { Customer, Invoice, Trip } from '@/payload-types'
+import { Trip } from '@/payload-types'
 import { getPayload } from 'payload'
-import { resolve } from 'path'
-import { readFileSync } from 'fs'
+
 
 
 import TripsTableHeader from './(components)/TripsTableHeader'
 import TripsTableRow from './(components)/TripsTableRow'
 import TripsTableFooter from './(components)/TripsTableFooter'
 import TripDetails from './(components)/TripDetails'
+import { number } from 'payload/shared'
 
-const logoPath = resolve('./public/images/logo.jpg')
-const paidStamp = resolve('./public/images/paid.png')
-
-const paidStampData = readFileSync(paidStamp).toString('base64')
-const paidStampSrc = `data:image/png;base64,${paidStampData}`
-
-const logoData = readFileSync(logoPath).toString('base64')
-const logoSrc = `data:image/jpeg;base64,${logoData}`
 
 
 
@@ -28,26 +20,14 @@ const logoSrc = `data:image/jpeg;base64,${logoData}`
 const styles = StyleSheet.create({
   page: {
     fontFamily: 'Helvetica',
-    fontSize: 11,
+    fontSize: 10,
     paddingTop: 30,
     paddingBottom: 30,
-    paddingLeft: 40,
-    paddingRight: 50,
+    paddingLeft: 10,
+    paddingRight: 10,
     lineHeight: 1.5,
     flexDirection: 'column',
     backgroundColor: 'white'
-  },
-  logo: {
-    width: 229,
-    height: 79,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  paidStamp: {
-    width: 120,
-    height: 120,
-    position: 'absolute',
-    top: 100,
   },
   tableContainer: {
     flexDirection: 'row',
@@ -62,17 +42,15 @@ const styles = StyleSheet.create({
 const InvoicePDF = ({ invoice, customerData }: { invoice: Trip, customerData: any }) => {
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A3" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image style={styles.logo} src={logoSrc} />
 
         <View style={styles.tableContainer}>
           <TripDetails invoice={invoice} />
 
-          <View style={{ borderColor: '#3e85c5', borderWidth: 1, borderRadius: 16 }}>
+          <View style={{ borderColor: '#3e85c5', borderWidth: 1 }}>
             <TripsTableHeader />
             <TripsTableRow customerData={customerData} invoice={invoice} />
-            <TripsTableFooter invoice={invoice} />
           </View>
         </View>
 
@@ -108,7 +86,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const customers = invoice.transaction?.docs?.map((c: TransactionDetail | any) => c.customer)
 
-  console.log(customers);
 
 
 
@@ -120,7 +97,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   })
 
 
-  console.log(invoice.transaction);
+
+
+
+
+
+
+
+
 
 
 

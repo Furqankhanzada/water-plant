@@ -10,28 +10,28 @@ const styles = StyleSheet.create({
         borderBottomColor: '#bff0fd',
         borderBottomWidth: 1,
         alignItems: 'center',
-        height: 30,
+        height: 'auto',
         fontSize: 12,
-        backgroundColor: borderColor,
-        borderBottomRightRadius: 16,
-        borderBottomLeftRadius: 16
+        backgroundColor: '#fff',
+        paddingVertical: 2
+
     },
     description: {
-        width: '79%',
-        textAlign: 'left',
+        width: '84.6%',
+        textAlign: 'right',
         borderRightColor: borderColor,
         borderRightWidth: 1,
         paddingRight: 8,
         paddingLeft: 8,
         fontSize: 12,
-        color: '#fff',
+        color: borderColor,
     },
     total: {
-        width: '21%',
+        width: '15.4%',
         textAlign: 'center',
         paddingRight: 8,
         fontSize: 12,
-        color: '#fff',
+        color: borderColor,
 
     },
 })
@@ -47,7 +47,7 @@ function TripsTableFooter({ invoice }: { invoice: Trip }) {
     return (
         <View style={styles.row}>
             <Text style={styles.description}>TOTAL</Text>
-            <Text style={styles.total}>{Number(totalAmount)}</Text>
+            <Text style={styles.total}></Text>
         </View>
     )
 }
