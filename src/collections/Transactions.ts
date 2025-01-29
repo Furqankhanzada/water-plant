@@ -8,13 +8,14 @@ export const Transaction: CollectionConfig = {
   admin: {
     useAsTitle: 'transactionAt',
     defaultColumns: [
-      'trip',
+      'transactionAt',
       'customer',
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
       'total',
       'status',
+      'trip',
     ],
   },
   hooks: {

@@ -24,20 +24,28 @@ const styles = StyleSheet.create({
     width: '12%',
     textAlign: 'right',
     paddingRight: 8,
+    fontWeight: 'bold',
   },
 })
 
-const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
-  const totalAmount = invoice.transactions.reduce((sum, transaction) => {
-    transaction = transaction as Transaction
-    return sum + transaction.total
-  }, 0)
+const rupee = new Intl.NumberFormat('en-PK', {
+  style: 'currency',
+  currency: 'PKR',
+  minimumFractionDigits: 0,
+})
 
+const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
   return (
-    <View style={styles.row}>
-      <Text style={styles.description}>TOTAL</Text>
-      <Text style={styles.total}>{Number(totalAmount).toFixed(2)}</Text>
-    </View>
+    <>
+      <View style={styles.row}>
+        <Text style={styles.description}>Previous Balance</Text>
+        <Text style={styles.total}>{rupee.format(invoice.previousBalance!)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.description}>Total</Text>
+        <Text style={styles.total}>{rupee.format(invoice.dueAmount!)}</Text>
+      </View>
+    </>
   )
 }
 

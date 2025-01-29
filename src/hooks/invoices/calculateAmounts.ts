@@ -19,7 +19,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
   }, 0)
 
   // Calculate due amount
-  data.dueAmount = totalAmount
+  data.dueAmount = totalAmount + data.previousBalance
 
   // Set status based on due amount and paid amount
   if (data.paidAmount === data.dueAmount) {

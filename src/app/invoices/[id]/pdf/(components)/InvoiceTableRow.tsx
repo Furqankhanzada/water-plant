@@ -41,6 +41,12 @@ const styles = StyleSheet.create({
   },
 })
 
+const rupee = new Intl.NumberFormat('en-PK', {
+  style: 'currency',
+  currency: 'PKR',
+  minimumFractionDigits: 0,
+})
+
 const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
   const rows = invoice.transactions.map((item) => {
     item = item as Transaction
@@ -48,12 +54,12 @@ const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
     return (
       <View style={styles.row} key={item.id}>
         <Text style={styles.description}>
-          19 Liter Bottles - {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
+          19 Liter Bottles - {format(item.transactionAt, 'EEE, MMM dd	yyyy')}
         </Text>
-        <Text style={styles.qty}>-{item.bottleTaken}</Text>
         <Text style={styles.qty}>+{item.bottleGiven}</Text>
-        <Text style={styles.rate}>{customer.rate}</Text>
-        <Text style={styles.amount}>{item.total.toFixed(2)}</Text>
+        <Text style={styles.qty}>-{item.bottleTaken}</Text>
+        <Text style={styles.rate}>{rupee.format(customer.rate)}</Text>
+        <Text style={styles.amount}>{rupee.format(item.total)}</Text>
       </View>
     )
   })
