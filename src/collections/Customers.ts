@@ -161,22 +161,35 @@ export const Customers: CollectionConfig = {
           label: 'Transactions',
           fields: [
             {
-              name: 'transaction', // Relationship to customers
+              name: 'transaction',
               type: 'join',
               on: 'customer',
-              collection: 'transaction', // Specify the collection being related to
+              collection: 'transaction',
+              admin: {
+                defaultColumns: [
+                  'transactionAt',
+                  'bottleGiven',
+                  'bottleTaken',
+                  'remainingBottles',
+                  'total',
+                  'status',
+                  'trip',
+                ],
+              },
             },
-            // Add other fields for Transaction here...
           ],
         },
         {
           label: 'Invoices',
           fields: [
             {
-              name: 'invoice', // Relationship to customers
+              name: 'invoice',
               type: 'join',
               on: 'customer',
-              collection: 'invoice', // Specify the collection being related to
+              collection: 'invoice',
+              admin: {
+                defaultColumns: ['status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
+              },
             },
           ],
         },
