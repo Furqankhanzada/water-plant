@@ -48,10 +48,10 @@ const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
     return (
       <View style={styles.row} key={item.id}>
         <Text style={styles.description}>
-          19 Liter Bottles - {format(item.transactionAt, 'EEEE Do	MMM yyyy')}
+          19 Liter Bottles - {format(item.transactionAt, 'EEE, MMM dd	yyyy')}
         </Text>
-        <Text style={styles.qty}>-{item.bottleTaken}</Text>
         <Text style={styles.qty}>+{item.bottleGiven}</Text>
+        <Text style={styles.qty}>-{item.bottleTaken}</Text>
         <Text style={styles.rate}>{customer.rate}</Text>
         <Text style={styles.amount}>{item.total.toFixed(2)}</Text>
       </View>
