@@ -17,7 +17,7 @@ export const GenerateTripInvoicePdf = async (
       href={`/trips/${props.id ? props.id : props.rowData.id}/pdf`}
       className={`btn btn--size-${props.id ? 'medium' : 'small'} btn--style-primary`}
     >
-      Generate Invoice
+      Generate Report
     </Link>
   )
 }

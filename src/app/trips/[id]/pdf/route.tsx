@@ -83,14 +83,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   })
 
 
-  console.log(invoice);
-
-
-  const customers = invoice.transaction?.docs?.map((c: TransactionDetail | any) => c.customer)
-
-
-
-
+  const customers = invoice.transactions?.docs?.map((c: TransactionDetail | any) => c.customer)
+  
   const customerData = await payload.find({
     collection: 'customers',
     where: {
@@ -98,18 +92,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
   })
 
-
-
-
-
-
-
-
-
-
-
-
-
+  console.log('customerData',customerData);
+  
 
   const stream = await renderToStream(<InvoicePDF invoice={invoice} customerData={customerData} />)
   return new NextResponse(stream as unknown as ReadableStream)

@@ -76,18 +76,16 @@ const styles = StyleSheet.create({
     },
 })
 
-
-
 function TripsTableRow({ invoice, customerData }: { invoice: Trip, customerData: any }) {
 
-    const rows = invoice.transaction?.docs?.map((item, i: number) => {
+    const rows = invoice.transactions?.docs?.map((item, i: number) => {
         item = item as Transaction
-        console.log(customerData.docs[i]?.name);
+        console.log("item",item);
         return (
             <View style={styles.row} key={item.id}>
                 <Text style={styles.description}>{customerData.docs[i]?.name || "unkown"}</Text>
-                <Text style={styles.rate}>{customerData.docs[i].contactNumbers[0].contactNumber}</Text>
-                <Text style={styles.address}>{customerData.docs[i].address} ,{customerData.docs[0].area?.name}</Text>
+                <Text style={styles.rate}>{customerData.docs[i].contactNumbers?.[0]?.contactNumber}</Text>
+                <Text style={styles.address}>{customerData.docs[i].address} ,{customerData.docs[i].area?.name}</Text>
                 <Text style={styles.amount}></Text>
                 <Text style={styles.amount}></Text>
                 <Text style={styles.amount}></Text>

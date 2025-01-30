@@ -48,9 +48,6 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         color: "#fff",
         paddingTop: 4,
-
-
-
     },
     amount: {
         width: '10.6%',

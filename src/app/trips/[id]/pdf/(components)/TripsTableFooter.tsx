@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         backgroundColor: '#fff',
         paddingVertical: 2
-
     },
     description: {
         width: '84.6%',
@@ -38,7 +37,7 @@ const styles = StyleSheet.create({
 
 
 function TripsTableFooter({ invoice }: { invoice: Trip }) {
-    const totalAmount = invoice.transaction?.docs?.reduce((sum, transaction) => {
+    const totalAmount = invoice.transactions?.docs?.reduce((sum, transaction) => {
         sum = sum as number
         transaction = transaction as Transaction
         return sum + transaction.total
@@ -48,7 +47,7 @@ function TripsTableFooter({ invoice }: { invoice: Trip }) {
         <View style={styles.row}>
             <Text style={styles.description}>TOTAL</Text>
             <Text style={styles.total}></Text>
-        </View>
+        </View> 
     )
 }
 

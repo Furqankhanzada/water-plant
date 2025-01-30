@@ -18,13 +18,13 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
 })
-
+ 
 function TripDetails({ invoice }: { invoice: Trip | any }) {
     return (
         <View style={styles.deatilsWrapper}>
             <Text style={styles.tripDetails}>{invoice.area.name}</Text>
         </View>
     )
-}
+}  
 
 export default TripDetails
