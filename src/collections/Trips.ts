@@ -77,6 +77,21 @@ export const Trips: CollectionConfig = {
       ],
     },
     {
+      name: 'pdf',
+      label: 'PDF Invoice',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/TripInvoices#GenerateTripInvoicePdf',
+          Cell: {
+            path: '/components/TripInvoices',
+            exportName: 'GenerateTripInvoicePdf',
+            serverProps: { cell: true },
+          },
+        },
+      },
+    },
+    {
       name: 'transaction',
       type: 'join',
       on: 'trip',
