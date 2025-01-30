@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { afterOperationHook } from '@/hooks/trips'
+import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactionsOnTripCreate'
+import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
@@ -9,7 +10,8 @@ export const Trips: CollectionConfig = {
     defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status'],
   },
   hooks: {
-    afterOperation: [afterOperationHook],
+    afterOperation: [createTransactionsOnTripCreate],
+    beforeChange: [toggleTransactionsOnStatusChangeHook],
   },
   fields: [
     {
@@ -77,7 +79,7 @@ export const Trips: CollectionConfig = {
       ],
     },
     {
-      name: 'transaction',
+      name: 'transactions',
       type: 'join',
       on: 'trip',
       collection: 'transaction',
