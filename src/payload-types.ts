@@ -35,7 +35,7 @@ export interface Config {
       customers: 'customers';
     };
     trips: {
-      transaction: 'transaction';
+      transactions: 'transaction';
     };
   };
   collectionsSelect: {
@@ -190,7 +190,7 @@ export interface Trip {
   tripAt: string;
   employee: (string | Employee)[];
   status: 'inprogress' | 'complete';
-  transaction?: {
+  transactions?: {
     docs?: (string | Transaction)[] | null;
     hasNextPage?: boolean | null;
   } | null;
@@ -378,7 +378,7 @@ export interface TripsSelect<T extends boolean = true> {
   tripAt?: T;
   employee?: T;
   status?: T;
-  transaction?: T;
+  transactions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
