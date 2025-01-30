@@ -2,7 +2,7 @@ import type { CollectionAfterOperationHook } from 'payload'
 
 import { Trip } from '@/payload-types'
 
-export const afterOperationHook: CollectionAfterOperationHook = async ({
+export const createTransactionsOnTripCreate: CollectionAfterOperationHook = async ({
   result,
   operation,
   req,
