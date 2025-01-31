@@ -15,7 +15,7 @@ export const createTransactionsOnTripCreate: CollectionAfterOperationHook = asyn
         area: {
           equals: tripResult.area,
         },
-      },
+      }, 
       pagination: false,
     })
     for (const customer of customers.docs) {
@@ -29,7 +29,7 @@ export const createTransactionsOnTripCreate: CollectionAfterOperationHook = asyn
           bottleTaken: 0,
           total: 0,
           transactionAt: new Date(tripResult.tripAt).toISOString(),
-        },
+        }, 
       })
     }
   }

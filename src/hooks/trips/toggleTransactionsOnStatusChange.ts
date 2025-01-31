@@ -9,14 +9,14 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
   if (operation === 'update' && originalDoc.status !== data.status) {
     if (data.status === 'complete') {
       payload.delete({
-        collection: 'transaction',
+        collection: 'transaction', 
         where: {
           id: {
-            in: data.transactions.docs,
+            in: data.transactions.docs, 
           },
           bottleGiven: {
             equals: 0,
-          },
+          }, 
           bottleTaken: {
             equals: 0,
           },
