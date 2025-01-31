@@ -4,12 +4,12 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer'
 import { Transaction, Trip } from '@/payload-types'
 
 
-const borderColor = '#3e85c5'
+const borderColor = '#e1e1e1'
 const bgColor = '#3e85c5'
 const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
-        borderBottomColor: '#bff0fd',
+        borderBottomColor: '#e1e1e1',
         borderBottomWidth: 1,
         alignItems: 'center',
         height: 'auto',
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         marginTop: '30',
         width: '100%',
         flexDirection: 'row',
-        borderBottomColor: '#bff0fd',
+        borderBottomColor: '#e1e1e1',
         // backgroundColor: '#bff0fd',
         borderBottomWidth: 1,
         // alignItems: 'center',
@@ -36,43 +36,52 @@ const styles = StyleSheet.create({
         width: '12%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        color: bgColor,
+        color: "black",
         paddingTop: 4,
-        fontSize: 10,
-        paddingLeft: 2
-
+        fontSize: 8,
+        height :"100%",
+        textAlign : 'left',
+        paddingLeft : 3
     },
     address: {
         width: '30%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        color: bgColor,
-        paddingTop: 4
-
-
+        color: "black",
+        paddingTop: 4,
+        height :"100%",
+        textAlign : 'left',
+        paddingLeft : 3
     },
     rate: {
-        width: '16.6%',
+        width: '13.6%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        color: bgColor,
-        paddingTop: 4
-
-
+        color: "black",
+        paddingTop: 4,
+        // height : 'fitContent'
+        height :"100%",
+        textAlign : 'left',
+        paddingLeft : 3
     },
     amount: {
-        width: '10.6%',
-        color: bgColor,
+        width: '11.6%',
+        color: "black",
         paddingTop: 4,
         borderRightWidth: 1,
         borderRightColor: borderColor,
-        height: 24
+        height :"100%",
+        textAlign : 'left',
+        paddingLeft : 3
+
     },
     amount1: {
         width: '10.6%',
-        color: bgColor,
+        color: "black",
         paddingTop: 4,
-        height: 24
+        height :"100%",
+        textAlign : 'left',
+        paddingLeft : 3
     },
 })
 

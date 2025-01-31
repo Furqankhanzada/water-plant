@@ -28,8 +28,9 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         color: "#fff",
         paddingTop: 4,
-        fontSize: 10,
-        paddingLeft: 2,
+        fontSize: 8,
+        textAlign : 'left',
+        paddingLeft : 3
 
     },
     address: {
@@ -38,28 +39,35 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         color: "#fff",
         paddingTop: 4,
-
-
-
+        textAlign : 'left',
+        paddingLeft : 3
     },
     rate: {
-        width: '16.6%',
+        width: '13.6%',
         borderRightColor: borderColor,
         borderRightWidth: 1,
         color: "#fff",
         paddingTop: 4,
+        textAlign : 'left',
+        paddingLeft : 3
+
     },
     amount: {
-        width: '10.6%',
+        width: '11.6%',
         color: "#fff",
         paddingTop: 4,
         borderRightColor: borderColor,
-        borderRightWidth: 1
+        borderRightWidth: 1,
+        textAlign : 'left',
+        paddingLeft : 3
+
     },
     amount1: {
         width: '10.6%',
         color: "#fff",
         paddingTop: 4,
+        textAlign : 'left',
+        paddingLeft : 3
 
     },
 })

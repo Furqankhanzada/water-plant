@@ -18,11 +18,11 @@ import TripDetails from './(components)/TripDetails'
 const styles = StyleSheet.create({
   page: {
     fontFamily: 'Helvetica',
-    fontSize: 10,
+    fontSize: 8,
     paddingTop: 30,
     paddingBottom: 30,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
     lineHeight: 1.5,
     flexDirection: 'column',
     backgroundColor: 'white'
@@ -40,13 +40,13 @@ const styles = StyleSheet.create({
 const InvoicePDF = ({ invoice, customerData }: { invoice: Trip, customerData: any }) => {
   return (
     <Document>
-      <Page size="A3" style={styles.page}>
+      <Page size="A4" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
 
         <View style={styles.tableContainer}>
           <TripDetails invoice={invoice} />
 
-          <View style={{ borderColor: '#3e85c5', borderWidth: 1 }}>
+          <View style={{ borderColor: '#e1e1e1', borderWidth: 1 }}>
             <TripsTableHeader />
             <TripsTableRow customerData={customerData} invoice={invoice} />
           </View>
