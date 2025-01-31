@@ -27,11 +27,11 @@ export const createTransactionsOnTripCreate: CollectionAfterOperationHook = asyn
           status: 'unpaid',
           bottleGiven: 0,
           bottleTaken: 0,
-          total: 0,
+          total: 0, 
           transactionAt: new Date(tripResult.tripAt).toISOString(),
         }, 
       })
-    }
+    }  
   }
   return result
 }

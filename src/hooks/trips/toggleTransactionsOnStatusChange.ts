@@ -15,7 +15,7 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
             in: data.transactions.docs, 
           },
           bottleGiven: {
-            equals: 0,
+            equals: 0,  
           }, 
           bottleTaken: {
             equals: 0,
@@ -27,7 +27,7 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
         collection: 'transaction',
         where: {
           id: {
-            in: data.transactions.docs,
+            in: data.transactions.docs, 
           },
           trip: {
             equals: originalDoc.id,
