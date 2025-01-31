@@ -8,24 +8,25 @@ export const Transaction: CollectionConfig = {
   admin: {
     useAsTitle: 'transactionAt',
     defaultColumns: [
-      'trip',
+      'transactionAt',
       'customer',
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
+      'total',
       'status',
+      'trip',
     ],
   },
   hooks: {
-    afterChange: [calculateRemainingBottles],
-    beforeChange: [calculateTotalHook],
+    afterChange: [],
+    beforeChange: [calculateRemainingBottles, calculateTotalHook],
   },
   fields: [
     {
       name: 'trip',
       type: 'relationship',
       relationTo: 'trips',
-      required: true,
     },
     {
       name: 'customer',
@@ -94,6 +95,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'total',
       type: 'number',
+      required: true,
       admin: {
         hidden: true,
       },
