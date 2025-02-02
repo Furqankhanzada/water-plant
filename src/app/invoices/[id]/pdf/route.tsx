@@ -1,16 +1,16 @@
 import { Page, Document, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
-import { Invoice } from '@/payload-types'
 import { getPayload } from 'payload'
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
+import { format } from 'date-fns'
 
 import InvoiceNo from './(components)/InvoiceNo'
-import InvoiceTitle from './(components)/InvoiceTitle'
 import BillTo from './(components)/BillTo'
 import InvoiceItemsTable from './(components)/InvoiceItemsTable'
 import InvoiceThankYouMsg from './(components)/InvoiceThankYouMsg'
+import { Customer, Invoice } from '@/payload-types'
 
 const logoPath = resolve('./public/images/logo.jpg')
 const paidStamp = resolve('./public/images/paid.png')
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 11,
     paddingTop: 20,
-    paddingBottom: 20,
+    paddingBottom: 30,
     paddingLeft: 30,
     paddingRight: 30,
     lineHeight: 1.5,
@@ -39,10 +39,11 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   paidStamp: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
     position: 'absolute',
-    top: 100,
+    top: 170,
+    right: 20,
   },
 })
 
@@ -60,7 +61,6 @@ const InvoicePDF = ({ invoice }: InvoiceProps) => {
           /* eslint-disable-next-line jsx-a11y/alt-text */
           <Image style={styles.paidStamp} src={paidStampSrc} />
         ) : null}
-        <InvoiceTitle title="Invoice" />
         <InvoiceNo invoice={invoice} />
         <BillTo invoice={invoice} />
         <InvoiceItemsTable invoice={invoice} />
@@ -79,7 +79,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     collection: 'invoice',
     id: (await params).id,
   })
+  const customer = invoice.customer as Customer
 
   const stream = await renderToStream(<InvoicePDF invoice={invoice} />)
-  return new NextResponse(stream as unknown as ReadableStream)
+  const response = new NextResponse(stream as unknown as ReadableStream)
+  response.headers.set(
+    'Content-disposition',
+    `inline; filename="${customer.name} ${format(invoice.createdAt, 'dd-MM-yyyy')}.pdf"`,
+  )
+  return response
 }
