@@ -1,10 +1,15 @@
 import type { CollectionConfig } from 'payload'
 
+import { isAdmin } from './access/isAdmin'
+
 export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
+  },
+  access: {
+    delete: isAdmin,
   },
   fields: [
     {
@@ -73,6 +78,7 @@ export const Customers: CollectionConfig = {
                 },
                 {
                   name: 'advance',
+                  label: 'Security Deposit',
                   type: 'number',
                   defaultValue: 0,
                   admin: {

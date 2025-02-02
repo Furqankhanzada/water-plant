@@ -1,30 +1,16 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice, Transaction } from '@/payload-types'
+import { Invoice } from '@/payload-types'
+import { tableStyles } from './InvoiceItemsTable'
 
-const borderColor = '#90e5fc'
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    borderBottomColor: '#bff0fd',
-    borderBottomWidth: 1,
-    alignItems: 'center',
-    height: 24,
-    fontSize: 12,
-    fontStyle: 'bold',
-  },
   description: {
-    width: '88%',
+    width: '88.2%',
     textAlign: 'right',
-    borderRightColor: borderColor,
-    borderRightWidth: 1,
-    paddingRight: 8,
   },
   total: {
     width: '12%',
     textAlign: 'right',
-    paddingRight: 8,
-    fontWeight: 'bold',
   },
 })
 
@@ -37,13 +23,27 @@ const rupee = new Intl.NumberFormat('en-PK', {
 const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
   return (
     <>
-      <View style={styles.row}>
-        <Text style={styles.description}>Previous Balance</Text>
-        <Text style={styles.total}>{rupee.format(invoice.previousBalance!)}</Text>
+      <View style={tableStyles.row}>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>Net Total</Text>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+          {rupee.format(invoice.dueAmount! - invoice.previousBalance!)}
+        </Text>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.description}>Total</Text>
-        <Text style={styles.total}>{rupee.format(invoice.dueAmount!)}</Text>
+      <View style={tableStyles.row}>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+          Previous Balance
+        </Text>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+          {rupee.format(invoice.previousBalance!)}
+        </Text>
+      </View>
+      <View style={tableStyles.row}>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+          Amount to Pay
+        </Text>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+          {rupee.format(invoice.dueAmount!)}
+        </Text>
       </View>
     </>
   )
