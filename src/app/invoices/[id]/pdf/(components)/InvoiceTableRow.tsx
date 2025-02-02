@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Customer, Invoice, Transaction } from '@/payload-types'
+import { Invoice, Transaction } from '@/payload-types'
 import { format } from 'date-fns'
 import { tableStyles } from './InvoiceItemsTable'
 
@@ -31,7 +31,6 @@ const rupee = new Intl.NumberFormat('en-PK', {
 const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
   const rows = invoice.transactions.map((item, i) => {
     item = item as Transaction
-    const customer = invoice.customer as Customer
     return (
       <View style={tableStyles.row} key={item.id} break={i === 24}>
         <Text style={[tableStyles.column, styles.description]}>
@@ -39,7 +38,9 @@ const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
         </Text>
         <Text style={[tableStyles.column, styles.qty]}>+{item.bottleGiven}</Text>
         <Text style={[tableStyles.column, styles.qty]}>-{item.bottleTaken}</Text>
-        <Text style={[tableStyles.column, styles.rate]}>{rupee.format(customer.rate)}</Text>
+        <Text style={[tableStyles.column, styles.rate]}>
+          {rupee.format(item.total / item.bottleGiven)}
+        </Text>
         <Text style={[tableStyles.column, styles.amount]}>{rupee.format(item.total)}</Text>
       </View>
     )
