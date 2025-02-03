@@ -48,7 +48,7 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
             not_in: existingTransactions.docs.map((t) => t.customer),
           },
           area: {
-            equals: data.area,
+            in: data.areas,
           },
         },
         select: {},
