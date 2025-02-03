@@ -13,7 +13,7 @@ export const createTransactionsOnTripCreate: CollectionAfterOperationHook = asyn
       collection: 'customers',
       where: {
         area: {
-          equals: tripResult.area,
+          in: tripResult.areas,
         },
       },
       pagination: false,

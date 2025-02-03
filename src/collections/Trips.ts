@@ -23,10 +23,11 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
-          name: 'area',
-          label: 'Area',
+          name: 'areas',
+          label: 'Areas',
           type: 'relationship',
           relationTo: 'areas',
+          hasMany: true,
           required: true,
         },
         {

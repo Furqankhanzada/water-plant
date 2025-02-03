@@ -187,7 +187,7 @@ export interface Transaction {
 export interface Trip {
   id: string;
   from: string;
-  area: string | Area;
+  areas: (string | Area)[];
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
@@ -377,7 +377,7 @@ export interface BlocksSelect<T extends boolean = true> {
  */
 export interface TripsSelect<T extends boolean = true> {
   from?: T;
-  area?: T;
+  areas?: T;
   bottles?: T;
   tripAt?: T;
   employee?: T;

@@ -35,14 +35,14 @@ interface TripProps {
 }
 
 const TripPDF = ({ trip, customers, qrDataURI }: TripProps) => {
-  const area = trip.area as Area
+  const areas = trip.areas as Area[]
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <Image style={styles.qrcode} src={qrDataURI} />
         <TripInfo trip={trip} />
-        {[area].map((a) => {
+        {areas.map((a) => {
           return (
             <>
               <Text style={{ marginTop: 10, fontFamily: 'Helvetica-Bold' }}>{a.name}</Text>
