@@ -7,7 +7,7 @@ export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
     useAsTitle: 'tripAt',
-    defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status'],
+    defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status', 'pdf'],
   },
   hooks: {
     afterOperation: [createTransactionsOnTripCreate],
@@ -77,6 +77,21 @@ export const Trips: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'pdf',
+      label: 'PDF Trip Report',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Trips#GeneratePdfButton',
+          Cell: {
+            path: '/components/Trips',
+            exportName: 'GeneratePdfButton',
+            serverProps: { cell: true },
+          },
+        },
+      },
     },
     {
       name: 'transactions',
