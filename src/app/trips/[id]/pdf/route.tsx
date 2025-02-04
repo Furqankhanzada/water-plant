@@ -7,7 +7,7 @@ import QRCode from 'qrcode'
 
 import TripInfo from './(components)/TripInfo'
 import Table from './(components)/Table'
-import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
+import { Area, Block, Customer, Invoice, Transaction, Trip } from '@/payload-types'
 
 const styles = StyleSheet.create({
   page: {
@@ -110,8 +110,36 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         equals: trip.id,
       },
     },
+    select: {
+      customer: true,
+    },
+    depth: 2,
     pagination: false,
   })
+
+  for (const transaction of transactions.docs) {
+    const customer = transaction.customer as Customer
+    const invoices = await payload.find({
+      collection: 'invoice',
+      where: {
+        customer: {
+          equals: customer.id,
+        },
+        status: {
+          not_equals: 'paid',
+        },
+      },
+      select: {
+        status: true,
+        paidAmount: true,
+        dueAmount: true,
+      },
+      pagination: false,
+    })
+    if (customer.invoice) {
+      customer.invoice.docs = invoices.docs as Invoice[]
+    }
+  }
 
   const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${trip.id}/pdf`)
 

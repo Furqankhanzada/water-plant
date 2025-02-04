@@ -7,7 +7,7 @@ export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
     useAsTitle: 'tripAt',
-    defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status', 'pdf'],
+    defaultColumns: ['tripAt', 'from', 'areas', 'bottles', 'employee', 'status', 'pdf'],
   },
   hooks: {
     afterOperation: [createTransactionsOnTripCreate],
@@ -99,6 +99,8 @@ export const Trips: CollectionConfig = {
       type: 'join',
       on: 'trip',
       collection: 'transaction',
+      defaultLimit: 100,
+      defaultSort: 'transactionAt',
     },
   ],
 }
