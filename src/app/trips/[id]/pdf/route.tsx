@@ -29,12 +29,13 @@ const styles = StyleSheet.create({
 })
 
 interface TripProps {
-  trip: Trip
+  trip: Partial<Trip>
   qrDataURI: string
-  customers: Partial<Customer>[]
+  transactions: Partial<Transaction>[]
+  blocks: Partial<Block>[]
 }
 
-const TripPDF = ({ trip, customers, qrDataURI }: TripProps) => {
+const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
   const areas = trip.areas as Area[]
   return (
     <Document>
@@ -43,22 +44,23 @@ const TripPDF = ({ trip, customers, qrDataURI }: TripProps) => {
         <Image style={styles.qrcode} src={qrDataURI} />
         <TripInfo trip={trip} />
         {areas.map((a) => {
+          const areaBlocks = blocks.filter((b) => b.area === a.id)
           return (
             <>
               <Text style={{ marginTop: 10, fontFamily: 'Helvetica-Bold' }}>{a.name}</Text>
-              {a.block?.docs?.map((blockId) => {
-                const blockCustomers = customers.filter((customer) => {
-                  const block = customer.block as Block
-                  return block.id === blockId
+              {areaBlocks.map((block) => {
+                const blockTransactions = transactions.filter((transaction) => {
+                  const customer = transaction.customer as Customer
+                  const customerBlock = customer.block as Block
+                  return customerBlock.id === block.id
                 })
-                if (!blockCustomers.length) return
-                const block = blockCustomers[0].block as Block
+                if (!blockTransactions.length) return
                 return (
                   <>
                     <Text style={{ marginTop: 8, fontFamily: 'Helvetica-BoldOblique' }}>
                       {block.name}
                     </Text>
-                    <Table key={a.id} customers={blockCustomers} />
+                    <Table key={a.id} blockTransactions={blockTransactions} />
                   </>
                 )
               })}
@@ -78,31 +80,48 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const trip = await payload.findByID({
     collection: 'trips',
     id: (await params).id,
-  })
-
-  const transactions = trip.transactions?.docs as Transaction[]
-  const customerIds = transactions.map((c) => c.customer)
-
-  const customers = await payload.find({
-    collection: 'customers',
-    where: {
-      id: { in: customerIds },
+    select: {
+      areas: true,
+      tripAt: true,
+      bottles: true,
     },
     depth: 1,
-    pagination: false,
+  })
+
+  const blocks = await payload.find({
+    collection: 'blocks',
+    where: {
+      area: {
+        in: trip.areas.map((a) => (typeof a === 'string' ? a : a.id)),
+      },
+    },
     select: {
       name: true,
-      address: true,
       area: true,
-      block: true,
-      invoice: true,
     },
+    depth: 0,
+    pagination: false,
+  })
+
+  const transactions = await payload.find({
+    collection: 'transaction',
+    where: {
+      trip: {
+        equals: trip.id,
+      },
+    },
+    pagination: false,
   })
 
   const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${trip.id}/pdf`)
 
   const stream = await renderToStream(
-    <TripPDF trip={trip} customers={customers.docs} qrDataURI={qrDataURI} />,
+    <TripPDF
+      trip={trip}
+      transactions={transactions.docs}
+      blocks={blocks.docs}
+      qrDataURI={qrDataURI}
+    />,
   )
   const response = new NextResponse(stream as unknown as ReadableStream)
   response.headers.set(

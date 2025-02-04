@@ -14,12 +14,12 @@ const styles = StyleSheet.create({
   },
 })
 
-const TripInfo = ({ trip }: { trip: Trip }) => {
+const TripInfo = ({ trip }: { trip: Partial<Trip> }) => {
   return (
     <>
       <View style={styles.container}>
         <Text style={styles.label}>Date:</Text>
-        <Text>{format(trip.tripAt, 'EEE, MMM dd	yyyy')}</Text>
+        <Text>{format(trip.tripAt!, 'EEE, MMM dd	yyyy')}</Text>
       </View>
       <View style={styles.container}>
         <Text style={styles.label}>Total Bottles:</Text>

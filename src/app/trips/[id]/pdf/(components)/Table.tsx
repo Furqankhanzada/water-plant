@@ -2,7 +2,7 @@ import React from 'react'
 import { View, StyleSheet } from '@react-pdf/renderer'
 import TableHeader from './TableHeader'
 import TableRow from './TableRow'
-import { Customer } from '@/payload-types'
+import { Customer, Transaction } from '@/payload-types'
 
 const generic = {
   borderColor: '#bff0fd',
@@ -39,12 +39,15 @@ export const tableStyles = StyleSheet.create({
   },
 })
 
-const InvoiceItemsTable = ({ customers }: { customers: Partial<Customer>[] }) => {
+const InvoiceItemsTable = ({
+  blockTransactions,
+}: {
+  blockTransactions: Partial<Transaction>[]
+}) => {
   return (
     <View style={tableStyles.tableContainer}>
       <TableHeader />
-      <TableRow customers={customers} />
-      {/* <InvoiceTableFooter invoice={invoice} /> */}
+      <TableRow customers={blockTransactions.map((t) => t.customer as Customer)} />
     </View>
   )
 }
