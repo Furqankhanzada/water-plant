@@ -99,7 +99,7 @@ export const Trips: CollectionConfig = {
       type: 'join',
       on: 'trip',
       collection: 'transaction',
-      defaultLimit: 100,
+      defaultLimit: 1000,
       defaultSort: 'transactionAt',
     },
   ],
