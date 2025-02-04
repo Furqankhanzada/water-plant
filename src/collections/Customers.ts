@@ -171,6 +171,8 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'transaction',
+              defaultLimit: 30,
+              defaultSort: '-transactionAt',
               admin: {
                 defaultColumns: [
                   'transactionAt',
@@ -193,6 +195,7 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'invoice',
+              defaultSort: '-createdAt',
               admin: {
                 defaultColumns: ['status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
               },
