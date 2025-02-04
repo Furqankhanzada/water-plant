@@ -11,6 +11,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
         in: data.transactions,
       },
     },
+    pagination: false,
   })
 
   // Calculate total from multiple transactions
