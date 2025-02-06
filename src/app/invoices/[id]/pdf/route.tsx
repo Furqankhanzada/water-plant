@@ -66,7 +66,7 @@ const InvoicePDF = ({ invoice, qrDataURI }: InvoiceProps) => {
       <Page size="A4" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <Image style={styles.logo} src={logoSrc} />
-        {invoice.status === 'unpaid' ? (
+        {invoice.status === 'paid' ? (
           /* eslint-disable-next-line jsx-a11y/alt-text */
           <Image style={styles.paidStamp} src={paidStampSrc} />
         ) : null}
