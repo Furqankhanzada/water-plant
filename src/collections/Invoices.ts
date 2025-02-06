@@ -59,17 +59,30 @@ export const Invoice: CollectionConfig = {
       },
     },
     {
-      name: 'paidAmount',
+      name: 'netTotal',
       type: 'number',
-      label: 'Paid Amount',
+      label: 'Net Total',
       defaultValue: 0,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'previousBalance',
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'Previous months balance',
+        description: 'Previous months balance which customer needs to pay.',
+      },
+    },
+    {
+      name: 'previousAdvanceAmount',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description:
+          'Customer paid more then invoice amount in previous month which will be adjust on this invoice.',
+        readOnly: true,
       },
     },
     {
@@ -77,7 +90,31 @@ export const Invoice: CollectionConfig = {
       type: 'number',
       label: 'Due Amount',
       admin: {
-        readOnly: true, // Read-only field in admin
+        readOnly: true,
+      },
+    },
+    {
+      name: 'paidAmount',
+      type: 'number',
+      defaultValue: 0,
+    },
+    {
+      name: 'advanceAmount',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description:
+          'Customer paid more then invoice amount which will be adjust on next billig/invoice.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'remainingAmount',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: 'Customer needs to pay this amount to clear billig/invoice.',
+        readOnly: true,
       },
     },
     {

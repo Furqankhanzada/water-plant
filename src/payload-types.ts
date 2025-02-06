@@ -221,9 +221,13 @@ export interface Invoice {
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
-  paidAmount?: number | null;
+  netTotal?: number | null;
   previousBalance?: number | null;
+  previousAdvanceAmount?: number | null;
   dueAmount?: number | null;
+  paidAmount?: number | null;
+  advanceAmount?: number | null;
+  remainingAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -422,9 +426,13 @@ export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
   transactions?: T;
   status?: T;
-  paidAmount?: T;
+  netTotal?: T;
   previousBalance?: T;
+  previousAdvanceAmount?: T;
   dueAmount?: T;
+  paidAmount?: T;
+  advanceAmount?: T;
+  remainingAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
