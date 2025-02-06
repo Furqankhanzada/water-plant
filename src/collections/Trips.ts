@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { format } from 'date-fns'
 
 import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactionsOnTripCreate'
 import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
@@ -49,6 +50,13 @@ export const Trips: CollectionConfig = {
               pickerAppearance: 'dayOnly',
               displayFormat: 'd MMM yyy',
             },
+          },
+          hooks: {
+            afterRead: [
+              ({ value }) => {
+                return format(value, 'dd MMM yyyy')
+              },
+            ],
           },
         },
         {

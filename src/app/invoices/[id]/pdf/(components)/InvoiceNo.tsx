@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 const styles = StyleSheet.create({
   invoiceNoContainer: {
     flexDirection: 'row',
-    marginTop: 25,
+    marginTop: 10,
     justifyContent: 'flex-end',
   },
   invoiceDateContainer: {

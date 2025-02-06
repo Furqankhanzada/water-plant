@@ -35,10 +35,22 @@ const rupee = new Intl.NumberFormat('en-PK', {
 
 const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
   const rows = customers.map((customer) => {
-    const dueAmount = customer.invoice?.docs?.reduce((currentValue, invoice) => {
-      invoice = invoice as Invoice
-      return currentValue + invoice.dueAmount!
-    }, 0)
+    let paymentDue = 0
+    if (customer.invoice?.docs?.length) {
+      const invoice = customer.invoice?.docs[0] as Invoice
+      if (invoice) {
+        switch (invoice.status) {
+          case 'paid':
+            paymentDue = invoice.advanceAmount!
+            break
+          case 'partially-paid':
+            paymentDue = invoice.remainingAmount!
+          default:
+            paymentDue = invoice.dueAmount!
+            break
+        }
+      }
+    }
     return (
       <View style={tableStyles.row} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
@@ -47,7 +59,7 @@ const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
         <Text style={[tableStyles.column, styles.returned]}></Text>
         <Text style={[tableStyles.column, styles.remaining]}></Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
-        <Text style={[tableStyles.column, styles.paymentReceived]}>{rupee.format(dueAmount!)}</Text>
+        <Text style={[tableStyles.column, styles.paymentReceived]}>{rupee.format(paymentDue)}</Text>
       </View>
     )
   })

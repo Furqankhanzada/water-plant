@@ -7,6 +7,7 @@ export const Customers: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
+    listSearchableFields: ['name', 'address'],
   },
   access: {
     delete: isAdmin,

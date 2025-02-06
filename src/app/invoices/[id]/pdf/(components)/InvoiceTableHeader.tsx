@@ -8,16 +8,19 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   description: {
-    width: '50%',
+    width: '40%',
   },
   qty: {
-    width: '15%',
+    width: '12.66%',
+    textAlign: 'right',
   },
   rate: {
-    width: '12%',
+    width: '10%',
+    textAlign: 'right',
   },
   amount: {
     width: '12%',
+    textAlign: 'right',
   },
 })
 
@@ -26,8 +29,9 @@ const InvoiceTableHeader = () => (
     <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
       Item - Delivery Date
     </Text>
-    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Delivered Qty</Text>
-    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Returned Qty</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Delivered</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Returned</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Remaining</Text>
     <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>Rate</Text>
     <Text style={[tableStyles.column, tableStyles.bold, styles.amount]}>Amount</Text>
   </View>

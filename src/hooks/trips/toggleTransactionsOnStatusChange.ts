@@ -11,8 +11,8 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
       payload.delete({
         collection: 'transaction',
         where: {
-          id: {
-            in: data.transactions.docs,
+          trip: {
+            equals: originalDoc.id,
           },
           bottleGiven: {
             equals: 0,
@@ -26,9 +26,6 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
       const existingTransactions = await payload.find({
         collection: 'transaction',
         where: {
-          id: {
-            in: data.transactions.docs,
-          },
           trip: {
             equals: originalDoc.id,
           },

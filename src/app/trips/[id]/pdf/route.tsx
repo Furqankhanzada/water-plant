@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 9,
     paddingTop: 20,
-    paddingBottom: 20,
+    paddingBottom: 50,
     paddingLeft: 20,
     paddingRight: 20,
     flexDirection: 'column',
@@ -125,13 +125,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         customer: {
           equals: customer.id,
         },
-        status: {
-          not_equals: 'paid',
-        },
       },
+      limit: 1,
+      sort: '-createdAt',
       select: {
         status: true,
-        paidAmount: true,
+        advanceAmount: true,
+        remainingAmount: true,
         dueAmount: true,
       },
       pagination: false,
