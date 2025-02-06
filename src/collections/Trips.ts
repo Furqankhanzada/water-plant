@@ -103,6 +103,16 @@ export const Trips: CollectionConfig = {
       },
     },
     {
+      name: 'Info',
+      label: 'Custom info',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Trips#Info',
+        },
+      },
+    },
+    {
       name: 'transactions',
       type: 'join',
       on: 'trip',
