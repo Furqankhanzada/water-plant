@@ -27,10 +27,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 11,
     paddingTop: 20,
-    paddingBottom: 30,
+    paddingBottom: 50,
     paddingLeft: 30,
     paddingRight: 30,
-    lineHeight: 1.5,
+    // lineHeight: 1.5,
     flexDirection: 'column',
   },
   logo: {
@@ -43,14 +43,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     position: 'absolute',
-    top: 220,
-    right: 25,
+    top: 140,
+    right: 80,
   },
   qrcode: {
     width: 50,
     height: 50,
     position: 'absolute',
-    top: 170,
+    top: 140,
     right: 25,
   },
 })
@@ -66,7 +66,7 @@ const InvoicePDF = ({ invoice, qrDataURI }: InvoiceProps) => {
       <Page size="A4" style={styles.page}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <Image style={styles.logo} src={logoSrc} />
-        {invoice.status === 'paid' ? (
+        {invoice.status === 'unpaid' ? (
           /* eslint-disable-next-line jsx-a11y/alt-text */
           <Image style={styles.paidStamp} src={paidStampSrc} />
         ) : null}

@@ -2,13 +2,12 @@ import React from 'react'
 import { View, StyleSheet } from '@react-pdf/renderer'
 import InvoiceTableHeader from './InvoiceTableHeader'
 import InvoiceTableRow from './InvoiceTableRow'
-import InvoiceTableBlankSpace from './InvoiceTableBlankSpace'
 import InvoiceTableFooter from './InvoiceTableFooter'
 import { Invoice } from '@/payload-types'
 
 const generic = {
   borderColor: '#bff0fd',
-  height: 20,
+  height: 18,
 }
 
 const genericColumn = {
@@ -47,7 +46,6 @@ const InvoiceItemsTable = ({ invoice }: { invoice: Invoice }) => {
     <View style={tableStyles.tableContainer}>
       <InvoiceTableHeader />
       <InvoiceTableRow invoice={invoice} />
-      <InvoiceTableBlankSpace rowsCount={2} />
       <InvoiceTableFooter invoice={invoice} />
     </View>
   )

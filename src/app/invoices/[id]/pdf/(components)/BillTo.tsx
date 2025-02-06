@@ -6,7 +6,7 @@ import { tableStyles } from './InvoiceItemsTable'
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 26,
+    marginTop: 10,
   },
   billTo: {
     paddingBottom: 3,
