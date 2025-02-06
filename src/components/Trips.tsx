@@ -33,7 +33,7 @@ export const Info = async (props: ServerComponentProps & { rowData: { id: string
   const transactions = await props.req.payload.db.collections['transaction'].aggregate([
     {
       $match: {
-        trip: { $eq: new mongoose.Types.ObjectId(props.id || props.rowData.id) },
+        trip: { $eq: new mongoose.Types.ObjectId(props.id || props.rowData?.id) },
       },
     },
     {
