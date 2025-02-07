@@ -74,12 +74,22 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
           {rupee.format(invoice.previousAdvanceAmount!)}
         </Text>
       </View>
+      {invoice.paidAmount ? (
+        <View style={tableStyles.row}>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+            Paid Amount
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.paidAmount!)}
+          </Text>
+        </View>
+      ) : null}
       <View style={tableStyles.row}>
         <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
           Amount to Pay
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {rupee.format(invoice.dueAmount!)}
+          {rupee.format(invoice.dueAmount! - invoice.paidAmount!)}
         </Text>
       </View>
     </>
