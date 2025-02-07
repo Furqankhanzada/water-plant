@@ -60,7 +60,7 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
                     <Text style={{ marginTop: 8, fontFamily: 'Helvetica-BoldOblique' }}>
                       {block.name}
                     </Text>
-                    <Table key={a.id} blockTransactions={blockTransactions} />
+                    <Table key={a.id} blockTransactions={blockTransactions} trip={trip} />
                   </>
                 )
               })}
@@ -84,6 +84,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       areas: true,
       tripAt: true,
       bottles: true,
+      status: true,
     },
     depth: 1,
   })
@@ -112,6 +113,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     },
     select: {
       customer: true,
+      bottleGiven: true,
+      bottleTaken: true,
+      remainingBottles: true,
     },
     depth: 2,
     pagination: false,
