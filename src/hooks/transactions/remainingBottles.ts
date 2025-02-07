@@ -20,9 +20,13 @@ export const calculateRemainingBottles: CollectionBeforeChangeHook = async ({
       customer: {
         equals: data.customer,
       },
+      transactionAt: {
+        less_than: data.transactionAt,
+      },
     },
+    depth: 1,
     select: {
-      customer: true,
+      transactionAt: true,
       remainingBottles: true,
     },
   })
