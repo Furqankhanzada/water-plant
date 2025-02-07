@@ -74,7 +74,7 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
           {rupee.format(invoice.previousAdvanceAmount!)}
         </Text>
       </View>
-      {invoice.paidAmount ? (
+      {invoice.status !== 'paid' && invoice.paidAmount ? (
         <View style={tableStyles.row}>
           <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
             Paid Amount
@@ -89,7 +89,9 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
           Amount to Pay
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {rupee.format(invoice.dueAmount! - invoice.paidAmount!)}
+          {invoice.status !== 'paid' && invoice.paidAmount
+            ? rupee.format(invoice.dueAmount! - invoice.paidAmount!)
+            : rupee.format(invoice.dueAmount!)}
         </Text>
       </View>
     </>
