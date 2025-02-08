@@ -109,6 +109,7 @@ export interface User {
 export interface Customer {
   id: string;
   name: string;
+  email?: string | null;
   address?: string | null;
   area: string | Area;
   block: string | Block;
@@ -119,6 +120,7 @@ export interface Customer {
   bottlesAtHome?: number | null;
   contactNumbers?:
     | {
+        type?: 'whatsapp' | null;
         contactNumber: string;
         id?: string | null;
       }[]
@@ -335,6 +337,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   name?: T;
+  email?: T;
   address?: T;
   area?: T;
   block?: T;
@@ -346,6 +349,7 @@ export interface CustomersSelect<T extends boolean = true> {
   contactNumbers?:
     | T
     | {
+        type?: T;
         contactNumber?: T;
         id?: T;
       };
