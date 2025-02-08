@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   reportTitle: {
     fontSize: 12,
     textAlign: 'center',
-    textTransform: 'uppercase',
+    fontFamily: 'Helvetica',
   },
 })
 

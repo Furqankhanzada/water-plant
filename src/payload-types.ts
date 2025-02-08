@@ -35,7 +35,7 @@ export interface Config {
       customers: 'customers';
     };
     trips: {
-      transaction: 'transaction';
+      transactions: 'transaction';
     };
   };
   collectionsSelect: {
@@ -89,6 +89,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  fullName?: string | null;
+  roles: ('admin' | 'editor')[];
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -185,12 +187,12 @@ export interface Transaction {
 export interface Trip {
   id: string;
   from: string;
-  area: string | Area;
+  areas: (string | Area)[];
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
   status: 'inprogress' | 'complete';
-  transaction?: {
+  transactions?: {
     docs?: (string | Transaction)[] | null;
     hasNextPage?: boolean | null;
   } | null;
@@ -219,9 +221,13 @@ export interface Invoice {
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status: 'paid' | 'unpaid' | 'partially-paid';
-  paidAmount?: number | null;
+  netTotal?: number | null;
   previousBalance?: number | null;
+  previousAdvanceAmount?: number | null;
   dueAmount?: number | null;
+  paidAmount?: number | null;
+  advanceAmount?: number | null;
+  remainingAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -311,6 +317,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  fullName?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -373,12 +381,12 @@ export interface BlocksSelect<T extends boolean = true> {
  */
 export interface TripsSelect<T extends boolean = true> {
   from?: T;
-  area?: T;
+  areas?: T;
   bottles?: T;
   tripAt?: T;
   employee?: T;
   status?: T;
-  transaction?: T;
+  transactions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -418,9 +426,13 @@ export interface InvoiceSelect<T extends boolean = true> {
   customer?: T;
   transactions?: T;
   status?: T;
-  paidAmount?: T;
+  netTotal?: T;
   previousBalance?: T;
+  previousAdvanceAmount?: T;
   dueAmount?: T;
+  paidAmount?: T;
+  advanceAmount?: T;
+  remainingAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }

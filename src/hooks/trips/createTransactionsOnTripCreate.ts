@@ -2,7 +2,7 @@ import type { CollectionAfterOperationHook } from 'payload'
 
 import { Trip } from '@/payload-types'
 
-export const afterOperationHook: CollectionAfterOperationHook = async ({
+export const createTransactionsOnTripCreate: CollectionAfterOperationHook = async ({
   result,
   operation,
   req,
@@ -13,7 +13,7 @@ export const afterOperationHook: CollectionAfterOperationHook = async ({
       collection: 'customers',
       where: {
         area: {
-          equals: tripResult.area,
+          in: tripResult.areas,
         },
       },
       pagination: false,

@@ -1,15 +1,18 @@
 import type { CollectionConfig } from 'payload'
+import { format } from 'date-fns'
 
-import { afterOperationHook } from '@/hooks/trips'
+import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactionsOnTripCreate'
+import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
   admin: {
     useAsTitle: 'tripAt',
-    defaultColumns: ['tripAt', 'from', 'area', 'bottles', 'employee', 'status'],
+    defaultColumns: ['tripAt', 'from', 'areas', 'bottles', 'employee', 'status', 'pdf'],
   },
   hooks: {
-    afterOperation: [afterOperationHook],
+    afterOperation: [createTransactionsOnTripCreate],
+    beforeChange: [toggleTransactionsOnStatusChangeHook],
   },
   fields: [
     {
@@ -21,10 +24,11 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
-          name: 'area',
-          label: 'Area',
+          name: 'areas',
+          label: 'Areas',
           type: 'relationship',
           relationTo: 'areas',
+          hasMany: true,
           required: true,
         },
         {
@@ -46,6 +50,13 @@ export const Trips: CollectionConfig = {
               pickerAppearance: 'dayOnly',
               displayFormat: 'd MMM yyy',
             },
+          },
+          hooks: {
+            afterRead: [
+              ({ value }) => {
+                return format(value, 'dd MMM yyyy')
+              },
+            ],
           },
         },
         {
@@ -77,10 +88,37 @@ export const Trips: CollectionConfig = {
       ],
     },
     {
-      name: 'transaction',
+      name: 'pdf',
+      label: 'PDF Trip Report',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Trips#GeneratePdfButton',
+          Cell: {
+            path: '/components/Trips',
+            exportName: 'GeneratePdfButton',
+            serverProps: { cell: true },
+          },
+        },
+      },
+    },
+    {
+      name: 'Info',
+      label: 'Custom info',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Trips#Info',
+        },
+      },
+    },
+    {
+      name: 'transactions',
       type: 'join',
       on: 'trip',
       collection: 'transaction',
+      defaultLimit: 1000,
+      defaultSort: 'transactionAt',
     },
   ],
 }

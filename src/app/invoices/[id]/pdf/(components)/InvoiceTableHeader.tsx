@@ -1,46 +1,39 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
+import { tableStyles } from './InvoiceItemsTable'
 
-const borderColor = '#90e5fc'
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    borderBottomColor: '#bff0fd',
-    backgroundColor: '#bff0fd',
-    borderBottomWidth: 1,
-    alignItems: 'center',
-    height: 24,
-    textAlign: 'center',
-    fontStyle: 'bold',
-    flexGrow: 1,
+    fontSize: 10,
+    borderTopWidth: 1,
   },
   description: {
-    width: '50%',
-    borderRightColor: borderColor,
-    borderRightWidth: 1,
+    width: '40%',
   },
   qty: {
-    width: '15%',
-    borderRightColor: borderColor,
-    borderRightWidth: 1,
+    width: '12.66%',
+    textAlign: 'right',
   },
   rate: {
-    width: '12%',
-    borderRightColor: borderColor,
-    borderRightWidth: 1,
+    width: '10%',
+    textAlign: 'right',
   },
   amount: {
     width: '12%',
+    textAlign: 'right',
   },
 })
 
 const InvoiceTableHeader = () => (
-  <View style={styles.container}>
-    <Text style={styles.description}>Item - Delivery Date</Text>
-    <Text style={styles.qty}>Delivered Qty</Text>
-    <Text style={styles.qty}>Returned Qty</Text>
-    <Text style={styles.rate}>Rate</Text>
-    <Text style={styles.amount}>Amount</Text>
+  <View style={[tableStyles.row, styles.container]} fixed>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+      Item - Delivery Date
+    </Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Delivered</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Returned</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Remaining</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>Rate</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.amount]}>Amount</Text>
   </View>
 )
 

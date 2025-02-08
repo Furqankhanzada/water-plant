@@ -1,10 +1,16 @@
 import type { CollectionConfig } from 'payload'
 
+import { isAdmin } from './access/isAdmin'
+
 export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
+    listSearchableFields: ['name', 'address'],
+  },
+  access: {
+    delete: isAdmin,
   },
   fields: [
     {
@@ -73,6 +79,7 @@ export const Customers: CollectionConfig = {
                 },
                 {
                   name: 'advance',
+                  label: 'Security Deposit',
                   type: 'number',
                   defaultValue: 0,
                   admin: {
@@ -165,6 +172,8 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'transaction',
+              defaultLimit: 30,
+              defaultSort: '-transactionAt',
               admin: {
                 defaultColumns: [
                   'transactionAt',
@@ -187,6 +196,7 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'invoice',
+              defaultSort: '-createdAt',
               admin: {
                 defaultColumns: ['status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
               },

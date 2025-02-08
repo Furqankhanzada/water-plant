@@ -1,20 +1,19 @@
 import React from 'react'
 import { View, StyleSheet } from '@react-pdf/renderer'
-import InvoiceTableHeader from './InvoiceTableHeader'
-import InvoiceTableRow from './InvoiceTableRow'
-import InvoiceTableFooter from './InvoiceTableFooter'
-import { Invoice } from '@/payload-types'
+import TableHeader from './TableHeader'
+import TableRow from './TableRow'
+import { Customer, Transaction } from '@/payload-types'
 
 const generic = {
   borderColor: '#bff0fd',
-  height: 18,
+  height: 16,
 }
 
 const genericColumn = {
   ...generic,
   paddingTop: 3,
   borderRightWidth: 1,
-  fontSize: 9,
+  fontSize: 7,
   fontFamily: 'Helvetica',
 }
 
@@ -22,10 +21,9 @@ export const tableStyles = StyleSheet.create({
   tableContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 24,
   },
   bold: {
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   row: {
     ...generic,
@@ -41,12 +39,15 @@ export const tableStyles = StyleSheet.create({
   },
 })
 
-const InvoiceItemsTable = ({ invoice }: { invoice: Invoice }) => {
+const InvoiceItemsTable = ({
+  blockTransactions,
+}: {
+  blockTransactions: Partial<Transaction>[]
+}) => {
   return (
     <View style={tableStyles.tableContainer}>
-      <InvoiceTableHeader />
-      <InvoiceTableRow invoice={invoice} />
-      <InvoiceTableFooter invoice={invoice} />
+      <TableHeader />
+      <TableRow customers={blockTransactions.map((t) => t.customer as Customer)} />
     </View>
   )
 }
