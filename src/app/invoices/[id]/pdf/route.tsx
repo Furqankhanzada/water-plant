@@ -1,4 +1,4 @@
-import { Page, Document, Text, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
+import { Page, Document, View, Text, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -84,6 +84,25 @@ const InvoicePDF = ({ invoice, qrDataURI, company }: InvoiceProps) => {
         <InvoiceNo invoice={invoice} />
         <BillTo invoice={invoice} />
         <InvoiceItemsTable invoice={invoice} />
+        <View style={{ fontSize: 10 }}>
+          <Text style={{ marginTop: 8, marginBottom: 5, fontFamily: 'Helvetica-Bold' }}>
+            Online Payment Options
+          </Text>
+          {company.paymentMethods?.map((paymentMethod) => {
+            return (
+              <View key={paymentMethod.id}>
+                <Text>Payment Method: {paymentMethod.name}</Text>
+                <Text>Account Title: {paymentMethod.accountTitle}</Text>
+                {paymentMethod.accountNo && <Text>Account No: {paymentMethod.accountNo}</Text>}
+                {paymentMethod.accountIBAN && <Text>IBAN: {paymentMethod.accountIBAN}</Text>}
+              </View>
+            )
+          })}
+          <Text style={{ marginTop: 8, marginBottom: 5, fontFamily: 'Helvetica-Oblique' }}>
+            After sending payment inform us on our WhatsApp Number{' '}
+            {company.contactNumbers?.map((cn) => cn.contactNumber)}
+          </Text>
+        </View>
         <InvoiceThankYouMsg
           message={company.invoiceMessage ? company.invoiceMessage : 'Thank you for your business'}
         />
