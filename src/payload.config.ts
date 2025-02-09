@@ -5,7 +5,9 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import nodemailer from 'nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
@@ -51,4 +53,16 @@ export default buildConfig({
       },
     }),
   ],
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.FROM_EMAIL!,
+    defaultFromName: process.env.FROM_NAME!,
+    transport: nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: 587,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    }),
+  }),
 })
