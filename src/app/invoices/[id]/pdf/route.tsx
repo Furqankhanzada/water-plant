@@ -100,7 +100,9 @@ const InvoicePDF = ({ invoice, qrDataURI, company }: InvoiceProps) => {
           })}
           <Text style={{ marginTop: 8, marginBottom: 5, fontFamily: 'Helvetica-Oblique' }}>
             After sending payment inform us on our WhatsApp Number{' '}
-            {company.contactNumbers?.map((cn) => cn.contactNumber)}
+            {company.contactNumbers
+              ?.filter((cn) => cn.type === 'whatsapp')
+              .map((cn) => cn.contactNumber)}
           </Text>
         </View>
         <InvoiceThankYouMsg
