@@ -19,6 +19,7 @@
     "@payloadcms/next": "3.9.0",
     "@payloadcms/payload-cloud": "3.9.0",
     "@payloadcms/richtext-lexical": "3.9.0",
+    "@payloadcms/storage-uploadthing": "3.9.0",
     "@react-pdf/renderer": "^4.1.6",
     "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
