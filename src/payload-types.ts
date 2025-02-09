@@ -19,6 +19,7 @@ export interface Config {
     employee: Employee;
     transaction: Transaction;
     invoice: Invoice;
+    media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -47,6 +48,7 @@ export interface Config {
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -54,8 +56,12 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    company: Company;
+  };
+  globalsSelect: {
+    company: CompanySelect<false> | CompanySelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -230,8 +236,29 @@ export interface Invoice {
   paidAmount?: number | null;
   advanceAmount?: number | null;
   remainingAmount?: number | null;
+  sent?: boolean | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt: string;
+  _key?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -271,6 +298,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'invoice';
         value: string | Invoice;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -437,8 +468,28 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAmount?: T;
   advanceAmount?: T;
   remainingAmount?: T;
+  sent?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  _key?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -471,6 +522,64 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "company".
+ */
+export interface Company {
+  id: string;
+  logo?: (string | null) | Media;
+  name: string;
+  address?: string | null;
+  contactNumbers?:
+    | {
+        type?: 'whatsapp' | null;
+        contactNumber: string;
+        id?: string | null;
+      }[]
+    | null;
+  paymentMethods?:
+    | {
+        name?: string | null;
+        accountTitle?: string | null;
+        accountNo?: string | null;
+        accountIBAN?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  invoiceMessage?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "company_select".
+ */
+export interface CompanySelect<T extends boolean = true> {
+  logo?: T;
+  name?: T;
+  address?: T;
+  contactNumbers?:
+    | T
+    | {
+        type?: T;
+        contactNumber?: T;
+        id?: T;
+      };
+  paymentMethods?:
+    | T
+    | {
+        name?: T;
+        accountTitle?: T;
+        accountNo?: T;
+        accountIBAN?: T;
+        id?: T;
+      };
+  invoiceMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

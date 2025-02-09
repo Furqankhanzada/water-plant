@@ -9,13 +9,12 @@ const styles = StyleSheet.create({
   reportTitle: {
     fontSize: 12,
     textAlign: 'center',
-    fontFamily: 'Helvetica',
   },
 })
 
-const InvoiceThankYouMsg = () => (
+const InvoiceThankYouMsg = ({ message }: { message: string }) => (
   <View style={styles.titleContainer}>
-    <Text style={styles.reportTitle}>Thank you for your business</Text>
+    <Text style={styles.reportTitle}>{message}</Text>
   </View>
 )
 

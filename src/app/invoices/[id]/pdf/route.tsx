@@ -1,4 +1,4 @@
-import { Page, Document, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
+import { Page, Document, Text, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -11,16 +11,12 @@ import InvoiceNo from './(components)/InvoiceNo'
 import BillTo from './(components)/BillTo'
 import InvoiceItemsTable from './(components)/InvoiceItemsTable'
 import InvoiceThankYouMsg from './(components)/InvoiceThankYouMsg'
-import { Customer, Invoice } from '@/payload-types'
+import { Company, Customer, Invoice, Media } from '@/payload-types'
 
-const logoPath = resolve('./public/images/logo.jpg')
 const paidStamp = resolve('./public/images/paid.png')
 
 const paidStampData = readFileSync(paidStamp).toString('base64')
 const paidStampSrc = `data:image/png;base64,${paidStampData}`
-
-const logoData = readFileSync(logoPath).toString('base64')
-const logoSrc = `data:image/jpeg;base64,${logoData}`
 
 const styles = StyleSheet.create({
   page: {
@@ -30,7 +26,6 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingLeft: 30,
     paddingRight: 30,
-    // lineHeight: 1.5,
     flexDirection: 'column',
   },
   logo: {
@@ -38,6 +33,13 @@ const styles = StyleSheet.create({
     height: 79,
     marginLeft: 'auto',
     marginRight: 'auto',
+  },
+  logoText: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 22,
+    marginBottom: 50,
   },
   paidStamp: {
     width: 50,
@@ -58,14 +60,21 @@ const styles = StyleSheet.create({
 interface InvoiceProps {
   invoice: Invoice
   qrDataURI: string
+  company: Company
 }
 
-const InvoicePDF = ({ invoice, qrDataURI }: InvoiceProps) => {
+const InvoicePDF = ({ invoice, qrDataURI, company }: InvoiceProps) => {
+  const logo = company.logo as Media
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image style={styles.logo} src={logoSrc} />
+        {}
+        {logo && logo.url ? (
+          /* eslint-disable-next-line jsx-a11y/alt-text */
+          <Image style={styles.logo} source={logo.url} />
+        ) : (
+          <Text style={styles.logoText}>{company.name}</Text>
+        )}
         {invoice.status === 'paid' ? (
           /* eslint-disable-next-line jsx-a11y/alt-text */
           <Image style={styles.paidStamp} src={paidStampSrc} />
@@ -75,13 +84,20 @@ const InvoicePDF = ({ invoice, qrDataURI }: InvoiceProps) => {
         <InvoiceNo invoice={invoice} />
         <BillTo invoice={invoice} />
         <InvoiceItemsTable invoice={invoice} />
-        <InvoiceThankYouMsg />
+        <InvoiceThankYouMsg
+          message={company.invoiceMessage ? company.invoiceMessage : 'Thank you for your business'}
+        />
       </Page>
     </Document>
   )
 }
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+  const fullUrl = `${protocol}://${host}`
+
   const payload = await getPayload({
     config: configPromise,
   })
@@ -90,10 +106,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     collection: 'invoice',
     id: (await params).id,
   })
+
+  const company = await payload.findGlobal({
+    slug: 'company',
+  })
+
+  company.logo = company.logo as Media
+  company.logo.url = fullUrl + company.logo.url
+
+  console.log('request', request)
   const customer = invoice.customer as Customer
   const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${invoice.id}/pdf`)
 
-  const stream = await renderToStream(<InvoicePDF invoice={invoice} qrDataURI={qrDataURI} />)
+  const stream = await renderToStream(
+    <InvoicePDF invoice={invoice} qrDataURI={qrDataURI} company={company} />,
+  )
   const response = new NextResponse(stream as unknown as ReadableStream)
   response.headers.set(
     'Content-disposition',
