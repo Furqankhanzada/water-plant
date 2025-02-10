@@ -137,7 +137,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   console.log('request', request)
   const customer = invoice.customer as Customer
-  const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${invoice.id}/pdf`)
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${invoice.id}/pdf`)
 
   const stream = await renderToStream(
     <InvoicePDF invoice={invoice} qrDataURI={qrDataURI} company={company} />,

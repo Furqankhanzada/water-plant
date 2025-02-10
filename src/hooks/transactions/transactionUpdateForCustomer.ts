@@ -1,9 +1,12 @@
-import { add, format } from 'date-fns'
+import { format } from 'date-fns'
 import type { CollectionBeforeChangeHook } from 'payload'
+import inlineCSS from 'inline-css'
+
+import { getHandlebarsTemplate } from '@/lib/getHandlebarsTemplate'
 
 export const transactionUpdateForCustomer: CollectionBeforeChangeHook = async ({
   data,
-  req: { payload },
+  req: { payload, headers },
 }) => {
   if (data.bottleGiven > 0 || data.bottleTaken > 0) {
     const customer = await payload.findByID({
@@ -11,32 +14,32 @@ export const transactionUpdateForCustomer: CollectionBeforeChangeHook = async ({
       id: data.customer,
       select: {
         email: true,
+        name: true,
       },
     })
     if (customer.email) {
-      console.info(`email sending to ${customer.email}`)
-      const sendEmailJob = await payload.jobs.queue({
-        queue: 'every_2_minutes',
-        task: 'sendEmail',
-        input: {
-          to: customer.email,
-          subject: `Water Bottls Delivery - ${format(data.transactionAt, 'EEE, MMM dd yyyy')}`,
-          templateName: 'transaction',
-          data: {
-            ...data,
-            date: format(data.transactionAt, 'EEE, MMM dd yyyy'),
-          },
-        },
-      })
-      // const results = await payload.jobs.runByID({
-      //   id: sendEmailJob.id,
-      // })
+      const host = headers.get('x-forwarded-host') || headers.get('url')
+      const protocol = headers.get('x-forwarded-proto') || 'https'
 
-      // payload.sendEmail({
-      //   to: customer.email,
-      //   subject: `Water Bottls Delivery - ${format(data.transactionAt, 'EEE, MMM dd	yyyy')}`,
-      //   text: `We have delivered ${data.bottleGiven} bottles and you returned ${data.bottleTaken} bottles on date ${format(data.transactionAt, 'EEE, MMM dd	yyyy')}`,
-      // })
+      const fullUrl = `${protocol}://${host}`
+      const html = await inlineCSS(
+        getHandlebarsTemplate('transaction')({
+          bottleGiven: data.bottleGiven,
+          bottleTaken: data.bottleTaken,
+          date: format(data.transactionAt, 'EEE, MMM dd yyyy'),
+          customer: customer.name,
+          image: fullUrl + '/api/media/file/ad.jpg',
+        }),
+        {
+          url: ' ',
+          removeStyleTags: false,
+        },
+      )
+      payload.sendEmail({
+        to: customer.email,
+        subject: `Water Bottls Delivery - ${format(data.transactionAt, 'EEE, MMM dd	yyyy')}`,
+        html,
+      })
     }
   }
   return data
