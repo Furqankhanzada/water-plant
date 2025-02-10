@@ -55,6 +55,9 @@ export const Transaction: CollectionConfig = {
           value: 'pending',
         },
       ],
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'bottleGiven',
