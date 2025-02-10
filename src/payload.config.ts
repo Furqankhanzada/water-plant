@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import nodemailer from 'nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
@@ -32,6 +33,36 @@ export default buildConfig({
   },
   globals: [Company],
   collections: [Users, Customers, Areas, Blocks, Trips, Employee, Transaction, Invoice, Media],
+  jobs: {
+    tasks: [
+      {
+        slug: 'sendEmail',
+        inputSchema: [
+          {
+            name: 'to',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'subject',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'templateName',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'data',
+            type: 'json',
+          },
+        ],
+        retries: 2,
+        handler: path.resolve(dirname, 'src/tasks/sendEmail.ts') + '#sendEmailHandler',
+      },
+    ],
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -41,8 +72,8 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  // plugins: [payloadCloudPlugin()],
   plugins: [
+    payloadCloudPlugin(),
     uploadthingStorage({
       collections: {
         media: true,
