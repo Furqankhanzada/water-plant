@@ -20,6 +20,7 @@ import { Transaction } from './collections/Transactions'
 import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
 import { Company } from './globals/Company'
+import { sendEmailTask } from './tasks/sendEmail'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -34,34 +35,19 @@ export default buildConfig({
   globals: [Company],
   collections: [Users, Customers, Areas, Blocks, Trips, Employee, Transaction, Invoice, Media],
   jobs: {
-    tasks: [
+    autoRun: [
       {
-        slug: 'sendEmail',
-        inputSchema: [
-          {
-            name: 'to',
-            type: 'text',
-            required: true,
-          },
-          {
-            name: 'subject',
-            type: 'text',
-            required: true,
-          },
-          {
-            name: 'templateName',
-            type: 'text',
-            required: true,
-          },
-          {
-            name: 'data',
-            type: 'json',
-          },
-        ],
-        retries: 2,
-        handler: path.resolve(dirname, 'src/tasks/sendEmail.ts') + '#sendEmailHandler',
+        cron: '0 * * * *',
+        limit: 10,
+        queue: 'hourly',
+      },
+      {
+        cron: '*/2 * * * *',
+        limit: 10,
+        queue: 'every_2_minutes',
       },
     ],
+    tasks: [sendEmailTask],
   },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

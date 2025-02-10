@@ -207,6 +207,9 @@ export interface Trip {
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
+  /**
+   * Set the status to In Progress or Complete.
+   */
   status: 'inprogress' | 'complete';
   transactions?: {
     docs?: (string | Transaction)[] | null;
@@ -236,13 +239,28 @@ export interface Invoice {
   id: string;
   customer: string | Customer;
   transactions: (string | Transaction)[];
+  /**
+   * Set the status to In Progress or Complete.
+   */
   status: 'paid' | 'unpaid' | 'partially-paid';
   netTotal?: number | null;
+  /**
+   * Previous months balance which customer needs to pay.
+   */
   previousBalance?: number | null;
+  /**
+   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
+   */
   previousAdvanceAmount?: number | null;
   dueAmount?: number | null;
   paidAmount?: number | null;
+  /**
+   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
+   */
   advanceAmount?: number | null;
+  /**
+   * Customer needs to pay this amount to clear billig/invoice.
+   */
   remainingAmount?: number | null;
   sent?: boolean | null;
   updatedAt: string;
@@ -274,6 +292,9 @@ export interface Media {
  */
 export interface PayloadJob {
   id: string;
+  /**
+   * Input data provided to the job
+   */
   input?:
     | {
         [k: string]: unknown;
@@ -294,7 +315,13 @@ export interface PayloadJob {
     | null;
   completedAt?: string | null;
   totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
   hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
   error?:
     | {
         [k: string]: unknown;
@@ -304,6 +331,9 @@ export interface PayloadJob {
     | number
     | boolean
     | null;
+  /**
+   * Task execution log
+   */
   log?:
     | {
         executedAt: string;
