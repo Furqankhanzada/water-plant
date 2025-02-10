@@ -27,6 +27,10 @@ export const Customers: CollectionConfig = {
                   type: 'text',
                   required: true,
                 },
+                {
+                  name: 'email',
+                  type: 'email',
+                },
               ],
             },
 
@@ -130,6 +134,16 @@ export const Customers: CollectionConfig = {
                 },
               },
               fields: [
+                {
+                  name: 'type',
+                  type: 'select',
+                  options: [
+                    {
+                      label: 'WhatsApp',
+                      value: 'whatsapp',
+                    },
+                  ],
+                },
                 {
                   name: 'contactNumber',
                   type: 'text',

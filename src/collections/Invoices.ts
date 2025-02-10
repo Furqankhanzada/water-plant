@@ -118,6 +118,12 @@ export const Invoice: CollectionConfig = {
       },
     },
     {
+      label: 'Invoice Sent to Customer?',
+      name: 'sent',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
       name: 'pdf',
       label: 'PDF Invoice',
       type: 'ui',

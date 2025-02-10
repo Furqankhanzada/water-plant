@@ -73,6 +73,11 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
 }
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+  const fullUrl = `${protocol}://${host}`
+
   const payload = await getPayload({
     config: configPromise,
   })
@@ -141,7 +146,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
   }
 
-  const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${trip.id}/pdf`)
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
 
   const stream = await renderToStream(
     <TripPDF
