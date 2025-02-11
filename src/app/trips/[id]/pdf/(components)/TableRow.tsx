@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Customer, Invoice } from '@/payload-types'
+
+import { Customer, Invoice, Transaction, Trip } from '@/payload-types'
 import { tableStyles } from './Table'
 
 const styles = StyleSheet.create({
@@ -33,8 +34,15 @@ const rupee = new Intl.NumberFormat('en-PK', {
   minimumFractionDigits: 0,
 })
 
-const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
-  const rows = customers.map((customer) => {
+const TableRow = ({
+  blockTransactions,
+  trip,
+}: {
+  blockTransactions: Partial<Transaction>[]
+  trip: Partial<Trip>
+}) => {
+  const rows = blockTransactions.map((transaction) => {
+    const customer = transaction.customer as Customer
     let paymentDue = 0
     if (customer.invoice?.docs?.length) {
       const invoice = customer.invoice?.docs[0] as Invoice
@@ -55,9 +63,15 @@ const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
       <View style={tableStyles.row} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
         <Text style={[tableStyles.column, styles.address]}>{customer.address}</Text>
-        <Text style={[tableStyles.column, styles.delivered]}></Text>
-        <Text style={[tableStyles.column, styles.returned]}></Text>
-        <Text style={[tableStyles.column, styles.remaining]}></Text>
+        <Text style={[tableStyles.column, styles.delivered]}>
+          {trip.status !== 'complete' ? '' : transaction.bottleGiven}
+        </Text>
+        <Text style={[tableStyles.column, styles.returned]}>
+          {trip.status !== 'complete' ? '' : transaction.bottleTaken}
+        </Text>
+        <Text style={[tableStyles.column, styles.remaining]}>
+          {trip.status !== 'complete' ? '' : transaction.remainingBottles}
+        </Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}>{rupee.format(paymentDue)}</Text>
       </View>
