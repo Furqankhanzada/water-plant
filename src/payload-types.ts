@@ -20,6 +20,7 @@ export interface Config {
     transaction: Transaction;
     invoice: Invoice;
     media: Media;
+    reports: Report;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -50,6 +51,7 @@ export interface Config {
     transaction: TransactionSelect<false> | TransactionSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    reports: ReportsSelect<false> | ReportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -262,6 +264,8 @@ export interface Invoice {
    * Customer needs to pay this amount to clear billig/invoice.
    */
   remainingAmount?: number | null;
+  paidAt?: string | null;
+  dueAt?: string | null;
   sent?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -285,6 +289,24 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: string;
+  month?: string | null;
+  totalIncome?: string | null;
+  totalExpenses?: number | null;
+  totalBottlesDelivered?: number | null;
+  totalExpectedIncome?: string | null;
+  /**
+   * Needs to recover overall due amount
+   */
+  totalDueAmount?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -420,6 +442,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'reports';
+        value: string | Report;
       } | null)
     | ({
         relationTo: 'payload-jobs';
@@ -590,6 +616,8 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAmount?: T;
   advanceAmount?: T;
   remainingAmount?: T;
+  paidAt?: T;
+  dueAt?: T;
   sent?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -612,6 +640,20 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports_select".
+ */
+export interface ReportsSelect<T extends boolean = true> {
+  month?: T;
+  totalIncome?: T;
+  totalExpenses?: T;
+  totalBottlesDelivered?: T;
+  totalExpectedIncome?: T;
+  totalDueAmount?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

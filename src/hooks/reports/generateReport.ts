@@ -1,0 +1,45 @@
+import { endOfMonth, startOfMonth } from 'date-fns'
+
+import type { CollectionBeforeChangeHook } from 'payload'
+
+export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { payload } }) => {
+  const from = startOfMonth(data.month)
+  const to = endOfMonth(data.month)
+
+  const invoices = await payload.db.collections['invoice'].aggregate([
+    {
+      $match: {
+        createdAt: { $gte: from, $lte: to },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalIncome: { $sum: '$paidAmount' },
+        totalRemainingAmount: { $sum: '$remainingAmount' },
+      },
+    },
+  ])
+
+  const transactions = await payload.db.collections['transaction'].aggregate([
+    {
+      $match: {
+        transactionAt: { $gte: from, $lte: to },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalBottlesDelivered: { $sum: '$bottleGiven' },
+        totalExpectedIncome: { $sum: '$total' },
+      },
+    },
+  ])
+
+  data.totalIncome = invoices[0].totalIncome
+  data.totalDueAmount = invoices[0].totalRemainingAmount
+  data.totalBottlesDelivered = transactions[0].totalBottlesDelivered
+  data.totalExpectedIncome = transactions[0].totalExpectedIncome
+
+  return data
+}
