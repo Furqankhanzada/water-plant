@@ -45,6 +45,7 @@ const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
             break
           case 'partially-paid':
             paymentDue = invoice.remainingAmount!
+            break
           default:
             paymentDue = invoice.dueAmount!
             break
