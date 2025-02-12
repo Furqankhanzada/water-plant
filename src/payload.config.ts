@@ -21,6 +21,7 @@ import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
 import { Company } from './globals/Company'
 import { sendEmailTask } from './tasks/sendEmail'
+import { Reports } from './collections/Reports'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -33,7 +34,18 @@ export default buildConfig({
     },
   },
   globals: [Company],
-  collections: [Users, Customers, Areas, Blocks, Trips, Employee, Transaction, Invoice, Media],
+  collections: [
+    Users,
+    Customers,
+    Areas,
+    Blocks,
+    Trips,
+    Employee,
+    Transaction,
+    Invoice,
+    Media,
+    Reports,
+  ],
   jobs: {
     autoRun: [
       {
