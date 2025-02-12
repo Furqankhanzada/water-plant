@@ -139,6 +139,7 @@ export const Invoice: CollectionConfig = {
     {
       name: 'dueAt',
       type: 'date',
+      required: true,
       admin: {
         date: {
           pickerAppearance: 'dayOnly',
