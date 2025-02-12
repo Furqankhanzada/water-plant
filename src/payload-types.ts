@@ -265,7 +265,7 @@ export interface Invoice {
    */
   remainingAmount?: number | null;
   paidAt?: string | null;
-  dueAt?: string | null;
+  dueAt: string;
   sent?: boolean | null;
   updatedAt: string;
   createdAt: string;
