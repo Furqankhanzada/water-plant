@@ -16,7 +16,28 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
       $group: {
         _id: null,
         totalIncome: { $sum: '$paidAmount' },
-        totalRemainingAmount: { $sum: '$remainingAmount' },
+        // totalRemainingAmount: { $sum: '$remainingAmount' },
+      },
+    },
+  ])
+
+  const customers = await payload.db.collections['customers'].aggregate([
+    {
+      $lookup: {
+        from: 'invoices',
+        localField: '_id',
+        foreignField: 'customer',
+        pipeline: [{ $sort: { createdAt: -1 } }, { $limit: 1 }],
+        as: 'invoices',
+      },
+    },
+    { $unwind: '$invoices' },
+    {
+      $group: {
+        _id: null,
+        totalRemainingAmount: {
+          $sum: '$invoices.remainingAmount',
+        },
       },
     },
   ])
@@ -37,7 +58,7 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
   ])
 
   data.totalIncome = invoices[0].totalIncome
-  data.totalDueAmount = invoices[0].totalRemainingAmount
+  data.totalDueAmount = customers[0].totalRemainingAmount
   data.totalBottlesDelivered = transactions[0].totalBottlesDelivered
   data.totalExpectedIncome = transactions[0].totalExpectedIncome
 
