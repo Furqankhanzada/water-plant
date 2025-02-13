@@ -34,7 +34,8 @@ const rupee = new Intl.NumberFormat('en-PK', {
 })
 
 const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
-  const rows = customers.map((customer) => {
+  const rows = customers.map((customer, i) => {
+    const odd = i % 2 !== 0
     let paymentDue = 0
     if (customer.invoice?.docs?.length) {
       const invoice = customer.invoice?.docs[0] as Invoice
@@ -53,7 +54,7 @@ const TableRow = ({ customers }: { customers: Partial<Customer>[] }) => {
       }
     }
     return (
-      <View style={tableStyles.row} key={customer.id}>
+      <View style={[tableStyles.row, odd ? { backgroundColor: '#e3f9ff' } : {}]} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
         <Text style={[tableStyles.column, styles.address]}>{customer.address}</Text>
         <Text style={[tableStyles.column, styles.delivered]}></Text>
