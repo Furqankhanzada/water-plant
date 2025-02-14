@@ -24,9 +24,12 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
       id: {
         not_equals: originalDoc.id,
       },
+      dueAt: {
+        less_than: data.dueAt,
+      },
     },
     limit: 1,
-    sort: '-createdAt',
+    sort: '-dueAt',
     depth: 0,
     select: {
       advanceAmount: true,

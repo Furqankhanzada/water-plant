@@ -41,7 +41,8 @@ const TableRow = ({
   blockTransactions: Partial<Transaction>[]
   trip: Partial<Trip>
 }) => {
-  const rows = blockTransactions.map((transaction) => {
+  const rows = blockTransactions.map((transaction, i) => {
+    const odd = i % 2 !== 0
     const customer = transaction.customer as Customer
     let paymentDue = 0
     if (customer.invoice?.docs?.length) {
@@ -53,6 +54,7 @@ const TableRow = ({
             break
           case 'partially-paid':
             paymentDue = invoice.remainingAmount!
+            break
           default:
             paymentDue = invoice.dueAmount!
             break
@@ -60,7 +62,7 @@ const TableRow = ({
       }
     }
     return (
-      <View style={tableStyles.row} key={customer.id}>
+      <View style={[tableStyles.row, odd ? { backgroundColor: '#e3f9ff' } : {}]} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
         <Text style={[tableStyles.column, styles.address]}>{customer.address}</Text>
         <Text style={[tableStyles.column, styles.delivered]}>

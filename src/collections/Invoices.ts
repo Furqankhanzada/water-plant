@@ -11,7 +11,16 @@ export const Invoice: CollectionConfig = {
     beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
   },
   admin: {
-    defaultColumns: ['customer', 'status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
+    defaultColumns: [
+      'customer',
+      'status',
+      'dueAmount',
+      'paidAmount',
+      'dueAt',
+      'paidAt',
+      'sent',
+      'pdf',
+    ],
   },
   fields: [
     {
@@ -116,6 +125,33 @@ export const Invoice: CollectionConfig = {
         description: 'Customer needs to pay this amount to clear billig/invoice.',
         readOnly: true,
       },
+    },
+    {
+      name: 'paidAt',
+      type: 'date',
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'd MMM yyyy',
+        },
+      },
+    },
+    {
+      name: 'dueAt',
+      type: 'date',
+      required: true,
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'd MMM yyyy',
+        },
+      },
+    },
+    {
+      label: 'Invoice Sent to Customer?',
+      name: 'sent',
+      type: 'checkbox',
+      defaultValue: false,
     },
     {
       name: 'pdf',

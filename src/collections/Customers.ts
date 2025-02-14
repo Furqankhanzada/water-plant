@@ -27,6 +27,10 @@ export const Customers: CollectionConfig = {
                   type: 'text',
                   required: true,
                 },
+                {
+                  name: 'email',
+                  type: 'email',
+                },
               ],
             },
 
@@ -131,6 +135,16 @@ export const Customers: CollectionConfig = {
               },
               fields: [
                 {
+                  name: 'type',
+                  type: 'select',
+                  options: [
+                    {
+                      label: 'WhatsApp',
+                      value: 'whatsapp',
+                    },
+                  ],
+                },
+                {
                   name: 'contactNumber',
                   type: 'text',
                   required: true,
@@ -196,9 +210,17 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'invoice',
-              defaultSort: '-createdAt',
+              defaultSort: '-dueAt',
               admin: {
-                defaultColumns: ['status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
+                defaultColumns: [
+                  'status',
+                  'dueAmount',
+                  'paidAmount',
+                  'dueAt',
+                  'paidAt',
+                  'sent',
+                  'pdf',
+                ],
               },
             },
           ],

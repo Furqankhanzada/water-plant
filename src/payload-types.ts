@@ -19,6 +19,9 @@ export interface Config {
     employee: Employee;
     transaction: Transaction;
     invoice: Invoice;
+    media: Media;
+    reports: Report;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -47,6 +50,9 @@ export interface Config {
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    reports: ReportsSelect<false> | ReportsSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -54,14 +60,24 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    company: Company;
+  };
+  globalsSelect: {
+    company: CompanySelect<false> | CompanySelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
   };
   jobs: {
-    tasks: unknown;
+    tasks: {
+      sendEmail: TaskSendEmail;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -109,6 +125,7 @@ export interface User {
 export interface Customer {
   id: string;
   name: string;
+  email?: string | null;
   address?: string | null;
   area: string | Area;
   block: string | Block;
@@ -119,6 +136,7 @@ export interface Customer {
   bottlesAtHome?: number | null;
   contactNumbers?:
     | {
+        type?: 'whatsapp' | null;
         contactNumber: string;
         id?: string | null;
       }[]
@@ -191,6 +209,9 @@ export interface Trip {
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
+  /**
+   * Set the status to In Progress or Complete.
+   */
   status: 'inprogress' | 'complete';
   transactions?: {
     docs?: (string | Transaction)[] | null;
@@ -220,14 +241,162 @@ export interface Invoice {
   id: string;
   customer: string | Customer;
   transactions: (string | Transaction)[];
+  /**
+   * Set the status to In Progress or Complete.
+   */
   status: 'paid' | 'unpaid' | 'partially-paid';
   netTotal?: number | null;
+  /**
+   * Previous months balance which customer needs to pay.
+   */
   previousBalance?: number | null;
+  /**
+   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
+   */
   previousAdvanceAmount?: number | null;
   dueAmount?: number | null;
   paidAmount?: number | null;
+  /**
+   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
+   */
   advanceAmount?: number | null;
+  /**
+   * Customer needs to pay this amount to clear billig/invoice.
+   */
   remainingAmount?: number | null;
+  paidAt?: string | null;
+  dueAt: string;
+  sent?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt: string;
+  _key?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: string;
+  month?: string | null;
+  totalIncome?: string | null;
+  totalExpenses?: number | null;
+  totalBottlesDelivered?: number | null;
+  totalExpectedIncome?: string | null;
+  /**
+   * Needs to recover overall due amount
+   */
+  totalDueAmount?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'sendEmail';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'sendEmail') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -269,6 +438,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'invoice';
         value: string | Invoice;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'reports';
+        value: string | Report;
+      } | null)
+    | ({
+        relationTo: 'payload-jobs';
+        value: string | PayloadJob;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -335,6 +516,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   name?: T;
+  email?: T;
   address?: T;
   area?: T;
   block?: T;
@@ -346,6 +528,7 @@ export interface CustomersSelect<T extends boolean = true> {
   contactNumbers?:
     | T
     | {
+        type?: T;
         contactNumber?: T;
         id?: T;
       };
@@ -433,6 +616,73 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAmount?: T;
   advanceAmount?: T;
   remainingAmount?: T;
+  paidAt?: T;
+  dueAt?: T;
+  sent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  _key?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports_select".
+ */
+export interface ReportsSelect<T extends boolean = true> {
+  month?: T;
+  totalIncome?: T;
+  totalExpenses?: T;
+  totalBottlesDelivered?: T;
+  totalExpectedIncome?: T;
+  totalDueAmount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -467,6 +717,85 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "company".
+ */
+export interface Company {
+  id: string;
+  logo?: (string | null) | Media;
+  name: string;
+  address?: string | null;
+  contactNumbers?:
+    | {
+        type?: 'whatsapp' | null;
+        contactNumber: string;
+        id?: string | null;
+      }[]
+    | null;
+  paymentMethods?:
+    | {
+        name?: string | null;
+        accountTitle?: string | null;
+        accountNo?: string | null;
+        accountIBAN?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  invoiceMessage?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "company_select".
+ */
+export interface CompanySelect<T extends boolean = true> {
+  logo?: T;
+  name?: T;
+  address?: T;
+  contactNumbers?:
+    | T
+    | {
+        type?: T;
+        contactNumber?: T;
+        id?: T;
+      };
+  paymentMethods?:
+    | T
+    | {
+        name?: T;
+        accountTitle?: T;
+        accountNo?: T;
+        accountIBAN?: T;
+        id?: T;
+      };
+  invoiceMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSendEmail".
+ */
+export interface TaskSendEmail {
+  input: {
+    to: string;
+    subject: string;
+    templateName: string;
+    data?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
