@@ -50,6 +50,22 @@ export const Expenses: CollectionConfig = {
           value: 'gate_pass',
         },
         {
+          label: 'Maintenance of Plant',
+          value: 'maintenance_plant',
+        },
+        {
+          label: 'Maintenance of Vehicle',
+          value: 'maintenance_vehicle',
+        },
+        {
+          label: 'Minerals',
+          value: 'minerals',
+        },
+        {
+          label: 'Bottles',
+          value: 'bottles',
+        },
+        {
           label: 'PSQCA',
           value: 'psqca',
         },

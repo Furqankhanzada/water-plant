@@ -329,6 +329,10 @@ export interface Expense {
     | 'utility_bills'
     | 'laboratory'
     | 'gate_pass'
+    | 'maintenance_plant'
+    | 'maintenance_vehicle'
+    | 'minerals'
+    | 'bottles'
     | 'psqca';
   expenseAt: string;
   /**
