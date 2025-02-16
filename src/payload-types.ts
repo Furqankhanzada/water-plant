@@ -21,6 +21,7 @@ export interface Config {
     invoice: Invoice;
     media: Media;
     reports: Report;
+    expenses: Expense;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -52,6 +53,7 @@ export interface Config {
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
+    expenses: ExpensesSelect<false> | ExpensesSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -310,6 +312,38 @@ export interface Report {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expenses".
+ */
+export interface Expense {
+  id: string;
+  /**
+   * Describe the expense (for example): Petrol for Trip at Bahria Town, Driver Salary, Bahria Town Gate Pass Fee
+   */
+  title: string;
+  type:
+    | 'daily_miscellaneous'
+    | 'fuel'
+    | 'salary'
+    | 'plant-accessories'
+    | 'rent'
+    | 'utility_bills'
+    | 'laboratory'
+    | 'gate_pass'
+    | 'maintenance_plant'
+    | 'maintenance_vehicle'
+    | 'minerals'
+    | 'bottles'
+    | 'psqca';
+  expenseAt: string;
+  /**
+   * Amount that you spent
+   */
+  amount: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -446,6 +480,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'reports';
         value: string | Report;
+      } | null)
+    | ({
+        relationTo: 'expenses';
+        value: string | Expense;
       } | null)
     | ({
         relationTo: 'payload-jobs';
@@ -652,6 +690,18 @@ export interface ReportsSelect<T extends boolean = true> {
   totalBottlesDelivered?: T;
   totalExpectedIncome?: T;
   totalDueAmount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expenses_select".
+ */
+export interface ExpensesSelect<T extends boolean = true> {
+  title?: T;
+  type?: T;
+  expenseAt?: T;
+  amount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
