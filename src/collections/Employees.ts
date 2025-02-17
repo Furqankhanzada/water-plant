@@ -52,7 +52,6 @@ export const Employee: CollectionConfig = {
       name: 'nic',
       type: 'text',
       label: 'NIC Number',
-      required: true,
       maxLength: 13,
       admin: {
         placeholder: 'Enter NIC number without dashes',
@@ -73,9 +72,8 @@ export const Employee: CollectionConfig = {
         ],
       },
       validate: (value: string | null | undefined) => {
-        // Check if value is null, undefined, or not a string
         if (!value || typeof value !== 'string') {
-          return 'NIC number is required.' // If value is invalid, return error
+          return true
         }
 
         // NIC pattern: 5 digits - 7 digits - 1 digit
@@ -84,7 +82,7 @@ export const Employee: CollectionConfig = {
           return 'NIC number must follow the format 12345-1234567-1.' // If pattern doesn't match, return error
         }
 
-        return true // Validation passed
+        return true
       },
     },
   ],
