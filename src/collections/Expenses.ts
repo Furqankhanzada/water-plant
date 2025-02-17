@@ -2,6 +2,9 @@ import { CollectionConfig } from 'payload'
 
 export const Expenses: CollectionConfig = {
   slug: 'expenses',
+  admin: {
+    defaultColumns: ['title', 'type', 'amount', 'expenseAt'],
+  },
   fields: [
     {
       name: 'title',
@@ -75,6 +78,13 @@ export const Expenses: CollectionConfig = {
       name: 'expenseAt',
       type: 'date',
       required: true,
+      defaultValue: () => new Date(),
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'd MMM yyyy', // Display date in "29 Dec 2024" format
+        },
+      },
     },
     {
       name: 'amount',
