@@ -78,6 +78,14 @@ export const Transaction: CollectionConfig = {
       },
     },
     {
+      name: 'remainingBottles',
+      type: 'number',
+      admin: {
+        readOnly: true,
+        description: 'Bottles at home/office, calculates automaticly based on last transaction',
+      },
+    },
+    {
       name: 'transactionAt',
       type: 'date',
       required: true,
@@ -87,13 +95,6 @@ export const Transaction: CollectionConfig = {
           pickerAppearance: 'dayOnly', // Only show date picker (no time)
           displayFormat: 'd MMM yyyy', // Display date in "29 Dec 2024" format
         },
-      },
-    },
-    {
-      name: 'remainingBottles',
-      type: 'number',
-      admin: {
-        hidden: true,
       },
     },
     {
