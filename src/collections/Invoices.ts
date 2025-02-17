@@ -14,6 +14,7 @@ export const Invoice: CollectionConfig = {
     defaultColumns: [
       'customer',
       'status',
+      'netTotal',
       'dueAmount',
       'paidAmount',
       'dueAt',
@@ -63,7 +64,6 @@ export const Invoice: CollectionConfig = {
       ],
       defaultValue: 'unpaid',
       admin: {
-        description: 'Set the status to In Progress or Complete.',
         readOnly: true,
       },
     },
@@ -81,7 +81,8 @@ export const Invoice: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'Previous months balance which customer needs to pay.',
+        description:
+          'This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )',
       },
     },
     {
@@ -152,6 +153,33 @@ export const Invoice: CollectionConfig = {
       name: 'sent',
       type: 'checkbox',
       defaultValue: false,
+    },
+    {
+      label: 'Lost Bottles',
+      type: 'collapsible',
+      admin: {
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'lostBottlesCount',
+          label: 'How Many Bottles are Lost?',
+          type: 'number',
+        },
+        {
+          name: 'lostBottleAmount',
+          label: 'Amount Per Bottle',
+          type: 'number',
+        },
+        {
+          name: 'lostBottlesTotalAmount',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+      ],
     },
     {
       name: 'pdf',
