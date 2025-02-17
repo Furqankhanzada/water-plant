@@ -6,9 +6,13 @@ import { getHandlebarsTemplate } from '@/lib/getHandlebarsTemplate'
 
 export const transactionUpdateForCustomer: CollectionBeforeChangeHook = async ({
   data,
+  originalDoc,
   req: { payload, headers },
 }) => {
-  if (data.bottleGiven > 0 || data.bottleTaken > 0) {
+  if (
+    (data.bottleGiven > 0 || data.bottleTaken > 0) &&
+    (originalDoc.bottleGiven !== data.bottleGiven || originalDoc.bottleTaken !== data.bottleTaken)
+  ) {
     const customer = await payload.findByID({
       collection: 'customers',
       id: data.customer,

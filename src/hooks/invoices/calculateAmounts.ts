@@ -55,6 +55,13 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
   data.remainingAmount = data.dueAmount - data.paidAmount > 0 ? data.dueAmount - data.paidAmount : 0
   data.advanceAmount = data.dueAmount - data.paidAmount < 0 ? data.dueAmount - data.paidAmount : 0
 
+  if (data.lostBottlesCount && data.lostBottleAmount) {
+    data.lostBottlesTotalAmount = data.lostBottlesCount * data.lostBottleAmount
+    data.dueAmount += data.lostBottlesTotalAmount
+  } else if (data.lostBottlesTotalAmount) {
+    data.lostBottlesTotalAmount = 0
+  }
+
   // Set status based on due amount and paid amount
   if (data.paidAmount === data.dueAmount || data.paidAmount > data.dueAmount) {
     data.status = 'paid'

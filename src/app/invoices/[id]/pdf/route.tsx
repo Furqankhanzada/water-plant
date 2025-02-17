@@ -88,16 +88,18 @@ const InvoicePDF = ({ invoice, qrDataURI, company }: InvoiceProps) => {
           <Text style={{ marginTop: 8, marginBottom: 5, fontFamily: 'Helvetica-Bold' }}>
             Online Payment Options
           </Text>
-          {company.paymentMethods?.map((paymentMethod) => {
-            return (
-              <View key={paymentMethod.id}>
-                <Text>Payment Method: {paymentMethod.name}</Text>
-                <Text>Account Title: {paymentMethod.accountTitle}</Text>
-                {paymentMethod.accountNo && <Text>Account No: {paymentMethod.accountNo}</Text>}
-                {paymentMethod.accountIBAN && <Text>IBAN: {paymentMethod.accountIBAN}</Text>}
-              </View>
-            )
-          })}
+          <View style={{ flexDirection: 'row' }}>
+            {company.paymentMethods?.map((paymentMethod) => {
+              return (
+                <View key={paymentMethod.id} style={{ marginRight: 20 }}>
+                  <Text>Payment Method: {paymentMethod.name}</Text>
+                  <Text>Account Title: {paymentMethod.accountTitle}</Text>
+                  {paymentMethod.accountNo && <Text>Account No: {paymentMethod.accountNo}</Text>}
+                  {paymentMethod.accountIBAN && <Text>IBAN: {paymentMethod.accountIBAN}</Text>}
+                </View>
+              )
+            })}
+          </View>
           <Text style={{ marginTop: 8, marginBottom: 5, fontFamily: 'Helvetica-Oblique' }}>
             After sending payment inform us on our WhatsApp Number{' '}
             {company.contactNumbers
@@ -135,7 +137,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   company.logo = company.logo as Media
   company.logo.url = fullUrl + company.logo.url
 
-  console.log('request', request)
   const customer = invoice.customer as Customer
   const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${invoice.id}/pdf`)
 

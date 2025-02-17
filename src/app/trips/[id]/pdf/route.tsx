@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 9,
     paddingTop: 20,
-    paddingBottom: 50,
+    paddingBottom: 63,
     paddingLeft: 20,
     paddingRight: 20,
     flexDirection: 'column',

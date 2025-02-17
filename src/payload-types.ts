@@ -194,8 +194,11 @@ export interface Transaction {
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
-  transactionAt: string;
+  /**
+   * Bottles at home/office, calculates automaticly based on last transaction
+   */
   remainingBottles?: number | null;
+  transactionAt: string;
   total: number;
   updatedAt: string;
   createdAt: string;
@@ -231,7 +234,7 @@ export interface Employee {
   name: string;
   address: string;
   contactNumber: string;
-  nic: string;
+  nic?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -243,13 +246,10 @@ export interface Invoice {
   id: string;
   customer: string | Customer;
   transactions: (string | Transaction)[];
-  /**
-   * Set the status to In Progress or Complete.
-   */
   status: 'paid' | 'unpaid' | 'partially-paid';
   netTotal?: number | null;
   /**
-   * Previous months balance which customer needs to pay.
+   * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
    */
   previousBalance?: number | null;
   /**
@@ -269,6 +269,9 @@ export interface Invoice {
   paidAt?: string | null;
   dueAt: string;
   sent?: boolean | null;
+  lostBottlesCount?: number | null;
+  lostBottleAmount?: number | null;
+  lostBottlesTotalAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -633,8 +636,8 @@ export interface TransactionSelect<T extends boolean = true> {
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;
-  transactionAt?: T;
   remainingBottles?: T;
+  transactionAt?: T;
   total?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -657,6 +660,9 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAt?: T;
   dueAt?: T;
   sent?: T;
+  lostBottlesCount?: T;
+  lostBottleAmount?: T;
+  lostBottlesTotalAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
