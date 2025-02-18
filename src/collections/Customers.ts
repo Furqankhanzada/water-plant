@@ -217,7 +217,7 @@ export const Customers: CollectionConfig = {
                   'dueAmount',
                   'paidAmount',
                   'dueAt',
-                  'paidAt',
+                  'payments',
                   'sent',
                   'pdf',
                 ],

@@ -269,6 +269,18 @@ export interface Invoice {
   paidAt?: string | null;
   dueAt: string;
   sent?: boolean | null;
+  payments?:
+    | {
+        type?: ('online' | 'cash') | null;
+        amount: number;
+        paidAt: string;
+        /**
+         * Anything speacial that you want to mention?
+         */
+        comments?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   lostBottlesCount?: number | null;
   lostBottleAmount?: number | null;
   lostBottlesTotalAmount?: number | null;
@@ -660,6 +672,15 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAt?: T;
   dueAt?: T;
   sent?: T;
+  payments?:
+    | T
+    | {
+        type?: T;
+        amount?: T;
+        paidAt?: T;
+        comments?: T;
+        id?: T;
+      };
   lostBottlesCount?: T;
   lostBottleAmount?: T;
   lostBottlesTotalAmount?: T;
