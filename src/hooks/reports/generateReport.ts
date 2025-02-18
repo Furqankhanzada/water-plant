@@ -6,6 +6,20 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
   const from = startOfMonth(data.month)
   const to = endOfMonth(data.month)
 
+  const expenses = await payload.db.collections['expenses'].aggregate([
+    {
+      $match: {
+        expenseAt: { $gte: from, $lte: to },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalExpense: { $sum: '$amount' },
+      },
+    },
+  ])
+
   const invoices = await payload.db.collections['invoice'].aggregate([
     {
       $match: {
@@ -57,10 +71,13 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
     },
   ])
 
+  console.log('expenses: ', expenses[0].totalExpense)
+
   data.totalIncome = invoices[0].totalIncome
   data.totalDueAmount = customers[0].totalRemainingAmount
   data.totalBottlesDelivered = transactions[0].totalBottlesDelivered
   data.totalExpectedIncome = transactions[0].totalExpectedIncome
+  data.totalExpenses = expenses[0].totalExpense
 
   return data
 }

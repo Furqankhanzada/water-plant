@@ -303,7 +303,7 @@ export interface Report {
   id: string;
   month?: string | null;
   totalIncome?: string | null;
-  totalExpenses?: number | null;
+  totalExpenses?: string | null;
   totalBottlesDelivered?: number | null;
   totalExpectedIncome?: string | null;
   /**
