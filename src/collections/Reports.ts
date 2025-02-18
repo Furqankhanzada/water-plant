@@ -58,7 +58,14 @@ export const Reports: CollectionConfig = {
     },
     {
       name: 'totalExpenses',
-      type: 'number',
+      type: 'text',
+      hooks: {
+        afterRead: [
+          ({ data }) => {
+            return rupee.format(data?.totalExpenses)
+          },
+        ],
+      },
       admin: {
         readOnly: true,
       },
