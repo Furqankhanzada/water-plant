@@ -49,6 +49,12 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
     return sum + transaction.total
   }, 0)
 
+  if (data.payments) {
+    data.paidAmount = data.payments.reduce((sum: number, payment: { amount: number }) => {
+      return sum + payment.amount
+    }, 0)
+  }
+
   // Calculate due amount
   data.netTotal = totalAmount
   data.dueAmount = data.netTotal + (data.previousBalance || data.previousAdvanceAmount)

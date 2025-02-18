@@ -18,7 +18,7 @@ export const Invoice: CollectionConfig = {
       'dueAmount',
       'paidAmount',
       'dueAt',
-      'paidAt',
+      'payments',
       'sent',
       'pdf',
     ],
@@ -107,6 +107,9 @@ export const Invoice: CollectionConfig = {
       name: 'paidAmount',
       type: 'number',
       defaultValue: 0,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'advanceAmount',
@@ -131,6 +134,7 @@ export const Invoice: CollectionConfig = {
       name: 'paidAt',
       type: 'date',
       admin: {
+        hidden: true,
         date: {
           pickerAppearance: 'dayOnly',
           displayFormat: 'd MMM yyyy',
@@ -153,6 +157,52 @@ export const Invoice: CollectionConfig = {
       name: 'sent',
       type: 'checkbox',
       defaultValue: false,
+    },
+    {
+      name: 'payments',
+      type: 'array',
+      fields: [
+        {
+          name: 'type',
+          type: 'select',
+          defaultValue: 'cash',
+          options: [
+            {
+              label: 'Online',
+              value: 'online',
+            },
+            {
+              label: 'Cash',
+              value: 'cash',
+            },
+          ],
+        },
+        {
+          name: 'amount',
+          type: 'number',
+          defaultValue: 0,
+          required: true,
+        },
+        {
+          name: 'paidAt',
+          type: 'date',
+          required: true,
+          defaultValue: () => new Date(),
+          admin: {
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'd MMM yyyy',
+            },
+          },
+        },
+        {
+          name: 'comments',
+          type: 'textarea',
+          admin: {
+            description: 'Anything speacial that you want to mention?',
+          },
+        },
+      ],
     },
     {
       label: 'Lost Bottles',
