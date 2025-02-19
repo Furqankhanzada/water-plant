@@ -23,7 +23,6 @@ import { Company } from './globals/Company'
 import { sendEmailTask } from './tasks/sendEmail'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
-
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -32,6 +31,19 @@ export default buildConfig({
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
+    },
+    meta: {
+      icons: [
+        {
+          url: '/images/water-drop.png',
+        },
+      ],
+    },
+    components: {
+      graphics: {
+        Icon: '/graphics/Branding.tsx#Icon',
+        Logo: '/graphics/Branding.tsx#Logo',
+      },
     },
   },
   globals: [Company],
