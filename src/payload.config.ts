@@ -33,6 +33,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
+      titleSuffix: '| SuqyaTech',
+      title: 'Your Smart Partner in Water Supply',
       icons: [
         {
           url: '/images/water-drop.png',
