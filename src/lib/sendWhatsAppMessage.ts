@@ -1,3 +1,6 @@
+import { format } from 'date-fns'
+import { Invoice } from '@/payload-types'
+
 type Payload = {}
 export const sendMessage = (payload: Payload) => {
   return fetch(
@@ -38,4 +41,31 @@ export async function uploadMedia(pdfUrl: string) {
 
   const data = await response.json()
   return data.id // Returns media ID
+}
+
+export const isWhatsAppEnabled = () => {
+  return (
+    process.env.WHATSAPP_PHONE_NUMBER_ID &&
+    process.env.WHATSAPP_ACCESS_TOKEN &&
+    process.env.WHATSAPP_WEBHOOK_VERIFICATION_TOKEN
+  )
+}
+
+type SendInvoicePayload = {
+  to: string
+  invoice: Invoice
+  caption?: string
+}
+
+export const sendInvoice = async ({ invoice, to, caption }: SendInvoicePayload) => {
+  const mediaId = await uploadMedia(`${process.env.URL}/invoices/${invoice.id}/pdf`)
+  await sendMessage({
+    to,
+    type: 'document',
+    document: {
+      id: mediaId,
+      filename: `${format(invoice.dueAt, 'MMMM')}-Invoice.pdf`,
+      caption: caption || 'Here is your requested PDF 📄',
+    },
+  })
 }
