@@ -246,5 +246,19 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'sendInvoice',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Invoices#SendInvoiceButton',
+          Cell: {
+            path: '/components/Invoices',
+            exportName: 'SendInvoiceButton',
+            serverProps: { cell: true },
+          },
+        },
+      },
+    },
   ],
 }

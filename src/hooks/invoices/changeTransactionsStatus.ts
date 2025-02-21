@@ -8,7 +8,10 @@ export const changeTransactionsStatusHook: CollectionAfterOperationHook = async 
   req: { payload },
 }) => {
   const invoiceResult = result as Invoice
-  if (operation === 'create' || operation === 'updateByID') {
+  if (
+    (operation === 'create' || operation === 'updateByID') &&
+    invoiceResult.transactions[0] === 'string'
+  ) {
     await payload.update({
       collection: 'transaction',
       where: {
