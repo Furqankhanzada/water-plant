@@ -2,9 +2,8 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { type NextRequest } from 'next/server'
 
-import { sendMessage, uploadMedia } from '@/lib/sendWhatsAppMessage'
+import { getInvoiceCaption, sendInvoice, sendMessage } from '@/lib/sendWhatsAppMessage'
 import { Invoice } from '@/payload-types'
-import { format } from 'date-fns'
 
 export const GET = async (request: NextRequest) => {
   const searchParams = request.nextUrl.searchParams
@@ -17,12 +16,6 @@ export const GET = async (request: NextRequest) => {
   }
   return Response.json({ message: 'Verification failed' })
 }
-
-const rupee = new Intl.NumberFormat('en-PK', {
-  style: 'currency',
-  currency: 'PKR',
-  minimumFractionDigits: 0,
-})
 
 export async function POST(request: Request) {
   const res = await request.json()
@@ -101,45 +94,77 @@ export async function POST(request: Request) {
             })
           }
 
-          let greeting = 'Hello, \n'
-          let invoiceMessage = ''
+          let greeting = 'Dear Customer,\n'
           if (customers.docs && customers.docs.length) {
             const customer = customers.docs[0]
-            greeting = `Hello *${customer.name}*,\n`
-            if (customer.invoice?.docs && customer.invoice.docs.length) {
-              const invoice = customer.invoice.docs[0] as Invoice
-              switch (invoice.status) {
-                case 'paid':
-                  invoiceMessage = `\nYour last invoice is *Paid*, Thank you for paying it on time.`
-                  break
-                case 'unpaid':
-                  invoiceMessage = `\nYour last invoice is *UNPAID*, and your due amount is *${rupee.format(invoice.dueAmount!)}*.`
-                  break
-                case 'partially-paid':
-                  invoiceMessage = `\nYour last invoice is *Partially Paid*, and your remaining due amount is *${rupee.format(invoice.remainingAmount!)}*.`
-                  break
+            greeting = `Dear *${customer.name}*,\n`
+          }
+
+          const generalMessage = `Your number is not registered in our system. Our representative will call you for further information. In the meantime, please WhatsApp us at +923151114778.
+          
+آپ کا نمبر ہمارے رکارڈ میں موجود نہیں ہے۔ ہمارا نمائیندہ جلد آپ سے رابطہ کرے گا، فلحال آپ اس نمبر پر رابطہ کر سکتے ہیں 03151114778
+          `
+          let messageSent
+          switch (message?.text.body.trim()) {
+            case '1':
+              if (customers.docs.length) {
+                const customer = customers.docs[0]
+                if (customer.invoice?.docs && customer.invoice.docs.length) {
+                  const invoice = customer.invoice.docs[0] as Invoice
+                  messageSent = await sendInvoice({
+                    invoice,
+                    to: message.from,
+                    caption: getInvoiceCaption(invoice),
+                  })
+                }
+              } else {
+                if (customers.docs.length) {
+                  const customer = customers.docs[0]
+                  messageSent = await sendMessage({
+                    to: message.from,
+                    text: {
+                      body: generalMessage,
+                    },
+                  })
+                } else {
+                  messageSent = await sendMessage({
+                    to: message.from,
+                    text: {
+                      body: generalMessage,
+                    },
+                  })
+                }
               }
-              const mediaId = await uploadMedia(`${process.env.URL}/invoices/${invoice.id}/pdf`)
-              await sendMessage({
+              break
+            case '2':
+              messageSent = await sendMessage({
                 to: message.from,
-                type: 'document',
-                document: {
-                  id: mediaId,
-                  filename: `${format(invoice.dueAt, 'MMMM')}-Invoice.pdf`,
+                text: {
+                  body: generalMessage,
                 },
               })
-            }
+              break
+            default:
+              const initialMessage = `\nI'm a *Bot*, created by Labbaik Drinking Water exclusively for it's customers.
+
+Feel free to ask me:
+                
+1️⃣ *Last month bill* (*پچھلے مہینے کا بل*)
+2️⃣ *Water Delivery* (*پانی چاہیے*)
+                          
+The bot is under development so for now contact us on +923151114778`
+              messageSent = await sendMessage({
+                to: message.from,
+                text: {
+                  body: `${greeting}${initialMessage}`,
+                },
+              })
+              break
           }
-          const messageSent = await sendMessage({
-            to: message.from,
-            text: {
-              body: `${greeting}${invoiceMessage}`,
-            },
-          })
 
-          const data = await messageSent.json()
+          const data = await messageSent?.json()
 
-          if (!messageSent.ok) {
+          if (!messageSent?.ok) {
             throw new Error(data.error?.message || 'Failed to send message')
           }
 

@@ -59,13 +59,32 @@ type SendInvoicePayload = {
 
 export const sendInvoice = async ({ invoice, to, caption }: SendInvoicePayload) => {
   const mediaId = await uploadMedia(`${process.env.URL}/invoices/${invoice.id}/pdf`)
-  await sendMessage({
+  return await sendMessage({
     to,
     type: 'document',
     document: {
       id: mediaId,
       filename: `${format(invoice.dueAt, 'MMMM')}-Invoice.pdf`,
-      caption: caption || 'Here is your requested PDF 📄',
+      caption: caption || 'Here is your requested *Invoice*',
     },
   })
+}
+
+const rupee = new Intl.NumberFormat('en-PK', {
+  style: 'currency',
+  currency: 'PKR',
+  minimumFractionDigits: 0,
+})
+
+export const getInvoiceCaption = (invoice: Invoice) => {
+  let caption
+  switch (invoice.status) {
+    case 'unpaid':
+      caption = `Dear customer,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      break
+    case 'partially-paid':
+      caption = `Dear customer,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      break
+  }
+  return caption
 }
