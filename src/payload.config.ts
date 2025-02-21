@@ -24,6 +24,7 @@ import { sendEmailTask } from './tasks/sendEmail'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
 import { Messages } from './collections/Messages'
+import { Requests } from './collections/Requests'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -62,6 +63,7 @@ export default buildConfig({
     Reports,
     Expenses,
     Messages,
+    Requests,
   ],
   jobs: {
     autoRun: [

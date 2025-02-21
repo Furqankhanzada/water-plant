@@ -66,18 +66,36 @@ export async function POST(request: Request) {
           const messages = await payload.find({
             collection: 'messages',
             where: {
-              from: {
-                in: customers.docs.map((c) => c.id),
-              },
+              or: [
+                {
+                  from: {
+                    in: customers.docs.map((c) => c.id),
+                  },
+                },
+                {
+                  'messages.fullMessage.from': {
+                    equals: message.from,
+                  },
+                },
+              ],
             },
           })
           if (messages.docs.length) {
             payload.update({
               collection: 'messages',
               where: {
-                from: {
-                  in: customers.docs.map((c) => c.id),
-                },
+                or: [
+                  {
+                    from: {
+                      in: customers.docs.map((c) => c.id),
+                    },
+                  },
+                  {
+                    'messages.fullMessage.from': {
+                      equals: message.from,
+                    },
+                  },
+                ],
               },
               data: {
                 from: customers.docs.map((c) => c.id),
@@ -107,6 +125,7 @@ export async function POST(request: Request) {
           let messageSent
           switch (message?.text.body.trim()) {
             case '1':
+            case 'Last Month Invoice/Bill':
               if (customers.docs.length) {
                 const customer = customers.docs[0]
                 if (customer.invoice?.docs && customer.invoice.docs.length) {
@@ -118,31 +137,58 @@ export async function POST(request: Request) {
                   })
                 }
               } else {
-                if (customers.docs.length) {
-                  const customer = customers.docs[0]
-                  messageSent = await sendMessage({
-                    to: message.from,
-                    text: {
-                      body: generalMessage,
-                    },
-                  })
-                } else {
-                  messageSent = await sendMessage({
-                    to: message.from,
-                    text: {
-                      body: generalMessage,
-                    },
-                  })
-                }
+                messageSent = await sendMessage({
+                  to: message.from,
+                  text: {
+                    body: generalMessage,
+                  },
+                })
               }
               break
             case '2':
-              messageSent = await sendMessage({
-                to: message.from,
-                text: {
-                  body: generalMessage,
+            case 'Request Water Delivery':
+              // Store Requests to DB
+              const requests = await payload.find({
+                collection: 'requests',
+                where: {
+                  or: [
+                    {
+                      from: {
+                        in: customers.docs.map((c) => c.id),
+                      },
+                    },
+                    {
+                      phone: {
+                        in: message.from,
+                      },
+                    },
+                  ],
                 },
               })
+              if (requests.docs.length) {
+                messageSent = await sendMessage({
+                  to: message.from,
+                  text: {
+                    body: `You have already requested for water delivery, We will try to deliver as soon as possible.`,
+                  },
+                })
+              } else {
+                await payload.create({
+                  collection: 'requests',
+                  data: {
+                    from: customers.docs.map((c) => c.id),
+                    phone: message.from,
+                    date: new Date().toISOString(),
+                  },
+                })
+                messageSent = await sendMessage({
+                  to: message.from,
+                  text: {
+                    body: `Your have received you request, We will try to deliver as soon as possible. `,
+                  },
+                })
+              }
+
               break
             default:
               const initialMessage = `\nI'm a *Bot*, created by Labbaik Drinking Water exclusively for it's customers.
