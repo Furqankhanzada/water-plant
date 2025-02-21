@@ -184,7 +184,7 @@ export async function POST(request: Request) {
                 messageSent = await sendMessage({
                   to: message.from,
                   text: {
-                    body: `Your have received you request, We will try to deliver as soon as possible. `,
+                    body: `We have received you request, We will try to deliver as soon as possible. `,
                   },
                 })
               }
