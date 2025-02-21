@@ -23,6 +23,8 @@ import { Company } from './globals/Company'
 import { sendEmailTask } from './tasks/sendEmail'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
+import { Messages } from './collections/Messages'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -59,6 +61,7 @@ export default buildConfig({
     Media,
     Reports,
     Expenses,
+    Messages,
   ],
   jobs: {
     autoRun: [
