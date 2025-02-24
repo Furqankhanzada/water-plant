@@ -126,6 +126,7 @@ export async function POST(request: Request) {
           switch (message?.text.body.trim()) {
             case '1':
             case 'Last Month Invoice/Bill':
+            case '/invoice':
               if (customers.docs.length) {
                 const customer = customers.docs[0]
                 if (customer.invoice?.docs && customer.invoice.docs.length) {
@@ -147,6 +148,7 @@ export async function POST(request: Request) {
               break
             case '2':
             case 'Request Water Delivery':
+            case '/delivery':
               // Store Requests to DB
               const requests = await payload.find({
                 collection: 'requests',
