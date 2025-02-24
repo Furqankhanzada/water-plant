@@ -165,6 +165,9 @@ export async function POST(request: Request) {
                       },
                     },
                   ],
+                  fulfilled: {
+                    not_equals: true,
+                  },
                 },
               })
               if (requests.docs.length) {
