@@ -10,6 +10,9 @@ import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
+import { isWhatsAppEnabled } from './lib/sendWhatsAppMessage'
+import { Company } from './globals/Company'
+import { sendEmailTask } from './tasks/sendEmail'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { Areas } from './collections/Areas'
@@ -19,8 +22,6 @@ import { Employee } from './collections/Employees'
 import { Transaction } from './collections/Transactions'
 import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
-import { Company } from './globals/Company'
-import { sendEmailTask } from './tasks/sendEmail'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
 import { Messages } from './collections/Messages'
@@ -36,8 +37,6 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: '| SuqyaTech',
-      title: 'Your Smart Partner in Water Supply',
       icons: [
         {
           url: '/images/water-drop.png',
@@ -64,8 +63,7 @@ export default buildConfig({
     Media,
     Reports,
     Expenses,
-    Messages,
-    Requests,
+    ...(isWhatsAppEnabled() ? [Messages, Requests] : []),
   ],
   jobs: {
     autoRun: [

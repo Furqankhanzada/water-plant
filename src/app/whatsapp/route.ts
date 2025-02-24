@@ -112,13 +112,13 @@ export async function POST(request: Request) {
             })
           }
 
-          let greeting = 'Dear Customer,\n'
+          let greeting = 'Dear *Customer*,\n'
           if (customers.docs && customers.docs.length) {
             const customer = customers.docs[0]
             greeting = `Dear *${customer.name}*,\n`
           }
 
-          const generalMessage = `Your number is not registered in our system. Our representative will call you for further information. In the meantime, please WhatsApp us at +923151114778.
+          const generalMessage = `${greeting}Your number is not registered in our system. Our representative will call you for further information. In the meantime, please WhatsApp us at +923151114778.
           
 آپ کا نمبر ہمارے رکارڈ میں موجود نہیں ہے۔ ہمارا نمائیندہ جلد آپ سے رابطہ کرے گا، فلحال آپ اس نمبر پر رابطہ کر سکتے ہیں 03151114778
           `
@@ -126,6 +126,7 @@ export async function POST(request: Request) {
           switch (message?.text.body.trim()) {
             case '1':
             case 'Last Month Invoice/Bill':
+            case '/invoice':
               if (customers.docs.length) {
                 const customer = customers.docs[0]
                 if (customer.invoice?.docs && customer.invoice.docs.length) {
@@ -134,6 +135,15 @@ export async function POST(request: Request) {
                     invoice,
                     to: message.from,
                     caption: getInvoiceCaption(invoice),
+                  })
+                } else {
+                  messageSent = await sendMessage({
+                    to: message.from,
+                    text: {
+                      body: `${greeting}We could not find a previous invoice in our records, as this is your first month with us.
+                      
+محترم صارف، ہمارے ریکارڈ میں کوئی پچھلا بل موجود نہیں ہے، کیونکہ یہ آپ کا ہمارے ساتھ پہلا مہینہ ہے۔`,
+                    },
                   })
                 }
               } else {
@@ -147,6 +157,7 @@ export async function POST(request: Request) {
               break
             case '2':
             case 'Request Water Delivery':
+            case '/delivery':
               // Store Requests to DB
               const requests = await payload.find({
                 collection: 'requests',
@@ -163,13 +174,18 @@ export async function POST(request: Request) {
                       },
                     },
                   ],
+                  fulfilled: {
+                    not_equals: true,
+                  },
                 },
               })
               if (requests.docs.length) {
                 messageSent = await sendMessage({
                   to: message.from,
                   text: {
-                    body: `You have already requested for water delivery, We will try to deliver as soon as possible.`,
+                    body: `${greeting}You have already requested a water delivery. We will do our best to deliver it as soon as possible.
+                    
+محترم صارف، آپ پہلے ہی پانی کی ترسیل کی درخواست کر چکے ہیں۔ ہم اسے جلد از جلد پہنچانے کی پوری کوشش کریں گے۔`,
                   },
                 })
               } else {
@@ -184,7 +200,9 @@ export async function POST(request: Request) {
                 messageSent = await sendMessage({
                   to: message.from,
                   text: {
-                    body: `We have received you request, We will try to deliver as soon as possible. `,
+                    body: `${greeting}We have received your request and will do our best to deliver your water bottles as soon as possible.
+   
+محترم صارف، ہمیں آپ کی درخواست موصول ہو گئی ہے۔ ہم آپ کی پانی کی بوتلیں جلد از جلد پہنچانے کی پوری کوشش کریں گے۔`,
                   },
                 })
               }
