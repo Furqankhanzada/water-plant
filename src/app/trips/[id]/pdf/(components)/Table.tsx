@@ -6,7 +6,7 @@ import TableHeader from './TableHeader'
 import TableRow from './TableRow'
 
 const generic = {
-  borderColor: '#bff0fd',
+  borderColor: '#dee2e6',
   height: 16,
 }
 

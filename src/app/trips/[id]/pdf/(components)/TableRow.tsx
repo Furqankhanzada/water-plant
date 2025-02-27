@@ -62,7 +62,7 @@ const TableRow = ({
       }
     }
     return (
-      <View style={[tableStyles.row, odd ? { backgroundColor: '#e3f9ff' } : {}]} key={customer.id}>
+      <View style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
         <Text style={[tableStyles.column, styles.address]}>{customer.address}</Text>
         <Text style={[tableStyles.column, styles.delivered]}>
