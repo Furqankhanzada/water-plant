@@ -70,6 +70,48 @@ export const sendInvoice = async ({ invoice, to, caption }: SendInvoicePayload) 
   })
 }
 
+type SendInvoiceTemplatePayload = {
+  to: string
+  invoice: Invoice
+  parameters: { type: 'text'; text: string }[]
+}
+
+export const sendInvoiceTemplate = async ({
+  invoice,
+  to,
+  parameters,
+}: SendInvoiceTemplatePayload) => {
+  const mediaId = await uploadMedia(`${process.env.URL}/invoices/${invoice.id}/pdf`)
+  return await sendMessage({
+    to,
+    type: 'template',
+    template: {
+      name: 'invoice',
+      language: {
+        code: 'en_US',
+      },
+      components: [
+        {
+          type: 'header',
+          parameters: [
+            {
+              type: 'document',
+              document: {
+                id: mediaId,
+                filename: `${format(invoice.dueAt, 'MMMM')}-Invoice.pdf`,
+              },
+            },
+          ],
+        },
+        {
+          type: 'body',
+          parameters,
+        },
+      ],
+    },
+  })
+}
+
 const rupee = new Intl.NumberFormat('en-PK', {
   style: 'currency',
   currency: 'PKR',
@@ -80,10 +122,10 @@ export const getInvoiceCaption = (invoice: Invoice) => {
   let caption
   switch (invoice.status) {
     case 'unpaid':
-      caption = `Dear customer,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.dueAmount!)}*/-.`
       break
     case 'partially-paid':
-      caption = `Dear customer,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.dueAmount!)}*/-.`
       break
   }
   return caption

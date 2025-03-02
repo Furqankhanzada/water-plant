@@ -250,7 +250,7 @@ export interface Invoice {
   id: string;
   customer: string | Customer;
   transactions: (string | Transaction)[];
-  status: 'paid' | 'unpaid' | 'partially-paid';
+  status?: ('paid' | 'unpaid' | 'partially-paid') | null;
   netTotal?: number | null;
   /**
    * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
