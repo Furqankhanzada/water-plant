@@ -21,6 +21,7 @@ export const Invoice: CollectionConfig = {
       'payments',
       'sent',
       'pdf',
+      'sendInvoice',
     ],
   },
   fields: [
@@ -47,7 +48,6 @@ export const Invoice: CollectionConfig = {
     {
       name: 'status',
       type: 'select',
-      required: true,
       options: [
         {
           label: 'Paid',
