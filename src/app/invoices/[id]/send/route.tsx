@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import { format } from 'date-fns'
 import configPromise from '@payload-config'
 
-import { sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
+import { isWhatsAppEnabled, sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
 import { Customer } from '@/payload-types'
 
 const rupee = new Intl.NumberFormat('en-PK', {
@@ -12,6 +12,8 @@ const rupee = new Intl.NumberFormat('en-PK', {
 })
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!isWhatsAppEnabled()) Response.json({ message: 'WhatsApp is not enabled!' })
+
   const payload = await getPayload({
     config: configPromise,
   })

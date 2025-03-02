@@ -3,7 +3,7 @@ import { endOfMonth, format, isSameMonth, setDate, startOfMonth, subMonths } fro
 import configPromise from '@payload-config'
 
 import { Invoice } from '@/payload-types'
-import { sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
+import { isWhatsAppEnabled, sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
 
 const getLastMonthTransactions = async (payload: BasePayload, customerId: string) => {
   const currentDate = new Date()
@@ -93,7 +93,7 @@ export const generateAndSendInvoices = async () => {
       )
       let sent = false
       // if customer have whatsapp number
-      if (whatsAppContact) {
+      if (whatsAppContact && isWhatsAppEnabled()) {
         await sendInvoiceTemplate({
           invoice: newInvoice,
           to: whatsAppContact.contactNumber.replace('+', ''),
