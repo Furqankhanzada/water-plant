@@ -26,6 +26,7 @@ import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
 import { Messages } from './collections/Messages'
 import { Requests } from './collections/Requests'
+import CronService from './services/cron'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -68,14 +69,8 @@ export default buildConfig({
   jobs: {
     autoRun: [
       {
-        cron: '0 * * * *',
-        limit: 10,
-        queue: 'hourly',
-      },
-      {
-        cron: '*/2 * * * *',
-        limit: 10,
-        queue: 'every_2_minutes',
+        cron: '*/5 * * * *',
+        queue: 'default',
       },
     ],
     tasks: [sendEmailTask],
@@ -113,4 +108,8 @@ export default buildConfig({
       },
     }),
   }),
+  onInit: () => {
+    console.log('### onInit ### PayloadCMS initiated ###')
+    new CronService()
+  },
 })
