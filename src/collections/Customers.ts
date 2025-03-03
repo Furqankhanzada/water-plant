@@ -214,12 +214,14 @@ export const Customers: CollectionConfig = {
               admin: {
                 defaultColumns: [
                   'status',
+                  'netTotal',
                   'dueAmount',
                   'paidAmount',
                   'dueAt',
                   'payments',
                   'sent',
                   'pdf',
+                  'sendInvoice',
                 ],
               },
             },
