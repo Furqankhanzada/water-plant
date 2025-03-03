@@ -71,13 +71,11 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
     },
   ])
 
-  console.log('expenses: ', expenses[0].totalExpense)
-
   data.totalIncome = invoices[0].totalIncome
   data.totalDueAmount = customers[0].totalRemainingAmount
   data.totalBottlesDelivered = transactions[0].totalBottlesDelivered
   data.totalExpectedIncome = transactions[0].totalExpectedIncome
-  data.totalExpenses = expenses[0].totalExpense
+  data.totalExpenses = expenses[0]?.totalExpense || 0
 
   return data
 }
