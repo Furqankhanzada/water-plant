@@ -14,7 +14,9 @@ export const Users: CollectionConfig = {
     update: isAdminOrSelf,
     delete: isAdmin,
   },
-  auth: true,
+  auth: {
+    useAPIKey: true,
+  },
   fields: [
     {
       name: 'fullName',
