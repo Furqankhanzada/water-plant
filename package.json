@@ -29,6 +29,7 @@
     "graphql": "^16.8.1",
     "handlebars": "^4.7.8",
     "inline-css": "^4.0.3",
+    "mongoose": "^8.13.2",
     "next": "15.2.3",
     "nodemailer": "^6.10.0",
     "payload": "3.33.0",
