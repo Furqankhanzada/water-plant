@@ -8,6 +8,9 @@ export const changeTransactionsStatusOnRemoval: CollectionBeforeChangeHook = asy
 }) => {
   if (operation !== 'update') return data
 
+  // If the transactions array is not present in the original document, make empty array
+  originalDoc.transactions = originalDoc.transactions || []
+
   if (originalDoc.transactions.length) {
     const deletedTransactions = originalDoc.transactions.filter(
       (otId: string) => !data.transactions.includes(otId),
