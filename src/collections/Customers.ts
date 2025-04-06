@@ -4,6 +4,7 @@ import { isAdmin } from './access/isAdmin'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
+  enableQueryPresets: true,
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'area', 'block', 'rate'],

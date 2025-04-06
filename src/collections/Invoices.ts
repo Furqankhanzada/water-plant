@@ -6,6 +6,7 @@ import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransa
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
+  enableQueryPresets: true,
   hooks: {
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
