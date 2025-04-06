@@ -6,6 +6,7 @@ import { transactionUpdateForCustomer } from '@/hooks/transactions/transactionUp
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
+  enableQueryPresets: true,
   admin: {
     useAsTitle: 'transactionAt',
     defaultColumns: [

@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 
 export const Expenses: CollectionConfig = {
   slug: 'expenses',
+  enableQueryPresets: true,
   admin: {
     defaultColumns: ['title', 'type', 'amount', 'expenseAt'],
   },
