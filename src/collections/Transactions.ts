@@ -2,9 +2,11 @@ import type { CollectionConfig } from 'payload'
 
 import { calculateRemainingBottles } from '@/hooks/transactions/remainingBottles'
 import { calculateTotalHook } from '@/hooks/transactions/total'
+import { transactionUpdateForCustomer } from '@/hooks/transactions/transactionUpdateForCustomer'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
+  enableQueryPresets: true,
   admin: {
     useAsTitle: 'transactionAt',
     defaultColumns: [
@@ -20,7 +22,7 @@ export const Transaction: CollectionConfig = {
   },
   hooks: {
     afterChange: [],
-    beforeChange: [calculateRemainingBottles, calculateTotalHook],
+    beforeChange: [calculateRemainingBottles, calculateTotalHook, transactionUpdateForCustomer],
   },
   fields: [
     {
@@ -54,6 +56,9 @@ export const Transaction: CollectionConfig = {
           value: 'pending',
         },
       ],
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'bottleGiven',
@@ -74,6 +79,14 @@ export const Transaction: CollectionConfig = {
       },
     },
     {
+      name: 'remainingBottles',
+      type: 'number',
+      admin: {
+        readOnly: true,
+        description: 'Bottles at home/office, calculates automaticly based on last transaction',
+      },
+    },
+    {
       name: 'transactionAt',
       type: 'date',
       required: true,
@@ -83,13 +96,6 @@ export const Transaction: CollectionConfig = {
           pickerAppearance: 'dayOnly', // Only show date picker (no time)
           displayFormat: 'd MMM yyyy', // Display date in "29 Dec 2024" format
         },
-      },
-    },
-    {
-      name: 'remainingBottles',
-      type: 'number',
-      admin: {
-        hidden: true,
       },
     },
     {

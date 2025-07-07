@@ -24,9 +24,12 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
       id: {
         not_equals: originalDoc.id,
       },
+      dueAt: {
+        less_than: data.dueAt,
+      },
     },
     limit: 1,
-    sort: '-createdAt',
+    sort: '-dueAt',
     depth: 0,
     select: {
       advanceAmount: true,
@@ -46,11 +49,24 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
     return sum + transaction.total
   }, 0)
 
+  if (data.payments) {
+    data.paidAmount = data.payments.reduce((sum: number, payment: { amount: number }) => {
+      return sum + payment.amount
+    }, 0)
+  }
+
   // Calculate due amount
   data.netTotal = totalAmount
   data.dueAmount = data.netTotal + (data.previousBalance || data.previousAdvanceAmount)
   data.remainingAmount = data.dueAmount - data.paidAmount > 0 ? data.dueAmount - data.paidAmount : 0
   data.advanceAmount = data.dueAmount - data.paidAmount < 0 ? data.dueAmount - data.paidAmount : 0
+
+  if (data.lostBottlesCount && data.lostBottleAmount) {
+    data.lostBottlesTotalAmount = data.lostBottlesCount * data.lostBottleAmount
+    data.dueAmount += data.lostBottlesTotalAmount
+  } else if (data.lostBottlesTotalAmount) {
+    data.lostBottlesTotalAmount = 0
+  }
 
   // Set status based on due amount and paid amount
   if (data.paidAmount === data.dueAmount || data.paidAmount > data.dueAmount) {

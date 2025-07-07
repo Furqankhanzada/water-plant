@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 9,
     paddingTop: 20,
-    paddingBottom: 50,
+    paddingBottom: 63,
     paddingLeft: 20,
     paddingRight: 20,
     flexDirection: 'column',
@@ -60,7 +60,7 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
                     <Text style={{ marginTop: 8, fontFamily: 'Helvetica-BoldOblique' }}>
                       {block.name}
                     </Text>
-                    <Table key={a.id} blockTransactions={blockTransactions} />
+                    <Table key={a.id} blockTransactions={blockTransactions} trip={trip} />
                   </>
                 )
               })}
@@ -73,6 +73,11 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
 }
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+  const fullUrl = `${protocol}://${host}`
+
   const payload = await getPayload({
     config: configPromise,
   })
@@ -84,6 +89,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       areas: true,
       tripAt: true,
       bottles: true,
+      status: true,
     },
     depth: 1,
   })
@@ -112,6 +118,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     },
     select: {
       customer: true,
+      bottleGiven: true,
+      bottleTaken: true,
+      remainingBottles: true,
     },
     depth: 2,
     pagination: false,
@@ -141,7 +150,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
   }
 
-  const qrDataURI = await QRCode.toDataURL(`https://ldw.furqan.codes/invoices/${trip.id}/pdf`)
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
 
   const stream = await renderToStream(
     <TripPDF

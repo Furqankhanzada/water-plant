@@ -31,6 +31,7 @@ const rupee = new Intl.NumberFormat('en-PK', {
 const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
   const rows = invoice.transactions.map((item, i) => {
     item = item as Transaction
+    const rate = isNaN(item.total / item.bottleGiven) ? 0 : item.total / item.bottleGiven
     return (
       <View style={tableStyles.row} key={item.id} break={i === 30}>
         <Text style={[tableStyles.column, styles.description]}>
@@ -39,9 +40,7 @@ const InvoiceTableRow = ({ invoice }: { invoice: Invoice }) => {
         <Text style={[tableStyles.column, styles.qty]}>+{item.bottleGiven}</Text>
         <Text style={[tableStyles.column, styles.qty]}>-{item.bottleTaken}</Text>
         <Text style={[tableStyles.column, styles.qty]}>{item.remainingBottles}</Text>
-        <Text style={[tableStyles.column, styles.rate]}>
-          {rupee.format(item.total / item.bottleGiven)}
-        </Text>
+        <Text style={[tableStyles.column, styles.rate]}>{rupee.format(rate)}</Text>
         <Text style={[tableStyles.column, styles.amount]}>{rupee.format(item.total)}</Text>
       </View>
     )

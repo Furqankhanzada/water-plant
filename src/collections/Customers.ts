@@ -4,6 +4,7 @@ import { isAdmin } from './access/isAdmin'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
+  enableQueryPresets: true,
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
@@ -26,6 +27,10 @@ export const Customers: CollectionConfig = {
                   name: 'name',
                   type: 'text',
                   required: true,
+                },
+                {
+                  name: 'email',
+                  type: 'email',
                 },
               ],
             },
@@ -131,6 +136,16 @@ export const Customers: CollectionConfig = {
               },
               fields: [
                 {
+                  name: 'type',
+                  type: 'select',
+                  options: [
+                    {
+                      label: 'WhatsApp',
+                      value: 'whatsapp',
+                    },
+                  ],
+                },
+                {
                   name: 'contactNumber',
                   type: 'text',
                   required: true,
@@ -196,9 +211,19 @@ export const Customers: CollectionConfig = {
               type: 'join',
               on: 'customer',
               collection: 'invoice',
-              defaultSort: '-createdAt',
+              defaultSort: '-dueAt',
               admin: {
-                defaultColumns: ['status', 'dueAmount', 'paidAmount', 'createdAt', 'pdf'],
+                defaultColumns: [
+                  'status',
+                  'netTotal',
+                  'dueAmount',
+                  'paidAmount',
+                  'dueAt',
+                  'payments',
+                  'sent',
+                  'pdf',
+                  'sendInvoice',
+                ],
               },
             },
           ],

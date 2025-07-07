@@ -6,6 +6,7 @@ import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransa
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
+  enableQueryPresets: true,
   admin: {
     useAsTitle: 'tripAt',
     defaultColumns: ['tripAt', 'from', 'areas', 'bottles', 'employee', 'status', 'pdf'],
