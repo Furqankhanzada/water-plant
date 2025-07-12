@@ -1,5 +1,4 @@
 import Handlebars from 'handlebars'
-import inlineCSS from 'inline-css'
 import path from 'path'
 import fs from 'fs'
 

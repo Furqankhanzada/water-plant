@@ -14,7 +14,7 @@ export const Reports: CollectionConfig = {
   admin: {
     defaultColumns: [
       'month',
-      'totalIncome',
+      'totalCollection',
       'totalExpenses',
       'totalBottlesDelivered',
       'totalExpectedIncome',
@@ -42,13 +42,13 @@ export const Reports: CollectionConfig = {
       },
     },
     {
-      name: 'totalIncome',
+      name: 'totalCollection',
       type: 'text',
       defaultValue: 0,
       hooks: {
         afterRead: [
           ({ data }) => {
-            return rupee.format(data?.totalIncome)
+            return rupee.format(data?.totalCollection)
           },
         ],
       },
