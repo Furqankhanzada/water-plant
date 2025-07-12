@@ -384,7 +384,7 @@ export interface Media {
 export interface Report {
   id: string;
   month?: string | null;
-  totalIncome?: string | null;
+  totalCollection?: string | null;
   totalExpenses?: string | null;
   totalBottlesDelivered?: number | null;
   totalExpectedIncome?: string | null;
@@ -873,7 +873,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ReportsSelect<T extends boolean = true> {
   month?: T;
-  totalIncome?: T;
+  totalCollection?: T;
   totalExpenses?: T;
   totalBottlesDelivered?: T;
   totalExpectedIncome?: T;
