@@ -8,6 +8,9 @@ export const Transaction: CollectionConfig = {
   slug: 'transaction',
   enableQueryPresets: true,
   admin: {
+    pagination: {
+      defaultLimit: 50,
+    },
     useAsTitle: 'transactionAt',
     defaultColumns: [
       'transactionAt',

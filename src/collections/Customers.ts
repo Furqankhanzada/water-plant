@@ -120,6 +120,14 @@ export const Customers: CollectionConfig = {
                     placeholder: 'Enter number of bottles at home',
                   },
                 },
+                {
+                  name: 'deliveryFrequencyDays',
+                  type: 'number',
+                  defaultValue: 6,
+                  admin: {
+                    placeholder: 'Enter number of delivery frequency days',
+                  },
+                },
               ],
             },
             {

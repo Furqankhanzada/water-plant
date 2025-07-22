@@ -20,7 +20,7 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   return (
     <html>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
+      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)} suppressHydrationWarning>
         {children}
       </body>
     </html>

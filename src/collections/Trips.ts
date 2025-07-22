@@ -33,6 +33,13 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
+          name: 'blocks',
+          label: 'Blocks',
+          type: 'relationship',
+          relationTo: 'blocks',
+          hasMany: true,
+        },
+        {
           name: 'bottles',
           type: 'number',
           required: true,
