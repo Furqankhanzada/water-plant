@@ -123,7 +123,7 @@ export const Customers: CollectionConfig = {
                 {
                   name: 'deliveryFrequencyDays',
                   type: 'number',
-                  defaultValue: 6,
+                  defaultValue: 4,
                   admin: {
                     placeholder: 'Enter number of delivery frequency days',
                   },

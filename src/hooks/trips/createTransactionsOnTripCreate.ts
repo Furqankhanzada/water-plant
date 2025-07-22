@@ -12,7 +12,7 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
     typeof b === 'string' ? new Types.ObjectId(b) : new Types.ObjectId(b.id)
   );
 
-  const deliveryFrequencyDays = 6;
+  const deliveryFrequencyDays = 4;
   const now = new Date();
 
   const match: Record<string, any> = {
