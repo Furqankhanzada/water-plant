@@ -32,6 +32,9 @@ export const Transaction: CollectionConfig = {
       name: 'trip',
       type: 'relationship',
       relationTo: 'trips',
+      admin: {
+        sortOptions: '-tripAt',
+      }
     },
     {
       name: 'customer',
