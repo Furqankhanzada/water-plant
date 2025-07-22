@@ -1,6 +1,6 @@
 import type { BasePayload, CollectionAfterOperationHook } from 'payload';
 import { Types } from 'mongoose';
-import { Trip } from '@/payload-types'
+import { Trip } from '@/payload-types';
 
 export const generateTripCustomers = async (trip: Trip, payload: BasePayload) => {
 
