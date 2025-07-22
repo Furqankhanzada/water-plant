@@ -268,6 +268,7 @@ export interface Transaction {
   id: string;
   trip?: (string | null) | Trip;
   customer: string | Customer;
+  lastDelivered?: number | null;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
@@ -828,6 +829,7 @@ export interface EmployeeSelect<T extends boolean = true> {
 export interface TransactionSelect<T extends boolean = true> {
   trip?: T;
   customer?: T;
+  lastDelivered?: T;
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;

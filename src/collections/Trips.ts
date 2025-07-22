@@ -127,6 +127,18 @@ export const Trips: CollectionConfig = {
       collection: 'transaction',
       defaultLimit: 1000,
       defaultSort: 'transactionAt',
+      admin: {
+        defaultColumns: [
+          'transactionAt',
+          'customer',
+          'bottleGiven',
+          'bottleTaken',
+          'remainingBottles',
+          'lastDeliverd',
+          'total',
+          'status',
+        ],
+      }
     },
   ],
 }

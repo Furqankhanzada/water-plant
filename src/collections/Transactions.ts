@@ -43,6 +43,17 @@ export const Transaction: CollectionConfig = {
       required: true,
     },
     {
+      name: 'lastDelivered',
+      type: 'number',
+      virtual: true,
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/DeliveryDayCell'
+        }
+      }
+    },
+    {
       name: 'status',
       label: 'Transaction Status',
       type: 'select',
