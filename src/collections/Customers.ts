@@ -54,6 +54,7 @@ export const Customers: CollectionConfig = {
                   relationTo: 'blocks',
                   required: true,
                   filterOptions: ({ data }) => {
+                    if (!data.area) return true
                     return {
                       area: { equals: data.area || '' },
                     }
