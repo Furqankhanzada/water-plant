@@ -8,6 +8,9 @@ export const Transaction: CollectionConfig = {
   slug: 'transaction',
   enableQueryPresets: true,
   admin: {
+    pagination: {
+      defaultLimit: 50,
+    },
     useAsTitle: 'transactionAt',
     defaultColumns: [
       'transactionAt',
@@ -29,12 +32,26 @@ export const Transaction: CollectionConfig = {
       name: 'trip',
       type: 'relationship',
       relationTo: 'trips',
+      admin: {
+        sortOptions: '-tripAt',
+      }
     },
     {
       name: 'customer',
       type: 'relationship',
       relationTo: 'customers',
       required: true,
+    },
+    {
+      name: 'lastDelivered',
+      type: 'number',
+      virtual: true,
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/LastDeliveredCell'
+        }
+      }
     },
     {
       name: 'status',

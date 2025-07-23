@@ -54,6 +54,7 @@ export const Customers: CollectionConfig = {
                   relationTo: 'blocks',
                   required: true,
                   filterOptions: ({ data }) => {
+                    if (!data.area) return true
                     return {
                       area: { equals: data.area || '' },
                     }
@@ -118,6 +119,14 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter number of bottles at home',
+                  },
+                },
+                {
+                  name: 'deliveryFrequencyDays',
+                  type: 'number',
+                  defaultValue: 4,
+                  admin: {
+                    placeholder: 'Enter number of delivery frequency days',
                   },
                 },
               ],

@@ -33,6 +33,13 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
+          name: 'blocks',
+          label: 'Blocks',
+          type: 'relationship',
+          relationTo: 'blocks',
+          hasMany: true,
+        },
+        {
           name: 'bottles',
           type: 'number',
           required: true,
@@ -120,6 +127,18 @@ export const Trips: CollectionConfig = {
       collection: 'transaction',
       defaultLimit: 1000,
       defaultSort: 'transactionAt',
+      admin: {
+        defaultColumns: [
+          'transactionAt',
+          'customer',
+          'bottleGiven',
+          'bottleTaken',
+          'remainingBottles',
+          'lastDelivered',
+          'total',
+          'status',
+        ],
+      }
     },
   ],
 }

@@ -183,6 +183,13 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
 }
 /**
@@ -201,6 +208,7 @@ export interface Customer {
   advance?: number | null;
   status: 'active' | 'archive';
   bottlesAtHome?: number | null;
+  deliveryFrequencyDays?: number | null;
   contactNumbers?:
     | {
         type?: 'whatsapp' | null;
@@ -260,6 +268,7 @@ export interface Transaction {
   id: string;
   trip?: (string | null) | Trip;
   customer: string | Customer;
+  lastDelivered?: number | null;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
@@ -280,6 +289,7 @@ export interface Trip {
   id: string;
   from: string;
   areas: (string | Area)[];
+  blocks?: (string | Block)[] | null;
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
@@ -701,6 +711,10 @@ export interface PayloadQueryPreset {
     | boolean
     | null;
   relatedCollection: 'customers' | 'trips' | 'transaction' | 'invoice' | 'expenses';
+  /**
+   * This is a tempoary field used to determine if updating the preset would remove the user's access to it. When `true`, this record will be deleted after running the preset's `validate` function.
+   */
+  isTemp?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -723,6 +737,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -739,6 +760,7 @@ export interface CustomersSelect<T extends boolean = true> {
   advance?: T;
   status?: T;
   bottlesAtHome?: T;
+  deliveryFrequencyDays?: T;
   contactNumbers?:
     | T
     | {
@@ -779,6 +801,7 @@ export interface BlocksSelect<T extends boolean = true> {
 export interface TripsSelect<T extends boolean = true> {
   from?: T;
   areas?: T;
+  blocks?: T;
   bottles?: T;
   tripAt?: T;
   employee?: T;
@@ -806,6 +829,7 @@ export interface EmployeeSelect<T extends boolean = true> {
 export interface TransactionSelect<T extends boolean = true> {
   trip?: T;
   customer?: T;
+  lastDelivered?: T;
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;
@@ -1016,6 +1040,7 @@ export interface PayloadQueryPresetsSelect<T extends boolean = true> {
   where?: T;
   columns?: T;
   relatedCollection?: T;
+  isTemp?: T;
   updatedAt?: T;
   createdAt?: T;
 }
