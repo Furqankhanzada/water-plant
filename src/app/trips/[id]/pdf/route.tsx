@@ -1,13 +1,15 @@
 import { Page, Document, Text, Image, StyleSheet, renderToStream } from '@react-pdf/renderer'
 import { NextResponse } from 'next/server'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { BasePayload, getPayload } from 'payload'
 import { format } from 'date-fns'
 import QRCode from 'qrcode'
 
 import TripInfo from './(components)/TripInfo'
 import Table from './(components)/Table'
-import { Area, Block, Customer, Invoice, Transaction, Trip } from '@/payload-types'
+import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
+import { Types } from 'mongoose';
+import { normalizeIds } from '@/lib/utils'
 
 const styles = StyleSheet.create({
   page: {
@@ -35,8 +37,9 @@ interface TripProps {
   blocks: Partial<Block>[]
 }
 
+
 const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
-  const areas = trip.areas as Area[]
+  const areas = trip.areas as Area[];
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -72,98 +75,152 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
   )
 }
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
-  const protocol = request.headers.get('x-forwarded-proto') || 'https'
-
-  const fullUrl = `${protocol}://${host}`
-
-  const payload = await getPayload({
-    config: configPromise,
-  })
-
+export const generateTripReport = async (tripId: string, payload: BasePayload) => {
+  // 1. Fetch trip
   const trip = await payload.findByID({
     collection: 'trips',
-    id: (await params).id,
+    id: tripId,
     select: {
       areas: true,
       tripAt: true,
+      blocks: true,
       bottles: true,
       status: true,
     },
     depth: 1,
-  })
+  });
 
-  const blocks = await payload.find({
+  // 2. Fetch relevant blocks
+  const areaIds = trip.areas.map(a => typeof a === 'string' ? a : a.id);
+  const blockIds = (trip.blocks || []).map(b => typeof b === 'string' ? b : b.id);
+
+  const blockWhere: Record<string, { in: string[] }> = {
+    area: { in: areaIds },
+  };
+  if (blockIds && blockIds?.length) blockWhere.id = { in: blockIds };
+
+  const blocksPromise = payload.find({
     collection: 'blocks',
-    where: {
-      area: {
-        in: trip.areas.map((a) => (typeof a === 'string' ? a : a.id)),
-      },
-    },
-    select: {
-      name: true,
-      area: true,
-    },
+    where: blockWhere,
+    select: { name: true, area: true },
     depth: 0,
     pagination: false,
-  })
+  });
 
-  const transactions = await payload.find({
-    collection: 'transaction',
-    where: {
-      trip: {
-        equals: trip.id,
+  // 3. Aggregation to fetch enriched transactions
+  const transactionsPromise = payload.db.collections['transaction'].aggregate([
+    { $match: { trip: new Types.ObjectId(tripId) } },
+
+    // Lookup customer
+    {
+      $lookup: {
+        from: 'customers',
+        localField: 'customer',
+        foreignField: '_id',
+        as: 'customer',
       },
     },
-    select: {
-      customer: true,
-      bottleGiven: true,
-      bottleTaken: true,
-      remainingBottles: true,
+    { $unwind: '$customer' },
+
+    // Lookup customer's block (optional)
+    {
+      $lookup: {
+        from: 'blocks',
+        localField: 'customer.block',
+        foreignField: '_id',
+        as: 'customer.block',
+      },
     },
-    depth: 2,
-    pagination: false,
-  })
+    { $unwind: { path: '$customer.block', preserveNullAndEmptyArrays: true } },
 
-  for (const transaction of transactions.docs) {
-    const customer = transaction.customer as Customer
-    const invoices = await payload.find({
-      collection: 'invoice',
-      where: {
-        customer: {
-          equals: customer.id,
-        },
+    // Lookup latest invoice for customer
+    {
+      $lookup: {
+        from: 'invoices',
+        let: { customerId: '$customer._id' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$customer', '$$customerId'] } } },
+          { $sort: { createdAt: -1 } },
+          { $limit: 1 },
+          { $project: { status: 1, advanceAmount: 1, remainingAmount: 1, dueAmount: 1 } },
+        ],
+        as: 'customer.invoice.docs',
       },
-      limit: 1,
-      sort: '-createdAt',
-      select: {
-        status: true,
-        advanceAmount: true,
-        remainingAmount: true,
-        dueAmount: true,
-      },
-      pagination: false,
-    })
-    if (customer.invoice) {
-      customer.invoice.docs = invoices.docs as Invoice[]
-    }
-  }
+    },
 
-  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
+    // Lookup latest transaction for customer (across all trips)
+    {
+      $lookup: {
+        from: 'transactions',
+        let: { customerId: '$customer._id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$customer', '$$customerId'] },
+                  { $gt: ['$bottleGiven', 0] },
+                ],
+              },
+            },
+          },
+          { $sort: { transactionAt: -1 } },
+          { $limit: 1 },
+        ],
+        as: 'customer.latestTransaction',
+      },
+    },
+    { $unwind: { path: '$customer.latestTransaction', preserveNullAndEmptyArrays: true } },
+
+    // Optional: project only required fields
+    {
+      $project: {
+        customer: 1,
+        bottleGiven: 1,
+        bottleTaken: 1,
+        remainingBottles: 1,
+      },
+    },
+  ]);
+
+  const [blocks, transactions] = await Promise.all([blocksPromise, transactionsPromise]);
+  const data = {
+    trip,
+    blocks: blocks.docs,
+    transactions: normalizeIds(transactions),
+  };
+  return data;
+};
+
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('url');
+  const protocol = request.headers.get('x-forwarded-proto') || 'https';
+  const fullUrl = `${protocol}://${host}`;
+
+  const payload = await getPayload({
+    config: configPromise,
+  });
+
+  const tripId = (await params).id;
+
+  const { trip, transactions, blocks } = await generateTripReport(tripId, payload);
+
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`);
 
   const stream = await renderToStream(
     <TripPDF
       trip={trip}
-      transactions={transactions.docs}
-      blocks={blocks.docs}
+      transactions={transactions}
+      blocks={blocks}
       qrDataURI={qrDataURI}
     />,
-  )
-  const response = new NextResponse(stream as unknown as ReadableStream)
+  );
+
+  const response = new NextResponse(stream as unknown as ReadableStream);
   response.headers.set(
     'Content-disposition',
     `inline; filename="trip-at-${format(trip.tripAt, 'dd-MM-yyyy')}.pdf"`,
-  )
-  return response
+  );
+
+  return response;
 }
