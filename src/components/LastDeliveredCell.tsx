@@ -1,12 +1,13 @@
 import { DefaultServerCellComponentProps } from 'payload'
 import { getTimeAgo } from '@/lib/utils'
 
-const LastDeliveredCell = async ({ rowData, payload }: DefaultServerCellComponentProps) => {
+const LastDeliveredCell = async ({ rowData, payload, collectionSlug }: DefaultServerCellComponentProps) => {
+  const customerId = collectionSlug === 'customers' ? rowData.id : rowData.customer; 
   const transactionAt = (await payload.find({
     collection: 'transaction',
     where: {
       customer: {
-        equals: rowData.customer,
+        equals: customerId,
       },
       bottleGiven: {
         greater_than: 0,

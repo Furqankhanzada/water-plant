@@ -7,13 +7,24 @@ export const Customers: CollectionConfig = {
   enableQueryPresets: true,
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
+    defaultColumns: ['name', 'address', 'lastDelivered', 'area', 'block', 'rate'],
     listSearchableFields: ['name', 'address'],
   },
   access: {
     delete: isAdmin,
   },
   fields: [
+    {
+      name: 'lastDelivered',
+      type: 'number',
+      virtual: true,
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/LastDeliveredCell'
+        }
+      }
+    },
     {
       type: 'tabs',
       tabs: [
