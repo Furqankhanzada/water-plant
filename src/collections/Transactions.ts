@@ -49,7 +49,7 @@ export const Transaction: CollectionConfig = {
       admin: {
         hidden: true,
         components: {
-          Cell: '/components/DeliveryDayCell'
+          Cell: '/components/LastDeliveredCell'
         }
       }
     },

@@ -1,7 +1,7 @@
 import { DefaultServerCellComponentProps } from 'payload'
 import { getTimeAgo } from '@/lib/utils'
 
-const DeliveryDayCell = async ({ rowData, payload }: DefaultServerCellComponentProps) => {
+const LastDeliveredCell = async ({ rowData, payload }: DefaultServerCellComponentProps) => {
   const transactionAt = (await payload.find({
     collection: 'transaction',
     where: {
@@ -26,4 +26,4 @@ const DeliveryDayCell = async ({ rowData, payload }: DefaultServerCellComponentP
   )
 };
 
-export default DeliveryDayCell;
+export default LastDeliveredCell;
