@@ -134,7 +134,7 @@ export const Trips: CollectionConfig = {
           'bottleGiven',
           'bottleTaken',
           'remainingBottles',
-          'lastDeliverd',
+          'lastDelivered',
           'total',
           'status',
         ],

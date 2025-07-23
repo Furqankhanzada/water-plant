@@ -7,26 +7,29 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   name: {
-    width: '20%',
+    width: '15%',
   },
   address: {
     width: '20%',
   },
   delivered: {
-    width: '10%',
+    width: '9%',
   },
   returned: {
-    width: '10%',
+    width: '9%',
   },
   remaining: {
     width: '10%',
   },
   paymentReceived: {
-    width: '15%',
+    width: '13%',
   },
   paymentDue: {
-    width: '15%',
+    width: '13%',
   },
+  lastDelivered: {
+    width: '12%',
+  }
 })
 
 const TableHeader = () => (
@@ -39,7 +42,8 @@ const TableHeader = () => (
     <Text style={[tableStyles.column, tableStyles.bold, styles.paymentReceived]}>
       Payment Received
     </Text>
-    <Text style={[tableStyles.column, tableStyles.bold, styles.paymentReceived]}>Payment Due</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.paymentDue]}>Payment Due</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.lastDelivered]}>Last Delivered</Text>
   </View>
 )
 
