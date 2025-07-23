@@ -86,7 +86,7 @@ const TableRow = ({
           {trip.status !== 'complete' ? '' : transaction.bottleTaken}
         </Text>
         <Text style={[tableStyles.column, styles.remaining]}>
-          {trip.status !== 'complete' ? '' : transaction.remainingBottles}
+          {trip.status !== 'complete' ? customer.bottlesAtHome : transaction.remainingBottles}
         </Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
         <Text style={[tableStyles.column, styles.paymentDue]}>{rupee.format(paymentDue)}</Text>

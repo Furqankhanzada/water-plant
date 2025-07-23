@@ -198,6 +198,7 @@ export interface User {
  */
 export interface Customer {
   id: string;
+  lastDelivered?: number | null;
   name: string;
   email?: string | null;
   address?: string | null;
@@ -750,6 +751,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "customers_select".
  */
 export interface CustomersSelect<T extends boolean = true> {
+  lastDelivered?: T;
   name?: T;
   email?: T;
   address?: T;
