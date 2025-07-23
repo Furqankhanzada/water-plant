@@ -33,6 +33,20 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
+          name: 'blocks',
+          label: 'Blocks',
+          type: 'relationship',
+          relationTo: 'blocks',
+          hasMany: true,
+          filterOptions: ({ data }) => {
+            console.log('data', data)
+            if (!data.areas) return true
+            return {
+              area: { in: data.areas || '' },
+            }
+          },
+        },
+        {
           name: 'bottles',
           type: 'number',
           required: true,
@@ -120,6 +134,18 @@ export const Trips: CollectionConfig = {
       collection: 'transaction',
       defaultLimit: 1000,
       defaultSort: 'transactionAt',
+      admin: {
+        defaultColumns: [
+          'transactionAt',
+          'customer',
+          'bottleGiven',
+          'bottleTaken',
+          'remainingBottles',
+          'lastDelivered',
+          'total',
+          'status',
+        ],
+      }
     },
   ],
 }
