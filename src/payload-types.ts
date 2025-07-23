@@ -208,6 +208,7 @@ export interface Customer {
   advance?: number | null;
   status: 'active' | 'archive';
   bottlesAtHome?: number | null;
+  deliveryFrequencyDays?: number | null;
   contactNumbers?:
     | {
         type?: 'whatsapp' | null;
@@ -267,6 +268,7 @@ export interface Transaction {
   id: string;
   trip?: (string | null) | Trip;
   customer: string | Customer;
+  lastDelivered?: number | null;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
   bottleTaken: number;
@@ -287,6 +289,7 @@ export interface Trip {
   id: string;
   from: string;
   areas: (string | Area)[];
+  blocks?: (string | Block)[] | null;
   bottles: number;
   tripAt: string;
   employee: (string | Employee)[];
@@ -757,6 +760,7 @@ export interface CustomersSelect<T extends boolean = true> {
   advance?: T;
   status?: T;
   bottlesAtHome?: T;
+  deliveryFrequencyDays?: T;
   contactNumbers?:
     | T
     | {
@@ -797,6 +801,7 @@ export interface BlocksSelect<T extends boolean = true> {
 export interface TripsSelect<T extends boolean = true> {
   from?: T;
   areas?: T;
+  blocks?: T;
   bottles?: T;
   tripAt?: T;
   employee?: T;
@@ -824,6 +829,7 @@ export interface EmployeeSelect<T extends boolean = true> {
 export interface TransactionSelect<T extends boolean = true> {
   trip?: T;
   customer?: T;
+  lastDelivered?: T;
   status?: T;
   bottleGiven?: T;
   bottleTaken?: T;
