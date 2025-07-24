@@ -75,7 +75,7 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
   )
 }
 
-export const generateTripReport = async (tripId: string, payload: BasePayload) => {
+const generateTripReport = async (tripId: string, payload: BasePayload) => {
   // 1. Fetch trip
   const trip = await payload.findByID({
     collection: 'trips',
