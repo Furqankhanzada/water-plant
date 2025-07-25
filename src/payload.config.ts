@@ -2,7 +2,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, Migration } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import nodemailer from 'nodemailer'
@@ -27,6 +27,8 @@ import { Expenses } from './collections/Expenses'
 import { Messages } from './collections/Messages'
 import { Requests } from './collections/Requests'
 import CronService from './services/cron'
+import { migrations } from './migrations'
+
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -82,6 +84,7 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+    prodMigrations: migrations as Migration[],
   }),
   sharp,
   plugins: [
