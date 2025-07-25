@@ -3,7 +3,7 @@ import { formatDistanceWithFallback } from '@/lib/utils'
 
 const LastDeliveredCell = async ({ rowData, payload, collectionSlug }: DefaultServerCellComponentProps) => {
   const customerId = collectionSlug === 'customers' ? rowData.id : rowData.customer;
-  const transactionAt = (await payload.find({
+  const lastTransactionAt = (await payload.find({
     collection: 'transaction',
     where: {
       customer: {
@@ -22,7 +22,7 @@ const LastDeliveredCell = async ({ rowData, payload, collectionSlug }: DefaultSe
 
   return (
     <div>
-      {formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' })}
+      {formatDistanceWithFallback(lastTransactionAt, { fallback: 'Never Delivered' })}
     </div>
   )
 };
