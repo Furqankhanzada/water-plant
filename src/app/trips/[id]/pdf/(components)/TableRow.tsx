@@ -3,7 +3,7 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer'
 
 import { Customer, Invoice, Transaction, Trip } from '@/payload-types'
 import { tableStyles } from './Table'
-import { getTimeAgo } from '@/lib/utils'
+import { formatDistanceWithFallback } from '@/lib/utils'
 
 const styles = StyleSheet.create({
   name: {
@@ -73,7 +73,7 @@ const TableRow = ({
     }
 
     const transactionAt = customer.latestTransaction?.transactionAt;
-    const lastDelivered = getTimeAgo(transactionAt);
+    const lastDelivered = formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' });
 
     return (
       <View style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]} key={customer.id}>

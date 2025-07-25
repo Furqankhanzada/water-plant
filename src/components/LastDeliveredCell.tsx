@@ -1,8 +1,8 @@
 import { DefaultServerCellComponentProps } from 'payload'
-import { getTimeAgo } from '@/lib/utils'
+import { formatDistanceWithFallback } from '@/lib/utils'
 
 const LastDeliveredCell = async ({ rowData, payload, collectionSlug }: DefaultServerCellComponentProps) => {
-  const customerId = collectionSlug === 'customers' ? rowData.id : rowData.customer; 
+  const customerId = collectionSlug === 'customers' ? rowData.id : rowData.customer;
   const transactionAt = (await payload.find({
     collection: 'transaction',
     where: {
@@ -22,7 +22,7 @@ const LastDeliveredCell = async ({ rowData, payload, collectionSlug }: DefaultSe
 
   return (
     <div>
-      {getTimeAgo(transactionAt)}
+      {formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' })}
     </div>
   )
 };
