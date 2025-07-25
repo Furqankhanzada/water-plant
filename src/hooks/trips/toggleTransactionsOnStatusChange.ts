@@ -1,5 +1,5 @@
 import type { CollectionBeforeChangeHook } from 'payload'
-import { generateTripCustomers, insertCustomersTransactions } from './utils';
+import { generateTripCustomers, insertCustomersTransactions } from '../../aggregations/trips';
 
 export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = async ({
   data,
