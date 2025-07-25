@@ -37,14 +37,24 @@ export const Info = async (props: ServerComponentProps & { rowData: { id: string
       },
     },
     {
+      $lookup: {
+        from: 'customers',
+        localField: 'customer',
+        foreignField: '_id',
+        as: 'customer',
+      },
+    },
+    { $unwind: '$customer' },
+    {
       $group: {
         _id: '$trip',
+        expectedBottlesToDeliver: { $sum: '$customer.bottlesAtHome' },
         totalBottlesCounts: { $sum: '$bottleGiven' },
         totalAmount: { $sum: '$total' },
         totalCustomers: { $sum: 1 },
       },
     },
-  ])
+  ]);
 
   return (
     <div
@@ -59,7 +69,8 @@ export const Info = async (props: ServerComponentProps & { rowData: { id: string
           <div key={transaction._id}>
             <i>Trip Summary:</i> <b>{transaction.totalBottlesCounts}</b> bottles distributed to{' '}
             <b>{transaction.totalCustomers}</b> customers, totaling{' '}
-            <b>{rupee.format(transaction.totalAmount)}</b>.
+            <b>{rupee.format(transaction.totalAmount)}</b>. Expected bottles to deliver:{' '}
+            <b>{transaction.expectedBottlesToDeliver}</b>
           </div>
         )
       })}
