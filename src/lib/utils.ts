@@ -19,14 +19,6 @@ export function formatDistanceWithFallback(
   return formatDistance(new Date(date), now, { addSuffix: true, ...otherOptions });
 }
 
-export function isValidDate(val: unknown): boolean {
-  if (typeof val === 'string' || val instanceof Date) {
-    const date = new Date(val);
-    return !isNaN(date.getTime());
-  }
-  return false;
-}
-
 export function normalizeIds(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(normalizeIds);
@@ -39,7 +31,7 @@ export function normalizeIds(obj: any): any {
       if (Types.ObjectId.isValid(val) && String(val) === val.toString()) {
         newObj[key === '_id' ? 'id' : key] = isNaN(val) ? val.toString() : val;
       } else {
-        newObj[key === '_id' ? 'id' : key] = isValidDate(val) ? val : normalizeIds(val);
+        newObj[key === '_id' ? 'id' : key] = isValid(val) ? val : normalizeIds(val);
       }
     }
     return newObj;
