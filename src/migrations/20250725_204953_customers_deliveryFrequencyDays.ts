@@ -25,7 +25,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     },
     {
       $unset: {
-        deliveryFrequencyDays: 4,
+        deliveryFrequencyDays: '',
       },
     },
   )
