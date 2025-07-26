@@ -39,7 +39,6 @@ export const Trips: CollectionConfig = {
           relationTo: 'blocks',
           hasMany: true,
           filterOptions: ({ data }) => {
-            console.log('data', data)
             if (!data.areas) return true
             return {
               area: { in: data.areas || '' },
