@@ -240,5 +240,9 @@ export const insertCustomersTransactions = async (tripCustomers: any[], tripResu
     transactionAt: new Date(tripResult.tripAt).toISOString(),
   }));
 
-  await payload.db.collections['transaction'].insertMany(transactions);
+  try {
+    await payload.db.collections['transaction'].insertMany(transactions);
+  } catch (error) {
+    throw new Error(`Failed to insert customer transactions for trip ${tripResult.id}: ${error}`);
+  }
 }
