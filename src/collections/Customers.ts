@@ -19,6 +19,7 @@ export const Customers: CollectionConfig = {
       type: 'number',
       virtual: true,
       admin: {
+        disableListFilter: true,
         hidden: true,
         components: {
           Cell: '/components/LastDeliveredCell'
@@ -64,8 +65,8 @@ export const Customers: CollectionConfig = {
                   type: 'relationship',
                   relationTo: 'blocks',
                   required: true,
-                  filterOptions: ({ data }) => {
-                    if (!data.area) return true
+                  filterOptions: ({ data, req: { pathname } }) => {
+                    if (pathname.split('/').pop() === 'customers') return true
                     return {
                       area: { equals: data.area || '' },
                     }

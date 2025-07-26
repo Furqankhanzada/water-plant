@@ -38,8 +38,8 @@ export const Trips: CollectionConfig = {
           type: 'relationship',
           relationTo: 'blocks',
           hasMany: true,
-          filterOptions: ({ data }) => {
-            if (!data.areas) return true
+          filterOptions: ({ data, req: { pathname } }) => {
+            if (pathname.split('/').pop() === 'trips') return true
             return {
               area: { in: data.areas || '' },
             }
