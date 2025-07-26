@@ -13,7 +13,6 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
     typeof b === 'string' ? new Types.ObjectId(b) : new Types.ObjectId(b.id)
   );
 
-  const deliveryFrequencyDays = 4;
   const now = new Date();
 
   const match: Record<string, any> = {
@@ -90,9 +89,7 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
                         1000 * 60 * 60 * 24,
                       ],
                     },
-                    {
-                      $ifNull: ['$deliveryFrequencyDays', deliveryFrequencyDays] // 👈 fallback to default
-                    }
+                    '$deliveryFrequencyDays'
                   ],
                 },
               ],
