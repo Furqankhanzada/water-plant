@@ -1,7 +1,6 @@
 import type { BasePayload } from 'payload';
 import { Types } from 'mongoose';
 import { Trip } from '@/payload-types';
-import { normalizeIds } from '@/lib/utils';
 
 export const generateTripCustomers = async (trip: Trip, payload: BasePayload) => {
 
@@ -38,12 +37,7 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
               $expr: {
                 $and: [
                   { $eq: ['$customer', '$$customerId'] },
-                  {
-                    $or: [
-                      { $gt: ['$bottleGiven', 0] },
-                      { $gt: ['$bottleTaken', 0] }
-                    ]
-                  }
+                  { $gt: ['$bottleGiven', 0] }
                 ]
               }
             }
@@ -107,7 +101,6 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
     },
   ]);
 
-  console.log(`Customers needing delivery: ${customers.length}`, customers);
   return customers;
 
 }
@@ -155,6 +148,9 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
         localField: 'customer',
         foreignField: '_id',
         as: 'customer',
+        pipeline: [
+          { $addFields: { id: { $toString: '$_id' } } },
+        ]
       },
     },
     { $unwind: '$customer' },
@@ -166,6 +162,9 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
         localField: 'customer.block',
         foreignField: '_id',
         as: 'customer.block',
+        pipeline: [
+          { $addFields: { id: { $toString: '$_id' } } },
+        ]
       },
     },
     { $unwind: { path: '$customer.block', preserveNullAndEmptyArrays: true } },
@@ -179,7 +178,8 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
           { $match: { $expr: { $eq: ['$customer', '$$customerId'] } } },
           { $sort: { createdAt: -1 } },
           { $limit: 1 },
-          { $project: { status: 1, advanceAmount: 1, remainingAmount: 1, dueAmount: 1 } },
+          { $addFields: { id: { $toString: '$_id' } } },
+          { $project: { status: 1, advanceAmount: 1, remainingAmount: 1, dueAmount: 1, id: 1 } },
         ],
         as: 'customer.invoice.docs',
       },
@@ -203,15 +203,22 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
           },
           { $sort: { transactionAt: -1 } },
           { $limit: 1 },
+          { $addFields: { id: { $toString: '$_id' } } },
         ],
         as: 'customer.latestTransaction',
       },
     },
     { $unwind: { path: '$customer.latestTransaction', preserveNullAndEmptyArrays: true } },
+    {
+      $addFields: {
+        id: { $toString: '$_id' },
+      }
+    },
 
     // Optional: project only required fields
     {
       $project: {
+        id: 1,
         customer: 1,
         bottleGiven: 1,
         bottleTaken: 1,
@@ -224,7 +231,7 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
   const data = {
     trip,
     blocks: blocks.docs,
-    transactions: normalizeIds(transactions),
+    transactions,
   };
   return data;
 };
