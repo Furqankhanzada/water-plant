@@ -1,5 +1,4 @@
 import { isValid, formatDistance, FormatDistanceOptions } from 'date-fns'
-import { Types } from 'mongoose';
 
 type FormatDistanceWithFallbackOptions = FormatDistanceOptions & {
   fallback: string;

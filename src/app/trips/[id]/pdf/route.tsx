@@ -86,7 +86,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const { trip, transactions, blocks } = await generateTripReport(tripId, payload)
 
-  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/trips/${trip.id}/pdf`)
 
   const stream = await renderToStream(
     <TripPDF trip={trip} transactions={transactions} blocks={blocks} qrDataURI={qrDataURI} />,
