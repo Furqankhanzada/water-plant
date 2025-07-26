@@ -1,6 +1,6 @@
 import type { BasePayload } from 'payload';
 import { Types } from 'mongoose';
-import { Trip } from '@/payload-types';
+import { Trip, Transaction } from '@/payload-types';
 
 export const generateTripCustomers = async (trip: Trip, payload: BasePayload) => {
 
@@ -55,7 +55,9 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
       },
     },
     {
+
       $addFields: {
+        id: { $toString: '$_id' },
         lastDeliveredDaysAgo: {
           $cond: {
             if: { $gt: ['$latestTransaction.transactionAt', null] },
@@ -236,20 +238,34 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
   return data;
 };
 
-export const insertCustomersTransactions = async (tripCustomers: any[], tripResult: Trip, payload: BasePayload) => {
-  const transactions = tripCustomers.map((customer) => ({
-    trip: tripResult.id,
-    customer: customer._id,
-    status: 'unpaid',
-    bottleGiven: 0,
-    bottleTaken: 0,
-    total: 0,
-    transactionAt: new Date(tripResult.tripAt).toISOString(),
-  }));
-
+export const insertCustomersTransactions = async (
+  tripCustomers: any[],
+  tripResult: Trip,
+  payload: BasePayload
+): Promise<void> => {
   try {
-    await payload.db.collections['transaction'].insertMany(transactions);
+    const transactions = tripCustomers.map((customer) => ({
+      trip: tripResult.id,
+      customer: customer.id,
+      status: 'unpaid',
+      bottleGiven: 0,
+      bottleTaken: 0,
+      total: 0,
+      transactionAt: new Date(tripResult.tripAt).toISOString(),
+    }));
+
+    // Insert all transactions in parallel
+    await Promise.all(
+      transactions.map((tx) =>
+        payload.create({
+          collection: 'transaction',
+          data: tx as Transaction,
+        })
+      )
+    );
   } catch (error) {
-    throw new Error(`Failed to insert customer transactions for trip ${tripResult.id}: ${error}`);
+    throw new Error(
+      `Failed to insert customer transactions for trip ${tripResult.id}: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
-}
+};
