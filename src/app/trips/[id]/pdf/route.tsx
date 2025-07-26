@@ -4,11 +4,11 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { format } from 'date-fns'
 import QRCode from 'qrcode'
+import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
+import { generateTripReport } from '@/aggregations/trips'
 
 import TripInfo from './(components)/TripInfo'
 import Table from './(components)/Table'
-import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
-import { generateTripReport } from '@/aggregations/trips'
 
 const styles = StyleSheet.create({
   page: {
@@ -36,9 +36,8 @@ interface TripProps {
   blocks: Partial<Block>[]
 }
 
-
 const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
-  const areas = trip.areas as Area[];
+  const areas = trip.areas as Area[]
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -74,36 +73,30 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
   )
 }
 
-
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('url');
-  const protocol = request.headers.get('x-forwarded-proto') || 'https';
-  const fullUrl = `${protocol}://${host}`;
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
+  const fullUrl = `${protocol}://${host}`
 
   const payload = await getPayload({
     config: configPromise,
-  });
+  })
 
-  const tripId = (await params).id;
+  const tripId = (await params).id
 
-  const { trip, transactions, blocks } = await generateTripReport(tripId, payload);
+  const { trip, transactions, blocks } = await generateTripReport(tripId, payload)
 
-  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`);
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
 
   const stream = await renderToStream(
-    <TripPDF
-      trip={trip}
-      transactions={transactions}
-      blocks={blocks}
-      qrDataURI={qrDataURI}
-    />,
-  );
+    <TripPDF trip={trip} transactions={transactions} blocks={blocks} qrDataURI={qrDataURI} />,
+  )
 
-  const response = new NextResponse(stream as unknown as ReadableStream);
+  const response = new NextResponse(stream as unknown as ReadableStream)
   response.headers.set(
     'Content-disposition',
     `inline; filename="trip-at-${format(trip.tripAt, 'dd-MM-yyyy')}.pdf"`,
-  );
+  )
 
-  return response;
+  return response
 }
