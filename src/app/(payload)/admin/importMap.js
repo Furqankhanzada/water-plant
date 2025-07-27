@@ -1,3 +1,4 @@
+import { default as default_da483b7c37723cd1fb5962da39c4695f } from '../../../components/LastDeliveredCell'
 import { ContactNumberCell as ContactNumberCell_73182a10d002044f26d480e9c0a389e0 } from '../../../components/Customers'
 import { GeneratePdfButton as GeneratePdfButton_91735f33071acecbd7cb388640edace0 } from '../../../components/Trips'
 import { Info as Info_91735f33071acecbd7cb388640edace0 } from '../../../components/Trips'
@@ -13,6 +14,7 @@ import { Logo as Logo_f9f58eabab541759fc9306399f740359 } from '../../../graphics
 import { UploadthingClientUploadHandler as UploadthingClientUploadHandler_749dcaa11bb61b873d113cb6c609bc10 } from '@payloadcms/storage-uploadthing/client'
 
 export const importMap = {
+  "/components/LastDeliveredCell#default": default_da483b7c37723cd1fb5962da39c4695f,
   "/components/Customers#ContactNumberCell": ContactNumberCell_73182a10d002044f26d480e9c0a389e0,
   "/components/Trips#GeneratePdfButton": GeneratePdfButton_91735f33071acecbd7cb388640edace0,
   "/components/Trips#Info": Info_91735f33071acecbd7cb388640edace0,

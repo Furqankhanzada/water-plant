@@ -1,4 +1,5 @@
 import type { CollectionBeforeChangeHook } from 'payload'
+import { generateTripCustomers, insertCustomersTransactions } from '../../aggregations/trips';
 
 export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = async ({
   data,
@@ -23,49 +24,8 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook = 
         },
       })
     } else if (data.status === 'inprogress') {
-      const existingTransactions = await payload.find({
-        collection: 'transaction',
-        where: {
-          trip: {
-            equals: originalDoc.id,
-          },
-        },
-        depth: 0,
-        select: {
-          customer: true,
-          trip: true,
-        },
-        pagination: false,
-      })
-
-      const customers = await payload.find({
-        collection: 'customers',
-        where: {
-          id: {
-            not_in: existingTransactions.docs.map((t) => t.customer),
-          },
-          area: {
-            in: data.areas,
-          },
-        },
-        select: {},
-        depth: 0,
-        pagination: false,
-      })
-      for (const customer of customers.docs) {
-        payload.create({
-          collection: 'transaction',
-          data: {
-            trip: originalDoc.id,
-            customer: customer.id,
-            status: 'unpaid',
-            bottleGiven: 0,
-            bottleTaken: 0,
-            total: 0,
-            transactionAt: new Date(data.tripAt).toISOString(),
-          },
-        })
-      }
+      const tripCustomers = await generateTripCustomers(originalDoc, payload);
+      await insertCustomersTransactions(tripCustomers, originalDoc, payload);
     }
   }
   return data

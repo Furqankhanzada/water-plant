@@ -4,10 +4,11 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { format } from 'date-fns'
 import QRCode from 'qrcode'
+import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
+import { generateTripReport } from '@/aggregations/trips'
 
 import TripInfo from './(components)/TripInfo'
 import Table from './(components)/Table'
-import { Area, Block, Customer, Invoice, Transaction, Trip } from '@/payload-types'
 
 const styles = StyleSheet.create({
   page: {
@@ -75,95 +76,27 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const host = request.headers.get('x-forwarded-host') || request.headers.get('url')
   const protocol = request.headers.get('x-forwarded-proto') || 'https'
-
   const fullUrl = `${protocol}://${host}`
 
   const payload = await getPayload({
     config: configPromise,
   })
 
-  const trip = await payload.findByID({
-    collection: 'trips',
-    id: (await params).id,
-    select: {
-      areas: true,
-      tripAt: true,
-      bottles: true,
-      status: true,
-    },
-    depth: 1,
-  })
+  const tripId = (await params).id
 
-  const blocks = await payload.find({
-    collection: 'blocks',
-    where: {
-      area: {
-        in: trip.areas.map((a) => (typeof a === 'string' ? a : a.id)),
-      },
-    },
-    select: {
-      name: true,
-      area: true,
-    },
-    depth: 0,
-    pagination: false,
-  })
+  const { trip, transactions, blocks } = await generateTripReport(tripId, payload)
 
-  const transactions = await payload.find({
-    collection: 'transaction',
-    where: {
-      trip: {
-        equals: trip.id,
-      },
-    },
-    select: {
-      customer: true,
-      bottleGiven: true,
-      bottleTaken: true,
-      remainingBottles: true,
-    },
-    depth: 2,
-    pagination: false,
-  })
-
-  for (const transaction of transactions.docs) {
-    const customer = transaction.customer as Customer
-    const invoices = await payload.find({
-      collection: 'invoice',
-      where: {
-        customer: {
-          equals: customer.id,
-        },
-      },
-      limit: 1,
-      sort: '-createdAt',
-      select: {
-        status: true,
-        advanceAmount: true,
-        remainingAmount: true,
-        dueAmount: true,
-      },
-      pagination: false,
-    })
-    if (customer.invoice) {
-      customer.invoice.docs = invoices.docs as Invoice[]
-    }
-  }
-
-  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${trip.id}/pdf`)
+  const qrDataURI = await QRCode.toDataURL(`${fullUrl}/trips/${trip.id}/pdf`)
 
   const stream = await renderToStream(
-    <TripPDF
-      trip={trip}
-      transactions={transactions.docs}
-      blocks={blocks.docs}
-      qrDataURI={qrDataURI}
-    />,
+    <TripPDF trip={trip} transactions={transactions} blocks={blocks} qrDataURI={qrDataURI} />,
   )
+
   const response = new NextResponse(stream as unknown as ReadableStream)
   response.headers.set(
     'Content-disposition',
     `inline; filename="trip-at-${format(trip.tripAt, 'dd-MM-yyyy')}.pdf"`,
   )
+
   return response
 }

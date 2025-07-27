@@ -1,6 +1,7 @@
-import type { CollectionAfterOperationHook } from 'payload'
+import type { CollectionAfterOperationHook } from 'payload';
+import { Trip } from '@/payload-types';
+import { generateTripCustomers, insertCustomersTransactions } from '../../aggregations/trips';
 
-import { Trip } from '@/payload-types'
 
 export const createTransactionsOnTripCreate: CollectionAfterOperationHook = async ({
   result,
@@ -9,29 +10,8 @@ export const createTransactionsOnTripCreate: CollectionAfterOperationHook = asyn
 }) => {
   const tripResult = result as Trip
   if (operation === 'create') {
-    const customers = await req.payload.find({
-      collection: 'customers',
-      where: {
-        area: {
-          in: tripResult.areas,
-        },
-      },
-      pagination: false,
-    })
-    for (const customer of customers.docs) {
-      await req.payload.create({
-        collection: 'transaction',
-        data: {
-          trip: tripResult.id,
-          customer: customer.id,
-          status: 'unpaid',
-          bottleGiven: 0,
-          bottleTaken: 0,
-          total: 0,
-          transactionAt: new Date(tripResult.tripAt).toISOString(),
-        },
-      })
-    }
+    const tripCustomers = await generateTripCustomers(tripResult, req.payload);
+    await insertCustomersTransactions(tripCustomers, tripResult, req.payload);
   }
   return result
 }

@@ -3,29 +3,33 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer'
 
 import { Customer, Invoice, Transaction, Trip } from '@/payload-types'
 import { tableStyles } from './Table'
+import { formatDistanceWithFallback } from '@/lib/utils'
 
 const styles = StyleSheet.create({
   name: {
-    width: '20%',
+    width: '15%',
   },
   address: {
     width: '20%',
   },
   delivered: {
-    width: '10%',
+    width: '9%',
   },
   returned: {
-    width: '10%',
+    width: '9%',
   },
   remaining: {
     width: '10%',
   },
   paymentReceived: {
-    width: '15%',
+    width: '13%',
   },
   paymentDue: {
-    width: '15%',
+    width: '13%',
   },
+  lastDelivered: {
+    width: '12%',
+  }
 })
 
 const rupee = new Intl.NumberFormat('en-PK', {
@@ -33,6 +37,12 @@ const rupee = new Intl.NumberFormat('en-PK', {
   currency: 'PKR',
   minimumFractionDigits: 0,
 })
+
+type CustomerWithLatestTransaction = Customer & {
+  latestTransaction?: {
+    transactionAt: Date | undefined
+  }
+}
 
 const TableRow = ({
   blockTransactions,
@@ -43,9 +53,9 @@ const TableRow = ({
 }) => {
   const rows = blockTransactions.map((transaction, i) => {
     const odd = i % 2 !== 0
-    const customer = transaction.customer as Customer
+    const customer = transaction.customer as CustomerWithLatestTransaction
     let paymentDue = 0
-    if (customer.invoice?.docs?.length) {
+    if (customer?.invoice?.docs?.length) {
       const invoice = customer.invoice?.docs[0] as Invoice
       if (invoice) {
         switch (invoice.status) {
@@ -61,6 +71,10 @@ const TableRow = ({
         }
       }
     }
+
+    const transactionAt = customer.latestTransaction?.transactionAt;
+    const lastDelivered = formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' });
+
     return (
       <View style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]} key={customer.id}>
         <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
@@ -72,10 +86,11 @@ const TableRow = ({
           {trip.status !== 'complete' ? '' : transaction.bottleTaken}
         </Text>
         <Text style={[tableStyles.column, styles.remaining]}>
-          {trip.status !== 'complete' ? '' : transaction.remainingBottles}
+          {trip.status !== 'complete' ? customer.bottlesAtHome : transaction.remainingBottles}
         </Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
-        <Text style={[tableStyles.column, styles.paymentReceived]}>{rupee.format(paymentDue)}</Text>
+        <Text style={[tableStyles.column, styles.paymentDue]}>{rupee.format(paymentDue)}</Text>
+        <Text style={[tableStyles.column, styles.lastDelivered]}>{lastDelivered}</Text>
       </View>
     )
   })

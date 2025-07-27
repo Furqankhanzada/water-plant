@@ -7,13 +7,25 @@ export const Customers: CollectionConfig = {
   enableQueryPresets: true,
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'address', 'area', 'block', 'rate'],
+    defaultColumns: ['name', 'address', 'lastDelivered', 'area', 'block', 'rate'],
     listSearchableFields: ['name', 'address'],
   },
   access: {
     delete: isAdmin,
   },
   fields: [
+    {
+      name: 'lastDelivered',
+      type: 'number',
+      virtual: true,
+      admin: {
+        disableListFilter: true,
+        hidden: true,
+        components: {
+          Cell: '/components/LastDeliveredCell'
+        }
+      }
+    },
     {
       type: 'tabs',
       tabs: [
@@ -53,7 +65,8 @@ export const Customers: CollectionConfig = {
                   type: 'relationship',
                   relationTo: 'blocks',
                   required: true,
-                  filterOptions: ({ data }) => {
+                  filterOptions: ({ data, req: { pathname } }) => {
+                    if (pathname.split('/').pop() === 'customers') return true
                     return {
                       area: { equals: data.area || '' },
                     }
@@ -118,6 +131,14 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter number of bottles at home',
+                  },
+                },
+                {
+                  name: 'deliveryFrequencyDays',
+                  type: 'number',
+                  defaultValue: 4,
+                  admin: {
+                    placeholder: 'Enter number of delivery frequency days',
                   },
                 },
               ],
