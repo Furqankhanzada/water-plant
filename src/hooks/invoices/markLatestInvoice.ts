@@ -2,7 +2,13 @@ import { Invoice } from '@/payload-types';
 import { Types } from 'mongoose';
 import type { CollectionAfterChangeHook } from 'payload';
 
-export const markLatestInvoice: CollectionAfterChangeHook<Invoice> = async ({ doc, req }) => {
+export const markLatestInvoice: CollectionAfterChangeHook<Invoice> = async ({ doc, req, operation }) => {
+
+  if (operation !== 'create') {
+    console.log('⚠️ markLatestInvoice hook only runs on create operations');
+    return;
+  }
+
   const { payload } = req;
   const { customer } = doc;
 
@@ -34,7 +40,7 @@ export const markLatestInvoice: CollectionAfterChangeHook<Invoice> = async ({ do
   // Set isLatest = false for all other invoices of the customer
   const othersUpdate = await db.updateMany(
     {
-      customer,
+      customer: customerId,
       _id: { $ne: latestInvoiceId },
     },
     {
