@@ -54,7 +54,6 @@ export const Invoice: CollectionConfig = {
           status: { equals: 'unpaid' },
         }
       },
-      validate: () => true,
     },
     {
       name: 'status',
