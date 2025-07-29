@@ -21,10 +21,10 @@ const LastDeliveredCell = async ({
       limit: 1,
       sort: '-transactionAt',
       select: {
-        updatedAt: true,
+        transactionAt: true,
       },
     })
-  ).docs[0]?.updatedAt
+  ).docs[0]?.transactionAt
 
   return <div>{formatDistanceWithFallback(lastTransactionAt, { fallback: 'Never Delivered' })}</div>
 }

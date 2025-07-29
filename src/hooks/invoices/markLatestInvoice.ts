@@ -4,7 +4,7 @@ import type { CollectionAfterChangeHook } from 'payload';
 
 export const markLatestInvoice: CollectionAfterChangeHook<Invoice> = async ({ doc, req, operation }) => {
 
-  if (operation !== 'create') {
+  if (operation === 'create') {
     console.log('⚠️ markLatestInvoice hook only runs on create operations');
     return;
   }
