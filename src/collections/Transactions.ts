@@ -9,7 +9,7 @@ export const Transaction: CollectionConfig = {
   enableQueryPresets: true,
   admin: {
     pagination: {
-      defaultLimit: 50,
+      defaultLimit: 10
     },
     useAsTitle: 'transactionAt',
     defaultColumns: [
