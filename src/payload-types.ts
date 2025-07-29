@@ -318,6 +318,7 @@ export interface Employee {
  */
 export interface Invoice {
   id: string;
+  isLatest?: boolean | null;
   customer: string | Customer;
   transactions: (string | Transaction)[];
   status?: ('paid' | 'unpaid' | 'partially-paid') | null;
@@ -832,6 +833,7 @@ export interface TransactionSelect<T extends boolean = true> {
  * via the `definition` "invoice_select".
  */
 export interface InvoiceSelect<T extends boolean = true> {
+  isLatest?: T;
   customer?: T;
   transactions?: T;
   status?: T;

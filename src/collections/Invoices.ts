@@ -3,11 +3,13 @@ import type { CollectionConfig } from 'payload'
 import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransactionsStatus'
 import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransactionsStatusOnRemoval'
+import { markLatestInvoice } from '@/hooks/invoices/markLatestInvoice'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   enableQueryPresets: true,
   hooks: {
+    afterChange: [markLatestInvoice],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
   },
