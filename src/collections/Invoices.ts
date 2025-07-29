@@ -27,6 +27,14 @@ export const Invoice: CollectionConfig = {
   },
   fields: [
     {
+      name: 'isLatest',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        hidden: true,
+      },
+    },
+    {
       name: 'customer',
       type: 'relationship',
       relationTo: 'customers',
