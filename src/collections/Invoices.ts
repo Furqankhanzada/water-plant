@@ -3,13 +3,13 @@ import type { CollectionConfig } from 'payload'
 import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransactionsStatus'
 import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransactionsStatusOnRemoval'
-import { markLatestInvoice } from '@/hooks/invoices/markLatestInvoice'
+import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   enableQueryPresets: true,
   hooks: {
-    afterChange: [markLatestInvoice],
+    afterChange: [unsetOldLatestInvoices],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
   },
@@ -31,7 +31,7 @@ export const Invoice: CollectionConfig = {
     {
       name: 'isLatest',
       type: 'checkbox',
-      defaultValue: false,
+      defaultValue: true,
       admin: {
         hidden: true,
       },
