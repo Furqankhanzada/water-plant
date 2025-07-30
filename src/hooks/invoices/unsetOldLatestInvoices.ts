@@ -7,8 +7,7 @@ const { ObjectId } = Types;
 export const unsetOldLatestInvoices: CollectionAfterChangeHook<Invoice> = async ({ doc, req, operation }) => {
 
   if (operation !== 'create') {
-    console.log('⚠️ unsetOldLatestInvoices hook only runs on create operations');
-    return;
+    return doc; // Only run this hook on create operation
   }
 
   const { payload } = req;
