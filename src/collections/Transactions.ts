@@ -3,10 +3,12 @@ import type { CollectionConfig } from 'payload'
 import { calculateRemainingBottles } from '@/hooks/transactions/remainingBottles'
 import { calculateTotalHook } from '@/hooks/transactions/total'
 import { transactionUpdateForCustomer } from '@/hooks/transactions/transactionUpdateForCustomer'
+import { isAdmin } from './access/isAdmin'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
   enableQueryPresets: true,
+  disableDuplicate: true,
   admin: {
     pagination: {
       defaultLimit: 50,
@@ -23,6 +25,9 @@ export const Transaction: CollectionConfig = {
       'trip',
     ],
   },
+  access: {
+    delete: isAdmin,
+  },
   hooks: {
     afterChange: [],
     beforeChange: [calculateRemainingBottles, calculateTotalHook, transactionUpdateForCustomer],
@@ -34,7 +39,7 @@ export const Transaction: CollectionConfig = {
       relationTo: 'trips',
       admin: {
         sortOptions: '-tripAt',
-      }
+      },
     },
     {
       name: 'customer',
@@ -49,9 +54,9 @@ export const Transaction: CollectionConfig = {
       admin: {
         hidden: true,
         components: {
-          Cell: '/components/LastDeliveredCell'
-        }
-      }
+          Cell: '/components/LastDeliveredCell',
+        },
+      },
     },
     {
       name: 'status',

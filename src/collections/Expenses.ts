@@ -1,10 +1,15 @@
 import { CollectionConfig } from 'payload'
+import { isAdmin } from './access/isAdmin'
 
 export const Expenses: CollectionConfig = {
   slug: 'expenses',
   enableQueryPresets: true,
+  disableDuplicate: true,
   admin: {
     defaultColumns: ['title', 'type', 'amount', 'expenseAt'],
+  },
+  access: {
+    delete: isAdmin,
   },
   fields: [
     {
