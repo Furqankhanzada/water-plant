@@ -9,9 +9,9 @@ export const Invoice: CollectionConfig = {
   slug: 'invoice',
   enableQueryPresets: true,
   hooks: {
-    afterChange: [unsetOldLatestInvoices],
+    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
     afterOperation: [changeTransactionsStatusHook],
-    beforeChange: [calculateAmountsHook, changeTransactionsStatusOnRemoval],
+    beforeChange: [calculateAmountsHook],
   },
   admin: {
     defaultColumns: [
@@ -54,8 +54,31 @@ export const Invoice: CollectionConfig = {
           status: { equals: 'unpaid' },
         }
       },
-      validate: () => true,
+      /**
+       * validate:
+       * This ensures that the invoice always has at least one transaction,
+       * even if the filtered options no longer include the originally selected transactions.
+       *
+       * Why:
+       * After transactions are added to an invoice, their status is changed (e.g., to 'paid' or 'pending').
+       * Because of this, those transactions no longer match the filter (`status: unpaid`),
+       * and therefore show up as "invalid selections" when editing.
+       *
+       * Without `validate`, Payload CMS throws an error when editing an invoice that includes
+       * now-filtered-out (originally valid according to the filter, but no longer match the filter conditions after a change) transactions.
+       *
+       * So this `validate` ensures:
+       * - At least one transaction remains linked
+       * - You can still save the invoice even if previously linked transactions are now filtered out
+       */
+      validate: async (value) => {
+        if (!value || value.length === 0) {
+          return 'At least one transaction is required.'
+        }
+        return true
+      },
     },
+
     {
       name: 'status',
       type: 'select',
