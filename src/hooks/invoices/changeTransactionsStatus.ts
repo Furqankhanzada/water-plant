@@ -1,5 +1,5 @@
-import type { CollectionAfterOperationHook } from 'payload';
-import { Invoice } from '@/payload-types';
+import type { CollectionAfterOperationHook } from 'payload'
+import { Invoice } from '@/payload-types'
 
 /**
  * Hook: changeTransactionsStatusHook
@@ -21,22 +21,22 @@ export const changeTransactionsStatusHook: CollectionAfterOperationHook = async 
   operation,
   req: { payload },
 }) => {
-  const invoice = result as Invoice;
+  const invoice = result as Invoice
 
   // Only run for create and updateByID operations
   if (!['create', 'updateByID'].includes(operation)) {
-    return result;
+    return result
   }
 
-  const { transactions, status } = invoice;
+  const { transactions, status } = invoice
 
   // Ensure transactions is an array of string IDs
   if (!Array.isArray(transactions) || typeof transactions[0] !== 'string') {
-    return result;
+    return result
   }
 
   // Determine new transaction status based on invoice status
-  const newStatus = status === 'unpaid' ? 'pending' : 'paid';
+  const newStatus = status === 'unpaid' ? 'pending' : 'paid'
 
   // Bulk update the status of all associated transactions
   await payload.update({
@@ -49,7 +49,7 @@ export const changeTransactionsStatusHook: CollectionAfterOperationHook = async 
     data: {
       status: newStatus,
     },
-  });
+  })
 
-  return result;
-};
+  return result
+}

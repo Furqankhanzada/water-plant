@@ -17,15 +17,15 @@ export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = asyn
   data,
   previousDoc,
 }) => {
-  if (operation !== 'update') return data;
+  if (operation !== 'update') return data
 
-  const previousTransactions = previousDoc.transactions || [];
-  const currentTransactions = data.transactions || [];
+  const previousTransactions = previousDoc.transactions || []
+  const currentTransactions = data.transactions || []
 
   // Find transactions that existed before but were removed in this update
   const removedTransactionIds = previousTransactions.filter(
-    (prevId: string) => !currentTransactions.includes(prevId)
-  );
+    (prevId: string) => !currentTransactions.includes(prevId),
+  )
 
   if (removedTransactionIds.length > 0) {
     // Set removed transactions back to 'unpaid'
@@ -37,8 +37,8 @@ export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = asyn
       data: {
         status: 'unpaid',
       },
-    });
+    })
   }
 
-  return data;
-};
+  return data
+}

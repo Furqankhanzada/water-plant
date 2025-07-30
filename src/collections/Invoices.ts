@@ -64,7 +64,7 @@ export const Invoice: CollectionConfig = {
        * Because of this, those transactions no longer match the filter (`status: unpaid`),
        * and therefore show up as "invalid selections" when editing.
        *
-       * Without `validate`, Payload CMS throws an error when editing an invoice that includes 
+       * Without `validate`, Payload CMS throws an error when editing an invoice that includes
        * now-filtered-out (originally valid according to the filter, but no longer match the filter conditions after a change) transactions.
        *
        * So this `validate` ensures:

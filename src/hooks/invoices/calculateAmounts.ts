@@ -6,7 +6,7 @@ import type { CollectionBeforeChangeHook } from 'payload'
  * This hook runs before creating or updating an Invoice. It performs the following:
  *
  * 1. 📦 Fetches the related transactions selected for this invoice and calculates the total amount.
- * 2. 🧾 Looks up the most recent invoice for the same customer (excluding the current one) 
+ * 2. 🧾 Looks up the most recent invoice for the same customer (excluding the current one)
  *    where the due date is less than the current invoice's due date. This gives us:
  *      - previous remaining balance
  *      - previous advance amount
@@ -26,7 +26,7 @@ import type { CollectionBeforeChangeHook } from 'payload'
  *    - `partially-paid`: partially paid
  *    - `unpaid`: no payments made
  *
- * This hook ensures invoice financial calculations remain consistent and 
+ * This hook ensures invoice financial calculations remain consistent and
  * reflect historical balances and real-time payments and losses.
  */
 
