@@ -1,5 +1,35 @@
 import type { CollectionBeforeChangeHook } from 'payload'
 
+/**
+ * 🔄 Hook: calculateAmountsHook (Before Change)
+ *
+ * This hook runs before creating or updating an Invoice. It performs the following:
+ *
+ * 1. 📦 Fetches the related transactions selected for this invoice and calculates the total amount.
+ * 2. 🧾 Looks up the most recent invoice for the same customer (excluding the current one) 
+ *    where the due date is less than the current invoice's due date. This gives us:
+ *      - previous remaining balance
+ *      - previous advance amount
+ *    These are used to compute the carry-forward balances.
+ *
+ * 3. 💰 Calculates financial fields:
+ *    - `netTotal`: total from all related transactions
+ *    - `paidAmount`: total from payments (if any)
+ *    - `dueAmount`: total due considering previous balances
+ *    - `remainingAmount`: unpaid portion
+ *    - `advanceAmount`: excess amount paid
+ *
+ * 4. 🧮 Adjusts for lost bottles if applicable, by increasing `dueAmount`.
+ *
+ * 5. 🟢 Sets the `status` of the invoice based on payment state:
+ *    - `paid`: fully paid
+ *    - `partially-paid`: partially paid
+ *    - `unpaid`: no payments made
+ *
+ * This hook ensures invoice financial calculations remain consistent and 
+ * reflect historical balances and real-time payments and losses.
+ */
+
 export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
   data,
   originalDoc,
