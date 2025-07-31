@@ -4,10 +4,12 @@ import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransaction
 import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransactionsStatusOnRemoval'
 import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
+import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
   enableQueryPresets: true,
+  disableDuplicate: true,
   hooks: {
     afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
     afterOperation: [changeTransactionsStatusHook],
@@ -26,6 +28,9 @@ export const Invoice: CollectionConfig = {
       'pdf',
       'sendInvoice',
     ],
+  },
+  access: {
+    delete: isAdmin,
   },
   fields: [
     {
