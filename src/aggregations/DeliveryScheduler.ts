@@ -1,4 +1,6 @@
-import { BasePayload } from 'payload'
+import { BasePayload, Where } from 'payload'
+import { addDays } from 'date-fns'
+import { Transaction } from '@/payload-types'
 
 /**
  * DeliveryScheduler is responsible for predicting when each customer will run out of water bottles
@@ -19,13 +21,13 @@ export interface DeliveryPrediction {
   customerId: string
   customerName: string
   address: string
+  invalidTransaction: boolean
   bottlesAtHome: number
   consumptionRate: number
   adjustedConsumptionRate: number
   daysUntilDelivery: number
   nextDeliveryDate: Date
   priority: 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'
-  confidence: number
 }
 
 export class DeliveryScheduler {
@@ -49,80 +51,35 @@ export class DeliveryScheduler {
     return seasonalFactors[month] || 1.0
   }
 
-  private getCustomerTypeMultiplier(avgConsumption: number): number {
-    // Adjusts prediction based on how much the customer normally consumes
-    if (avgConsumption >= 2.0) return 1.1 // Heavy users (e.g., families, offices)
-    if (avgConsumption >= 1.0) return 1.0 // Normal users
-    if (avgConsumption >= 0.5) return 0.9 // Light users
-    return 0.8 // Very light users
+  private getWaterConsumptionAdjustmentFactor(dailyAvgBottles: number): number {
+    // Returns a multiplier to adjust predictions based on daily average bottle consumption
+
+    if (dailyAvgBottles >= 2.0) return 1.1 // High-consumption customers (families, offices) -- add 10% buffer
+    if (dailyAvgBottles >= 1.0) return 1.0 // Average consumers -- add no buffer
+    if (dailyAvgBottles >= 0.5) return 0.9 // Low-consumption households -- reduce by 10%
+    return 0.8 // Very low usage (e.g., seasonal or occasional use) -- reduce by 20%
   }
 
-  private calculateConfidence(transactions: any[]): number {
-    let confidence = 0.3; // Lower base confidence
-    const transactionCount = transactions.length;
+  private calculateRemainingBottles(
+    latestTransaction: Transaction,
+    invalidTransaction: boolean,
+  ): number {
+    const { remainingBottles, bottleGiven } = latestTransaction
 
-    // 1. Transaction Count Factor (0-0.3) - Based on actual data patterns
-    // Since avg monthly transactions = 6.15, in 30 days we expect ~6 transactions
-    if (transactionCount >= 15) confidence += 0.3; // Excellent data (top 10% customers)
-    else if (transactionCount >= 10) confidence += 0.25; // Very good data
-    else if (transactionCount >= 6) confidence += 0.2; // Good data (around average)
-    else if (transactionCount >= 3) confidence += 0.15; // Fair data
-    else if (transactionCount >= 1) confidence += 0.1; // Minimal data
+    const remaining = remainingBottles ?? 0
 
-    // 2. Consumption Consistency Factor (0-0.25)
-    const consumptionRates = transactions.map(t => t.bottleTaken || 0);
-    const avgConsumption = consumptionRates.reduce((a, b) => a + b, 0) / consumptionRates.length;
-    
-    if (avgConsumption > 0) {
-      const variance = consumptionRates.reduce((sum, rate) => sum + Math.pow(rate - avgConsumption, 2), 0) / consumptionRates.length;
-      const stdDev = Math.sqrt(variance);
-      const coefficientOfVariation = stdDev / avgConsumption;
-      
-      // Based on DB analysis: CV <= 0.2 = Very consistent, CV <= 0.5 = Consistent
-      if (coefficientOfVariation <= 0.2) confidence += 0.25; // Very consistent
-      else if (coefficientOfVariation <= 0.5) confidence += 0.2; // Consistent  
-      else if (coefficientOfVariation <= 1.0) confidence += 0.1; // Moderate
-      // No bonus for inconsistent patterns (CV > 1.0)
+    // Case 1: Invalid transaction — prioritize bottleGiven if remaining is suspiciously low
+    if (invalidTransaction) {
+      return remaining < bottleGiven ? bottleGiven : remaining
     }
 
-    // 3. Recent Activity Factor (0-0.15)
-    const latestTransactionDate = new Date(transactions[0].transactionAt);
-    const daysSinceLatest = (new Date().getTime() - latestTransactionDate.getTime()) / (1000 * 60 * 60 * 24);
-    
-    if (daysSinceLatest <= 2) confidence += 0.15; // Very recent
-    else if (daysSinceLatest <= 5) confidence += 0.12; // Recent
-    else if (daysSinceLatest <= 10) confidence += 0.08; // Somewhat recent
-    else if (daysSinceLatest <= 15) confidence += 0.04; // Getting stale
-    // No bonus for very old data
-
-    // 4. Data Integrity Factor (penalty for impossible transactions)
-    const impossibleCount = transactions.filter(t => 
-      t.bottleTaken > t.remainingBottles && t.remainingBottles > 0
-    ).length;
-    const integrityPenalty = impossibleCount / Math.max(1, transactionCount);
-    confidence -= integrityPenalty * 0.25; // Up to 25% penalty for bad data
-
-    // 5. Transaction Frequency Regularity (0-0.1)
-    if (transactionCount >= 3) {
-      const dates = transactions.map(t => new Date(t.transactionAt).getTime()).sort((a, b) => b - a);
-      const intervals = [];
-      for (let i = 0; i < dates.length - 1; i++) {
-        intervals.push((dates[i] - dates[i + 1]) / (1000 * 60 * 60 * 24));
-      }
-      
-      if (intervals.length > 0) {
-        const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-        const intervalVariance = intervals.reduce((sum, interval) => sum + Math.pow(interval - avgInterval, 2), 0) / intervals.length;
-        const intervalCV = Math.sqrt(intervalVariance) / avgInterval;
-        
-        // Bonus for regular delivery patterns (low interval variation)
-        if (intervalCV <= 0.3) confidence += 0.1; // Very regular
-        else if (intervalCV <= 0.6) confidence += 0.05; // Somewhat regular
-      }
+    // Case 2: Even if valid, still prefer bottleGiven if remaining is lower
+    if (remaining < bottleGiven) {
+      return bottleGiven
     }
 
-    // Cap confidence between 0.2 and 0.95 (never completely certain or too pessimistic)
-    return Math.min(Math.max(confidence, 0.2), 0.95);
+    // Case 3: Trust remaining value
+    return remaining
   }
 
   private getPriority(daysUntilDelivery: number): 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW' {
@@ -132,10 +89,53 @@ export class DeliveryScheduler {
     return 'LOW'
   }
 
-  async calculateDeliverySchedule(match: any, payload: BasePayload): Promise<DeliveryPrediction[]> {
-    const customers = await payload.db.collections.customers.collection.find(match).toArray()
+  private isInvalidTransaction(latestTransaction: Transaction): boolean {
+    if (
+      latestTransaction.remainingBottles != null &&
+      latestTransaction.remainingBottles > 0 &&
+      latestTransaction.bottleTaken > latestTransaction.remainingBottles
+    ) {
+      return true
+    }
+    return false
+  }
 
-    console.log("Customers to process:", customers.length)
+  private calculateDaysDiff(startDate: Date, endDate: Date): number {
+    const millisecondsInADay = 1000 * 60 * 60 * 24
+    const timeDiffInMs = endDate.getTime() - startDate.getTime()
+    const days = Math.ceil(timeDiffInMs / millisecondsInADay)
+
+    return Math.max(1, days)
+  }
+
+  private calculateTotalBottlesConsumed(transactions: Transaction[]): number {
+    return transactions.reduce((sum, txn) => sum + (txn.bottleTaken || 0), 0)
+  }
+
+  private calculateNextDeliveryDate(daysUntilDelivery: number): Date {
+    return addDays(new Date(), Math.ceil(daysUntilDelivery))
+  }
+
+  private calculateDaysUntilDelivery(
+    remainingBottles: number,
+    adjustedConsumptionRate: number,
+    safetyBuffer = 1,
+  ): number {
+    const netBottles = remainingBottles - safetyBuffer
+    const safeRate = Math.max(0.1, adjustedConsumptionRate) // prevent divide-by-zero
+    return Math.max(0, netBottles / safeRate)
+  }
+
+  async calculateDeliverySchedule(
+    match: Where,
+    payload: BasePayload,
+  ): Promise<DeliveryPrediction[]> {
+    // const customers = await payload.db.collections.customers.collection.find(match).toArray()
+    const { docs: customers } = await payload.find({
+      collection: 'customers',
+      where: match,
+      limit: 1000,
+    })
 
     const predictions: DeliveryPrediction[] = []
     const currentDate = new Date()
@@ -147,63 +147,67 @@ export class DeliveryScheduler {
       const thirtyDaysAgo = new Date()
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-      const recentTransactions = await payload.db.collections.transaction.collection
-        .find({
-          customer: customer._id,
-          transactionAt: { $gte: thirtyDaysAgo },
-          bottleGiven: { $gt: 0 },
-        })
-        .sort({ transactionAt: -1 })
-        .limit(15)
-        .toArray()
+      const { docs: recentTransactions } = await payload.find({
+        collection: 'transaction',
+        where: {
+          and: [
+            { customer: { equals: customer.id } },
+            { transactionAt: { greater_than_equal: thirtyDaysAgo } },
+            { bottleGiven: { greater_than: 0 } },
+          ],
+        },
+        sort: '-transactionAt',
+        limit: 15,
+      })
 
       if (recentTransactions.length === 0) {
-        console.warn(`No recent transactions found for customer ${customer.address} ${customer.name}`)
+        console.warn(
+          `No recent transactions found for customer ${customer.address} ${customer.name}`,
+        )
         continue
       }
 
-      // Calculate base consumption rate
-      const totalBottlesConsumed = recentTransactions.reduce(
-        (sum, txn) => sum + (txn.bottleTaken || 0),
-        0,
-      )
-
-      const latestTransaction = recentTransactions[0];
+      const [latestTransaction] = recentTransactions
       const oldestTransactionDate = new Date(
         recentTransactions[recentTransactions.length - 1].transactionAt,
       )
-      const daysDiff = Math.max(
-        1,
-        Math.ceil(
-          (currentDate.getTime() - oldestTransactionDate.getTime()) / (1000 * 60 * 60 * 24),
-        ),
-      )
 
-      console.log(`${daysDiff}-${customer.name}`, daysDiff);
+      // Calculate base consumption rate
+      const totalBottlesConsumed = this.calculateTotalBottlesConsumed(recentTransactions)
+
+      const daysDiff = this.calculateDaysDiff(oldestTransactionDate, currentDate)
 
       const baseConsumptionRate = totalBottlesConsumed / daysDiff
 
       // Apply adjustments
-      const customerTypeMultiplier = this.getCustomerTypeMultiplier(baseConsumptionRate)
+      const customerTypeMultiplier = this.getWaterConsumptionAdjustmentFactor(baseConsumptionRate)
+
       const adjustedConsumptionRate =
         baseConsumptionRate * seasonalMultiplier * customerTypeMultiplier
 
-      // Calculate delivery timing
-      const safetyBuffer = 1 // Keep 1 bottle as safety stock
-      const daysUntilDelivery = Math.max(
-        0,
-        (latestTransaction.remainingBottles - safetyBuffer) / Math.max(0.1, adjustedConsumptionRate),
+      const invalidTransaction = this.isInvalidTransaction(latestTransaction)
+
+      if (invalidTransaction) {
+        console.warn(
+          `Invalid transaction detected for customer ${customer.name} (${customer.address})`,
+        )
+      }
+
+      const remainingBottles = this.calculateRemainingBottles(latestTransaction, invalidTransaction)
+
+      const daysUntilDelivery = this.calculateDaysUntilDelivery(
+        remainingBottles,
+        adjustedConsumptionRate,
       )
 
-      const nextDeliveryDate = new Date()
-      nextDeliveryDate.setDate(nextDeliveryDate.getDate() + Math.ceil(daysUntilDelivery))
+      const nextDeliveryDate = this.calculateNextDeliveryDate(daysUntilDelivery)
 
-      const confidence = this.calculateConfidence(recentTransactions)
       const priority = this.getPriority(daysUntilDelivery)
 
       predictions.push({
-        customerId: customer._id.toString(),
+        customerId: customer.id,
         customerName: customer.name,
+        invalidTransaction: invalidTransaction,
         address: customer.address || 'N/A',
         bottlesAtHome: latestTransaction.remainingBottles || 0,
         consumptionRate: baseConsumptionRate,
@@ -211,7 +215,6 @@ export class DeliveryScheduler {
         daysUntilDelivery,
         nextDeliveryDate,
         priority,
-        confidence,
       })
     }
 
@@ -225,7 +228,7 @@ export class DeliveryScheduler {
     })
   }
 
-  async generateDeliveryReport(predictions: DeliveryPrediction[]): Promise<string> {
+  generateDeliveryReport(predictions: DeliveryPrediction[]): string {
     const urgent = predictions.filter((p) => p.priority === 'URGENT').length
     const high = predictions.filter((p) => p.priority === 'HIGH').length
     const medium = predictions.filter((p) => p.priority === 'MEDIUM').length

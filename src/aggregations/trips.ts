@@ -1,26 +1,20 @@
-import type { BasePayload } from 'payload'
+import type { BasePayload, Where } from 'payload'
 import { Types } from 'mongoose'
 import { Trip, Transaction } from '@/payload-types'
 import { type DeliveryPrediction, deliveryScheduler } from './DeliveryScheduler'
 
 export const generateTripCustomers = async (trip: Trip, payload: BasePayload) => {
-  const areaIds = trip.areas.map((a) =>
-    typeof a === 'string' ? new Types.ObjectId(a) : new Types.ObjectId(a.id),
-  )
+  const areaIds = trip.areas.map((a) => (typeof a === 'string' ? a : a.id))
 
-  const blockIds = (trip.blocks || []).map((b) =>
-    typeof b === 'string' ? new Types.ObjectId(b) : new Types.ObjectId(b.id),
-  )
+  const blockIds = (trip.blocks || []).map((b) => (typeof b === 'string' ? b : b.id))
 
-  const now = new Date()
-
-  const match: Record<string, any> = {
-    area: { $in: areaIds },
-    status: 'active', // Assuming you want only active customers
+  const match: Where = {
+    area: { in: areaIds },
+    status: { equals: 'active' },
   }
 
   if (blockIds.length) {
-    match.block = { $in: blockIds }
+    match.block = { in: blockIds }
   }
 
   // const customers = await payload.db.collections['customers'].aggregate([
@@ -103,13 +97,16 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
   //   },
   // ]);
 
-  const customers: DeliveryPrediction[] = await deliveryScheduler.calculateDeliverySchedule(match, payload);
-  const analytics = await deliveryScheduler.generateDeliveryReport(customers);
+  const customers: DeliveryPrediction[] = await deliveryScheduler.calculateDeliverySchedule(
+    match,
+    payload,
+  )
+  // const analytics = deliveryScheduler.generateDeliveryReport(customers);
 
-  console.log("customers analytics", analytics);
-  console.log("customers", customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority)));
+  // console.log("customers analytics", analytics);
+  // console.log("customers", customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority)));
 
-  return customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority));
+  return customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority))
 }
 
 export const generateTripReport = async (tripId: string, payload: BasePayload) => {
