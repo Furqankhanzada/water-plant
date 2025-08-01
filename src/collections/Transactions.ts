@@ -1,8 +1,10 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, FieldAccess } from 'payload'
 
 import { calculateRemainingBottles } from '@/hooks/transactions/remainingBottles'
 import { calculateTotalHook } from '@/hooks/transactions/total'
 import { transactionUpdateForCustomer } from '@/hooks/transactions/transactionUpdateForCustomer'
+import { populateAdjustedBy } from '@/hooks/transactions/populateAdjustedBy'
+import { isAdmin } from './access/isAdmin'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
@@ -15,17 +17,24 @@ export const Transaction: CollectionConfig = {
     defaultColumns: [
       'transactionAt',
       'customer',
+      'transactionType',
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
       'total',
       'status',
+      'manualOverride',
       'trip',
     ],
   },
   hooks: {
     afterChange: [],
-    beforeChange: [calculateRemainingBottles, calculateTotalHook, transactionUpdateForCustomer],
+    beforeChange: [
+      populateAdjustedBy,
+      calculateRemainingBottles,
+      calculateTotalHook,
+      transactionUpdateForCustomer,
+    ],
   },
   fields: [
     {
@@ -34,7 +43,7 @@ export const Transaction: CollectionConfig = {
       relationTo: 'trips',
       admin: {
         sortOptions: '-tripAt',
-      }
+      },
     },
     {
       name: 'customer',
@@ -43,15 +52,53 @@ export const Transaction: CollectionConfig = {
       required: true,
     },
     {
+      name: 'transactionType',
+      type: 'select',
+      required: true,
+      defaultValue: 'delivery',
+      options: [
+        { label: 'Regular Delivery', value: 'delivery' },
+        { label: 'Manual Adjustment', value: 'adjustment' },
+      ],
+    },
+    {
+      name: 'manualOverride',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Check if this transaction bypasses automatic calculations',
+      },
+    },
+    {
+      name: 'overrideReason',
+      type: 'textarea',
+      required: true,
+      admin: {
+        condition: (data) => data.manualOverride,
+        placeholder: 'Explain why manual override was necessary...',
+      },
+    },
+    {
+      name: 'createdBy',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+      defaultValue: ({ req }) => req.user?.id || null,
+      admin: {
+        readOnly: true,
+        description: 'User who made the manual adjustment',
+      },
+    },
+    {
       name: 'lastDelivered',
       type: 'number',
       virtual: true,
       admin: {
         hidden: true,
         components: {
-          Cell: '/components/LastDeliveredCell'
-        }
-      }
+          Cell: '/components/LastDeliveredCell',
+        },
+      },
     },
     {
       name: 'status',
@@ -99,7 +146,7 @@ export const Transaction: CollectionConfig = {
       name: 'remainingBottles',
       type: 'number',
       admin: {
-        readOnly: true,
+        readOnly: false,
         description: 'Bottles at home/office, calculates automaticly based on last transaction',
       },
     },

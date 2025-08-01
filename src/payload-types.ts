@@ -262,6 +262,16 @@ export interface Transaction {
   id: string;
   trip?: (string | null) | Trip;
   customer: string | Customer;
+  transactionType: 'delivery' | 'adjustment';
+  /**
+   * Check if this transaction bypasses automatic calculations
+   */
+  manualOverride?: boolean | null;
+  overrideReason?: string | null;
+  /**
+   * User who made the manual adjustment
+   */
+  createdBy: string | User;
   lastDelivered?: number | null;
   status: 'paid' | 'unpaid' | 'pending';
   bottleGiven: number;
@@ -818,6 +828,10 @@ export interface EmployeeSelect<T extends boolean = true> {
 export interface TransactionSelect<T extends boolean = true> {
   trip?: T;
   customer?: T;
+  transactionType?: T;
+  manualOverride?: T;
+  overrideReason?: T;
+  createdBy?: T;
   lastDelivered?: T;
   status?: T;
   bottleGiven?: T;

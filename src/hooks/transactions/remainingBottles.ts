@@ -1,17 +1,9 @@
-import type { CollectionBeforeChangeHook } from 'payload'
+import { type CollectionBeforeChangeHook, APIError } from 'payload'
 
 export const calculateRemainingBottles: CollectionBeforeChangeHook = async ({
   data,
   req: { payload },
 }) => {
-  const customer = await payload.findByID({
-    collection: 'customers',
-    id: data.customer,
-    select: {
-      bottlesAtHome: true,
-    },
-  })
-
   const transactions = await payload.find({
     collection: 'transaction',
     limit: 1,
@@ -31,11 +23,32 @@ export const calculateRemainingBottles: CollectionBeforeChangeHook = async ({
     },
   })
 
+  let previousRemaining: number
+
   if (!transactions.docs.length) {
-    data.remainingBottles = customer.bottlesAtHome + data.bottleGiven - data.bottleTaken
+    // First transaction for this customer - use customer's initial bottles as zero
+    previousRemaining = 0
   } else {
-    data.remainingBottles =
-      transactions.docs[0].remainingBottles + data.bottleGiven - data.bottleTaken
+    // Use remaining bottles from the most recent transaction
+    previousRemaining = transactions.docs[0].remainingBottles || 0
+  }
+
+  // Validation: Cannot take more bottles than the customer has
+  if (data.bottleTaken > previousRemaining) {
+    throw new APIError(
+      `Invalid transaction: Cannot take ${data.bottleTaken} bottles; customer only has ${previousRemaining} available.`,
+      400,
+      undefined,
+      false, // admin-only error detail
+    )
+  }
+
+  // Calculate remaining bottles
+  data.remainingBottles = previousRemaining + data.bottleGiven - data.bottleTaken
+
+  // Additional validation: Remaining bottles cannot be negative
+  if (data.remainingBottles < 0) {
+    throw new APIError(`Invalid transaction: This would result would be ${data.remainingBottles}`, 400, undefined, false)
   }
 
   return data
