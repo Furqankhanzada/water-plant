@@ -27,10 +27,7 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
   // ----------------------------
   // Extract customer ID
   // ----------------------------
-  const customerId =
-    typeof data.customer === 'string'
-      ? data.customer
-      : data.customer?.id
+  const customerId = typeof data.customer === 'string' ? data.customer : data.customer?.id
 
   // If no customer is linked, skip all processing
   if (!customerId) return data
@@ -56,17 +53,17 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
     const existing = await payload.find({
       collection: 'transaction',
       where: {
-        and: [
-          { customer: { equals: customerId } },
-          { trip: { equals: data.trip } },
-        ],
+        and: [{ customer: { equals: customerId } }, { trip: { equals: data.trip } }],
       },
       limit: 1,
     })
 
     if (existing.totalDocs) {
       throw new APIError(
-        `A transaction for this customer already exists in this trip.`
+        `A transaction for this customer already exists in this trip.`,
+        400,
+        null,
+        true,
       )
     }
   }
@@ -88,16 +85,11 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
 
   if (!previousTransaction.docs.length) {
     // No previous transaction → start from bottlesAtHome
-    data.remainingBottles =
-      customer.bottlesAtHome +
-      data.bottleGiven -
-      data.bottleTaken
+    data.remainingBottles = customer.bottlesAtHome + data.bottleGiven - data.bottleTaken
   } else {
     // Build on previous remainingBottles value
     data.remainingBottles =
-      previousTransaction.docs[0].remainingBottles +
-      data.bottleGiven -
-      data.bottleTaken
+      previousTransaction.docs[0].remainingBottles + data.bottleGiven - data.bottleTaken
   }
 
   // ----------------------------
@@ -108,22 +100,15 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
   // ----------------------------
   // ✅ 4. Attach customer analytics
   // ----------------------------
-  data.analytics =
-    await customerDeliveryGenerator.fetchAnalyticsByCustomerId(
-      customerId,
-      payload
-    )
+  data.analytics = await customerDeliveryGenerator.fetchAnalyticsByCustomerId(customerId, payload)
 
   // ----------------------------
   // ✅ 5. Send update email (only if bottle counts changed)
   // ----------------------------
-  const bottlesChanged =
-    data.bottleGiven > 0 ||
-    data.bottleTaken > 0
+  const bottlesChanged = data.bottleGiven > 0 || data.bottleTaken > 0
 
   const valuesDifferent =
-    originalDoc?.bottleGiven !== data.bottleGiven ||
-    originalDoc?.bottleTaken !== data.bottleTaken
+    originalDoc?.bottleGiven !== data.bottleGiven || originalDoc?.bottleTaken !== data.bottleTaken
 
   if (bottlesChanged && valuesDifferent && customer.email) {
     // Construct full site URL for images/links
@@ -140,16 +125,13 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
         customer: customer.name,
         image: fullUrl + '/api/media/file/ad.jpg',
       }),
-      { url: ' ', removeStyleTags: false }
+      { url: ' ', removeStyleTags: false },
     )
 
     // Send the email
     await payload.sendEmail({
       to: customer.email,
-      subject: `Water Bottles Delivery - ${format(
-        data.transactionAt,
-        'EEE, MMM dd yyyy'
-      )}`,
+      subject: `Water Bottles Delivery - ${format(data.transactionAt, 'EEE, MMM dd yyyy')}`,
       html,
     })
   }
