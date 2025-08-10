@@ -5,6 +5,7 @@ import { isAdmin } from './access/isAdmin'
 export const Customers: CollectionConfig = {
   slug: 'customers',
   enableQueryPresets: true,
+  disableDuplicate: true,
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'lastDelivered', 'area', 'block', 'rate'],
@@ -22,9 +23,9 @@ export const Customers: CollectionConfig = {
         disableListFilter: true,
         hidden: true,
         components: {
-          Cell: '/components/LastDeliveredCell'
-        }
-      }
+          Cell: '/components/LastDeliveredCell',
+        },
+      },
     },
     {
       type: 'tabs',

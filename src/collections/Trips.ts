@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 
 import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactionsOnTripCreate'
 import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
+import { isAdmin } from './access/isAdmin'
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
@@ -10,6 +11,9 @@ export const Trips: CollectionConfig = {
   admin: {
     useAsTitle: 'tripAt',
     defaultColumns: ['tripAt', 'from', 'areas', 'bottles', 'employee', 'status', 'pdf'],
+  },
+  access: {
+    delete: isAdmin,
   },
   hooks: {
     afterOperation: [createTransactionsOnTripCreate],

@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin } from './access/isAdmin'
 
 export const Blocks: CollectionConfig = {
   slug: 'blocks',
+  disableDuplicate: true,
   admin: {
     useAsTitle: 'name', // Display the block name instead of ID
+  },
+  access: {
+    delete: isAdmin,
   },
   fields: [
     {

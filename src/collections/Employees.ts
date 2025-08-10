@@ -1,11 +1,15 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin } from './access/isAdmin'
 
 export const Employee: CollectionConfig = {
   slug: 'employee',
+  disableDuplicate: true,
   admin: {
     useAsTitle: 'name',
   },
-
+  access: {
+    delete: isAdmin,
+  },
   fields: [
     {
       name: 'name', // Name of the employee

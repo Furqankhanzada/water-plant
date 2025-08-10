@@ -1,9 +1,11 @@
 import type { CollectionConfig } from 'payload'
 import { transactionBeforeChange } from '@/hooks/transactions/transactionBeforeChange'
+import { isAdmin } from './access/isAdmin'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
   enableQueryPresets: true,
+  disableDuplicate: true,
   admin: {
     pagination: {
       defaultLimit: 50,
@@ -19,6 +21,9 @@ export const Transaction: CollectionConfig = {
       'status',
       'trip',
     ],
+  },
+  access: {
+    delete: isAdmin,
   },
   hooks: {
     beforeChange: [transactionBeforeChange]
