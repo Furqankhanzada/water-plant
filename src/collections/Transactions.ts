@@ -127,7 +127,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'priority',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.priority',
       hooks: {
         afterRead: [({ data }) => data?.analytics?.priority],
       },
@@ -139,7 +139,7 @@ export const Transaction: CollectionConfig = {
       name: 'consumptionRate',
       label: 'Daily Consumption',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.consumptionRate',
       admin: {
         hidden: true,
         components: {
@@ -150,7 +150,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'weeklyConsumption',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.weeklyConsumption',
       admin: {
         hidden: true,
         components: {
@@ -162,7 +162,7 @@ export const Transaction: CollectionConfig = {
       name: 'adjustedConsumption',
       label: 'Daily Adjusted Consumption',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.adjustedConsumptionRate',
       admin: {
         hidden: true,
         components: {
@@ -173,7 +173,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'daysUntilDelivery',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.daysUntilDelivery',
       admin: {
         hidden: true,
         components: {
@@ -184,7 +184,7 @@ export const Transaction: CollectionConfig = {
     {
       name: 'nextDeliveryDate',
       type: 'text',
-      virtual: true,
+      virtual: 'analytics.nextDeliveryDate',
       hooks: {
         afterRead: [({ data }) => data?.analytics?.nextDeliveryDate],
       },
