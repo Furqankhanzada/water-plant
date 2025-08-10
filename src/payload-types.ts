@@ -272,6 +272,21 @@ export interface Transaction {
   remainingBottles?: number | null;
   transactionAt: string;
   total: number;
+  priority?: string | null;
+  consumptionRate?: string | null;
+  weeklyConsumption?: string | null;
+  adjustedConsumption?: string | null;
+  daysUntilDelivery?: string | null;
+  nextDeliveryDate?: string | null;
+  analytics?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -290,7 +305,8 @@ export interface Trip {
   /**
    * Set the status to In Progress or Complete.
    */
-  status: 'inprogress' | 'complete';
+  status?: ('inprogress' | 'complete') | null;
+  priority: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW')[];
   transactions?: {
     docs?: (string | Transaction)[];
     hasNextPage?: boolean;
@@ -795,6 +811,7 @@ export interface TripsSelect<T extends boolean = true> {
   tripAt?: T;
   employee?: T;
   status?: T;
+  priority?: T;
   transactions?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -825,6 +842,13 @@ export interface TransactionSelect<T extends boolean = true> {
   remainingBottles?: T;
   transactionAt?: T;
   total?: T;
+  priority?: T;
+  consumptionRate?: T;
+  weeklyConsumption?: T;
+  adjustedConsumption?: T;
+  daysUntilDelivery?: T;
+  nextDeliveryDate?: T;
+  analytics?: T;
   updatedAt?: T;
   createdAt?: T;
 }

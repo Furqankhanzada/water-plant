@@ -97,7 +97,15 @@ export const Trips: CollectionConfig = {
           defaultValue: 'inprogress',
           admin: {
             description: 'Set the status to In Progress or Complete.',
+            condition: (__, _, { operation }) => operation !== 'create',
           },
+        },
+        {
+          name: 'priority',
+          type: 'select',
+          hasMany: true,
+          options: ['URGENT', 'HIGH', 'MEDIUM', 'LOW'],
+          required: true,
         },
       ],
     },
@@ -132,19 +140,20 @@ export const Trips: CollectionConfig = {
       on: 'trip',
       collection: 'transaction',
       defaultLimit: 1000,
-      defaultSort: 'transactionAt',
+      defaultSort: 'analytics.daysUntilDelivery',
       admin: {
         defaultColumns: [
           'transactionAt',
           'customer',
           'bottleGiven',
           'bottleTaken',
-          'remainingBottles',
           'lastDelivered',
-          'total',
-          'status',
+          'priority',
+          'weeklyConsumption',
+          'daysUntilDelivery',
+          'consumptionRate',
         ],
-      }
+      },
     },
   ],
 }

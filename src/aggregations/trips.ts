@@ -1,112 +1,33 @@
-import type { BasePayload, Where } from 'payload'
+import type { BasePayload } from 'payload'
 import { Types } from 'mongoose'
 import { Trip, Transaction } from '@/payload-types'
-import { type DeliveryPrediction, deliveryScheduler } from './DeliveryScheduler'
+import {
+  customerDeliveryGenerator,
+  type CustomerDeliveryAnalytics,
+} from '../services/CustomerDeliveryGenerator'
 
 export const generateTripCustomers = async (trip: Trip, payload: BasePayload) => {
-  const areaIds = trip.areas.map((a) => (typeof a === 'string' ? a : a.id))
+  const areaIds = trip.areas.map((a) =>
+    typeof a === 'string' ? new Types.ObjectId(a) : new Types.ObjectId(a.id),
+  )
+  const blockIds = (trip.blocks || []).map((b) =>
+    typeof b === 'string' ? new Types.ObjectId(b) : new Types.ObjectId(b.id),
+  )
 
-  const blockIds = (trip.blocks || []).map((b) => (typeof b === 'string' ? b : b.id))
-
-  const match: Where = {
-    area: { in: areaIds },
-    status: { equals: 'active' },
+  const matchStage = {
+    area: { $in: areaIds },
+    status: 'active',
+    ...(blockIds.length && { block: { $in: blockIds } }),
   }
 
-  if (blockIds.length) {
-    match.block = { in: blockIds }
-  }
-
-  // const customers = await payload.db.collections['customers'].aggregate([
-  //   {
-  //     $match: match,
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'transactions',
-  //       let: { customerId: '$_id' },
-  //       pipeline: [
-  //         {
-  //           $match: {
-  //             $expr: {
-  //               $and: [
-  //                 { $eq: ['$customer', '$$customerId'] },
-  //                 { $gt: ['$bottleGiven', 0] }
-  //               ]
-  //             }
-  //           }
-  //         },
-  //         { $sort: { transactionAt: -1 } },
-  //         { $limit: 1 }
-  //       ],
-  //       as: 'latestTransaction',
-  //     }
-  //   },
-  //   {
-  //     $unwind: {
-  //       path: '$latestTransaction',
-  //       preserveNullAndEmptyArrays: true, // keep customers with no transactions
-  //     },
-  //   },
-  //   {
-
-  //     $addFields: {
-  //       id: { $toString: '$_id' },
-  //       lastDeliveredDaysAgo: {
-  //         $cond: {
-  //           if: { $gt: ['$latestTransaction.transactionAt', null] },
-  //           then: {
-  //             $floor: {
-  //               $divide: [
-  //                 { $subtract: [now, '$latestTransaction.transactionAt'] },
-  //                 1000 * 60 * 60 * 24,
-  //               ],
-  //             },
-  //           },
-  //           else: null,
-  //         },
-  //       },
-  //       needsDelivery: {
-  //         $cond: {
-  //           if: {
-  //             $or: [
-  //               { $not: ['$latestTransaction.transactionAt'] },
-  //               {
-  //                 $gt: [
-  //                   {
-  //                     $divide: [
-  //                       { $subtract: [now, '$latestTransaction.transactionAt'] },
-  //                       1000 * 60 * 60 * 24,
-  //                     ],
-  //                   },
-  //                   '$deliveryFrequencyDays'
-  //                 ],
-  //               },
-  //             ],
-  //           },
-  //           then: true,
-  //           else: false,
-  //         },
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $match: {
-  //       needsDelivery: true,
-  //     }
-  //   },
-  // ]);
-
-  const customers: DeliveryPrediction[] = await deliveryScheduler.calculateDeliverySchedule(
-    match,
+  const customers = await customerDeliveryGenerator.fetchAnalyticsWithAggregation(
+    matchStage,
     payload,
   )
-  // const analytics = deliveryScheduler.generateDeliveryReport(customers);
 
-  // console.log("customers analytics", analytics);
-  // console.log("customers", customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority)));
+  const filteredCustomers = customers.filter((c) => trip.priority.includes(c.priority))
 
-  return customers.filter((c) => ['URGENT', 'HIGH'].includes(c.priority))
+  return filteredCustomers
 }
 
 export const generateTripReport = async (tripId: string, payload: BasePayload) => {
@@ -234,27 +155,31 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
 }
 
 export const insertCustomersTransactions = async (
-  tripCustomers: DeliveryPrediction[],
+  customerDeliveryAnalytics: CustomerDeliveryAnalytics[],
   tripResult: Trip,
   payload: BasePayload,
 ): Promise<void> => {
   try {
-    const transactions = tripCustomers.map((customer) => ({
-      trip: tripResult.id,
-      customer: customer.customerId,
-      status: 'unpaid',
-      bottleGiven: 0,
-      bottleTaken: 0,
-      total: 0,
-      transactionAt: new Date(tripResult.tripAt).toISOString(),
-    }))
+    const transactions: Omit<Transaction, 'id' | 'updatedAt' | 'createdAt'>[] =
+      customerDeliveryAnalytics.map(({ customer, ...analytics }) => ({
+        trip: tripResult.id,
+        customer: customer,
+        status: 'unpaid',
+        bottleGiven: 0,
+        bottleTaken: 0,
+        total: 0,
+        analytics: analytics,
+        transactionAt: new Date(tripResult.tripAt).toISOString(),
+      }))
+
+    // console.log('transactions', transactions)
 
     // Insert all transactions in parallel
     await Promise.all(
       transactions.map((tx) =>
         payload.create({
           collection: 'transaction',
-          data: tx as Transaction,
+          data: tx,
         }),
       ),
     )
