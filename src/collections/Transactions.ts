@@ -1,8 +1,5 @@
 import type { CollectionConfig } from 'payload'
-
-import { calculateRemainingBottles } from '@/hooks/transactions/remainingBottles'
-import { calculateTotalHook } from '@/hooks/transactions/total'
-import { transactionUpdateForCustomer } from '@/hooks/transactions/transactionUpdateForCustomer'
+import { transactionBeforeChange } from '@/hooks/transactions/transactionBeforeChange'
 import { isAdmin } from './access/isAdmin'
 
 export const Transaction: CollectionConfig = {
@@ -29,8 +26,7 @@ export const Transaction: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
-    afterChange: [],
-    beforeChange: [calculateRemainingBottles, calculateTotalHook, transactionUpdateForCustomer],
+    beforeChange: [transactionBeforeChange]
   },
   fields: [
     {
@@ -125,6 +121,99 @@ export const Transaction: CollectionConfig = {
       type: 'number',
       required: true,
       admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'priority',
+      type: 'text',
+      virtual: 'analytics.priority',
+      hooks: {
+        afterRead: [({ data }) => data?.analytics?.priority],
+      },
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'consumptionRate',
+      label: 'Daily Consumption',
+      type: 'text',
+      virtual: 'analytics.consumptionRate',
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/Transactions#DailyConsumptionCell',
+        },
+      },
+    },
+    {
+      name: 'weeklyConsumption',
+      type: 'text',
+      virtual: 'analytics.weeklyConsumption',
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/Transactions#WeeklyConsumptionCell',
+        },
+      },
+    },
+    {
+      name: 'adjustedConsumption',
+      label: 'Daily Adjusted Consumption',
+      type: 'text',
+      virtual: 'analytics.adjustedConsumptionRate',
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/Transactions#AdjustedConsumptionCell',
+        },
+      },
+    },
+    {
+      name: 'daysUntilDelivery',
+      type: 'text',
+      virtual: 'analytics.daysUntilDelivery',
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/Transactions#DaysUntilDeliveryCell',
+        },
+      },
+    },
+    {
+      name: 'nextDeliveryDate',
+      type: 'text',
+      virtual: 'analytics.nextDeliveryDate',
+      hooks: {
+        afterRead: [({ data }) => data?.analytics?.nextDeliveryDate],
+      },
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'analytics',
+      type: 'json',
+      // jsonSchema: {
+      //   fileMatch: ['*'],
+      //   uri: 'http://example.com/analytics.schema.json',
+      //   schema: {
+      //     type: 'object',
+      //     properties: {
+      //       consumptionRate: { type: 'number' },
+      //       adjustedConsumptionRate: { type: 'number' },
+      //       weeklyConsumption: { type: 'number' },
+      //       daysUntilDelivery: { type: 'number' },
+      //       nextDeliveryDate: { type: 'string', format: 'date-time' },
+      //       priority: {
+      //         enum: ['URGENT', 'HIGH', 'MEDIUM', 'LOW'],
+      //       },
+      //     },
+      //   },
+      // },
+      admin: {
+        disableListColumn: true,
         hidden: true,
       },
     },
