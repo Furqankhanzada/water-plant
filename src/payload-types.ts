@@ -334,8 +334,12 @@ export interface Employee {
  */
 export interface Invoice {
   id: string;
-  isLatest?: boolean | null;
-  customer: string | Customer;
+  customer: {
+    id: string | Customer;
+    address?: string | null;
+    area: string | Area;
+    block: string | Block;
+  };
   transactions: (string | Transaction)[];
   status?: ('paid' | 'unpaid' | 'partially-paid') | null;
   netTotal?: number | null;
@@ -375,6 +379,7 @@ export interface Invoice {
   lostBottlesCount?: number | null;
   lostBottleAmount?: number | null;
   lostBottlesTotalAmount?: number | null;
+  isLatest?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -857,8 +862,14 @@ export interface TransactionSelect<T extends boolean = true> {
  * via the `definition` "invoice_select".
  */
 export interface InvoiceSelect<T extends boolean = true> {
-  isLatest?: T;
-  customer?: T;
+  customer?:
+    | T
+    | {
+        id?: T;
+        address?: T;
+        area?: T;
+        block?: T;
+      };
   transactions?: T;
   status?: T;
   netTotal?: T;
@@ -883,6 +894,7 @@ export interface InvoiceSelect<T extends boolean = true> {
   lostBottlesCount?: T;
   lostBottleAmount?: T;
   lostBottlesTotalAmount?: T;
+  isLatest?: T;
   updatedAt?: T;
   createdAt?: T;
 }

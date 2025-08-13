@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 })
 
 const BillTo = ({ invoice }: { invoice: Invoice }) => {
-  const customer = invoice.customer as Customer
+  const customer = invoice.customer.id as Customer
   const block = customer.block as Block
   const area = customer.area as Area
 

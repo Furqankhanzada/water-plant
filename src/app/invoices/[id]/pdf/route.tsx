@@ -137,7 +137,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   company.logo = company.logo as Media
   company.logo.url = fullUrl + company.logo.url
 
-  const customer = invoice.customer as Customer
+  const customer = invoice.customer.id as Customer
   const qrDataURI = await QRCode.toDataURL(`${fullUrl}/invoices/${invoice.id}/pdf`)
 
   const stream = await renderToStream(

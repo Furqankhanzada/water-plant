@@ -231,7 +231,7 @@ export const Customers: CollectionConfig = {
             {
               name: 'invoice',
               type: 'join',
-              on: 'customer',
+              on: 'customer.id',
               collection: 'invoice',
               defaultSort: '-dueAt',
               admin: {

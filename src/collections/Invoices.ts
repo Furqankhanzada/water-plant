@@ -17,7 +17,7 @@ export const Invoice: CollectionConfig = {
   },
   admin: {
     defaultColumns: [
-      'customer',
+      'customer.id',
       'status',
       'netTotal',
       'dueAmount',
@@ -34,18 +34,49 @@ export const Invoice: CollectionConfig = {
   },
   fields: [
     {
-      name: 'isLatest',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        hidden: true,
-      },
-    },
-    {
+      label: 'Customer',
       name: 'customer',
-      type: 'relationship',
-      relationTo: 'customers',
-      required: true,
+      type: 'group',
+      fields: [
+        {
+          label: 'Name',
+          name: 'id',
+          type: 'relationship',
+          relationTo: 'customers',
+          required: true,
+        },
+        {
+          name: 'address',
+          type: 'text',
+          access: {
+            update: () => false,
+          },
+        },
+        {
+          name: 'area',
+          type: 'relationship',
+          relationTo: 'areas',
+          required: true,
+          access: {
+            update: () => false,
+          },
+        },
+        {
+          name: 'block',
+          type: 'relationship',
+          relationTo: 'blocks',
+          required: true,
+          filterOptions: ({ data, req: { pathname } }) => {
+            if (pathname.split('/').pop() === 'customers') return true
+            return {
+              area: { equals: data.area || '' },
+            }
+          },
+          access: {
+            update: () => false,
+          },
+        },
+      ],
     },
     {
       name: 'transactions',
@@ -297,6 +328,14 @@ export const Invoice: CollectionConfig = {
             serverProps: { cell: true },
           },
         },
+      },
+    },
+    {
+      name: 'isLatest',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        hidden: true,
       },
     },
   ],

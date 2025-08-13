@@ -55,7 +55,12 @@ const createAndSendInvoice = async (
   const newInvoice = await payload.create({
     collection: 'invoice',
     data: {
-      customer: customer.id!,
+      customer: {
+        id: customer.id!,
+        address: customer.address || null,
+        area: customer.area!,
+        block: customer.block!
+      },
       transactions: transactions.map((t) => t.id!),
       dueAt: setDate(currentDate, 10).toISOString(),
     },
