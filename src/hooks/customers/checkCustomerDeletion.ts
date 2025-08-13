@@ -1,0 +1,56 @@
+import { BeforeDeleteHook } from 'node_modules/payload/dist/collections/config/types';
+import { APIError } from 'payload'
+
+export const checkCustomerDeletion: BeforeDeleteHook = async ({ req, id }) => {
+  // Check for related transactions
+  const transactions = await req.payload.find({
+    collection: 'transaction',
+    where: {
+      customer: { equals: id }
+    },
+    limit: 1
+  });
+
+  if (transactions.docs.length > 0) {
+    throw new APIError('Cannot delete customer: Customer has associated transactions. Please delete all transactions first.', 400);
+  }
+
+  // Check for related invoices
+  const invoices = await req.payload.find({
+    collection: 'invoice',
+    where: {
+      customer: { equals: id }
+    },
+    limit: 1
+  });
+
+  if (invoices.docs.length > 0) {
+    throw new APIError('Cannot delete customer: Customer has associated invoices. Please delete all invoices first.', 400);
+  }
+
+  // Check for related messages
+  const messages = await req.payload.find({
+    collection: 'messages',
+    where: {
+      from: { in: [id] }
+    },
+    limit: 1
+  });
+
+  if (messages.docs.length > 0) {
+    throw new APIError('Cannot delete customer: Customer has associated messages. Please delete all messages first.', 400);
+  }
+
+  // Check for related requests
+  const requests = await req.payload.find({
+    collection: 'requests',
+    where: {
+      from: { in: [id] }
+    },
+    limit: 1
+  });
+
+  if (requests.docs.length > 0) {
+    throw new APIError('Cannot delete customer: Customer has associated requests. Please delete all requests first.', 400);
+  }
+}
