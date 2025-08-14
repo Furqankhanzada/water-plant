@@ -32,8 +32,11 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook<Tr
         where: {
           id: { in: data.transactions?.docs || [] },
         },
+        select: {
+          customer: true,
+        },
         depth: 0,
-        limit: 1000,
+        pagination: false,
       })
 
       const customerIds = new Set(transactions.map((tx) => tx.customer))
