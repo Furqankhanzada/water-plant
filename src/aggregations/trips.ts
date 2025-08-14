@@ -141,6 +141,7 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
         bottleGiven: 1,
         bottleTaken: 1,
         remainingBottles: 1,
+        analytics: 1
       },
     },
   ])

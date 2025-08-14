@@ -3,7 +3,6 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer'
 
 import { Customer, Invoice, Transaction, Trip } from '@/payload-types'
 import { tableStyles } from './Table'
-import { formatDistanceWithFallback } from '@/lib/utils'
 
 const styles = StyleSheet.create({
   name: {
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
   },
   lastDelivered: {
     width: '12%',
-  }
+  },
 })
 
 const rupee = new Intl.NumberFormat('en-PK', {
@@ -72,8 +71,8 @@ const TableRow = ({
       }
     }
 
-    const transactionAt = customer.latestTransaction?.transactionAt;
-    const lastDelivered = formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' });
+    // @ts-ignore
+    const priority = transaction.analytics?.priority
 
     return (
       <View style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]} key={customer.id}>
@@ -90,7 +89,7 @@ const TableRow = ({
         </Text>
         <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
         <Text style={[tableStyles.column, styles.paymentDue]}>{rupee.format(paymentDue)}</Text>
-        <Text style={[tableStyles.column, styles.lastDelivered]}>{lastDelivered}</Text>
+        <Text style={[tableStyles.column, styles.lastDelivered]}>{priority || 'Unknown'}</Text>
       </View>
     )
   })
