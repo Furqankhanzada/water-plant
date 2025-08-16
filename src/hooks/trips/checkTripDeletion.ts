@@ -8,7 +8,11 @@ export const checkTripDeletion: BeforeDeleteHook = async ({ req, id }) => {
     where: {
       trip: { equals: id }
     },
-    limit: 1
+    limit: 1,
+    depth: 0,
+    select: {
+      trip: true,
+    },
   });
 
   if (transactions.docs.length > 0) {

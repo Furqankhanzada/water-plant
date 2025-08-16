@@ -8,7 +8,11 @@ export const checkCustomerDeletion: BeforeDeleteHook = async ({ req, id }) => {
     where: {
       customer: { equals: id }
     },
-    limit: 1
+    limit: 1,
+    depth: 0,
+    select: {
+      customer: true,
+    },
   });
 
   if (transactions.docs.length > 0) {
@@ -21,7 +25,11 @@ export const checkCustomerDeletion: BeforeDeleteHook = async ({ req, id }) => {
     where: {
       customer: { equals: id }
     },
-    limit: 1
+    limit: 1,
+    depth: 0,
+    select: {
+      customer: true,
+    },
   });
 
   if (invoices.docs.length > 0) {
@@ -34,7 +42,11 @@ export const checkCustomerDeletion: BeforeDeleteHook = async ({ req, id }) => {
     where: {
       from: { in: [id] }
     },
-    limit: 1
+    limit: 1,
+    depth: 0,
+    select: {
+      from: true,
+    },
   });
 
   if (messages.docs.length > 0) {
@@ -47,7 +59,11 @@ export const checkCustomerDeletion: BeforeDeleteHook = async ({ req, id }) => {
     where: {
       from: { in: [id] }
     },
-    limit: 1
+    limit: 1,
+    depth: 0,
+    select: {
+      from: true,
+    },
   });
 
   if (requests.docs.length > 0) {

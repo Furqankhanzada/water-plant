@@ -6,6 +6,10 @@ export const checkInvoiceDeletion: BeforeDeleteHook = async ({ req, id }) => {
   const invoice = await req.payload.findByID({
     collection: 'invoice',
     id,
+    depth: 0,
+    select: {
+      transactions: true,
+    },
   });
 
   if (!invoice) {
