@@ -84,7 +84,7 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
-    prodMigrations: migrations as Migration[],
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [

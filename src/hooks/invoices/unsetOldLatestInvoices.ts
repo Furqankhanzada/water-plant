@@ -14,7 +14,7 @@ export const unsetOldLatestInvoices: CollectionAfterChangeHook<Invoice> = async 
   const { customer, id } = doc;
 
   const db = payload.db.collections.invoice.collection;
-  const customerId = typeof customer === 'string' ? new ObjectId(customer) : new ObjectId(customer.id);
+  const customerId = new ObjectId(typeof customer.id === 'string' ? customer.id : customer.id.id);
 
   // Set isLatest = false for all other invoices of the customer
   await db.updateMany(

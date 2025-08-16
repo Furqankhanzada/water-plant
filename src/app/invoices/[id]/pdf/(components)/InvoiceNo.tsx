@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 })
 
 const InvoiceNo = ({ invoice }: { invoice: Invoice }) => {
-  const customer = invoice.customer as Customer
+  const customer = invoice.customer.id as Customer
   return (
     <Fragment>
       <View style={styles.invoiceNoContainer}>

@@ -35,7 +35,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     })
   }
 
-  const customer = invoice.customer as Customer
+  const customer = invoice.customer.id as Customer
   const whatsAppContact = customer.contactNumbers?.find(
     (contactNumber) => contactNumber.type === 'whatsapp',
   )
