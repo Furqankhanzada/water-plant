@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { transactionBeforeChange } from '@/hooks/transactions/transactionBeforeChange'
+import { checkTransactionDeletion } from '@/hooks/transactions/checkTransactionDeletion'
 import { isAdmin } from './access/isAdmin'
 
 export const Transaction: CollectionConfig = {
@@ -26,7 +27,8 @@ export const Transaction: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
-    beforeChange: [transactionBeforeChange]
+    beforeChange: [transactionBeforeChange],
+    beforeDelete: [checkTransactionDeletion],
   },
   fields: [
     {

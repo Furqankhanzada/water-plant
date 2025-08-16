@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 
 import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactionsOnTripCreate'
 import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
+import { checkTripDeletion } from '@/hooks/trips/checkTripDeletion'
 import { isAdmin } from './access/isAdmin'
 
 export const Trips: CollectionConfig = {
@@ -18,6 +19,7 @@ export const Trips: CollectionConfig = {
   hooks: {
     afterOperation: [createTransactionsOnTripCreate],
     beforeChange: [toggleTransactionsOnStatusChangeHook],
+    beforeDelete: [checkTripDeletion],
   },
   fields: [
     {
