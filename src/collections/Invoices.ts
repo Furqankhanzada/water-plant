@@ -4,6 +4,7 @@ import { changeTransactionsStatusHook } from '@/hooks/invoices/changeTransaction
 import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransactionsStatusOnRemoval'
 import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
+import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
 import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
@@ -14,6 +15,7 @@ export const Invoice: CollectionConfig = {
     afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook],
+    beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
     defaultColumns: [
