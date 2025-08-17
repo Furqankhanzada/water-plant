@@ -58,7 +58,9 @@ export const TransactionTable = async ({ data, payload }: ServerComponentProps) 
       },
     },
     depth: 2,
+    pagination: false,
   })
+
   const columns: Column[] = [
     {
       accessor: 'transactionAt',
