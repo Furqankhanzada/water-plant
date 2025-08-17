@@ -66,7 +66,7 @@ export const TransactionTable = async ({ data, payload }: ServerComponentProps) 
       accessor: 'transactionAt',
       active: true,
       field: { type: 'date', name: 'Transaction At' },
-      Heading: <span>Transaction At</span>,
+      Heading: 'Transaction At',
       renderedCells: transactions.docs.map((tx) => (
         <span key={tx.id}>{new Date(tx.transactionAt).toLocaleDateString()}</span>
       )),
@@ -75,7 +75,7 @@ export const TransactionTable = async ({ data, payload }: ServerComponentProps) 
       accessor: 'customer',
       active: true,
       field: { type: 'relationship', name: 'customer', relationTo: 'transaction' },
-      Heading: <span>Customer</span>,
+      Heading: 'Customer',
       renderedCells: transactions.docs.map((tx) => (
         <span key={tx.id}>{typeof tx.customer === 'string' ? tx.customer : tx.customer?.name}</span>
       )),
@@ -84,42 +84,42 @@ export const TransactionTable = async ({ data, payload }: ServerComponentProps) 
       accessor: 'bottleGiven',
       active: true,
       field: { type: 'number', name: 'Bottle Given' },
-      Heading: <span>Bottle Given</span>,
+      Heading: 'Bottle Given',
       renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.bottleGiven}</span>),
     },
     {
       accessor: 'bottleTaken',
       active: true,
       field: { type: 'number', name: 'Bottle Taken' },
-      Heading: <span>Bottle Taken</span>,
+      Heading: 'Bottle Taken',
       renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.bottleTaken}</span>),
     },
     {
       accessor: 'remainingBottles',
       active: true,
       field: { type: 'number', name: 'Remaining Bottles' },
-      Heading: <span>Remaining</span>,
+      Heading: 'Remaining',
       renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.remainingBottles}</span>),
     },
     {
       accessor: 'total',
       active: true,
       field: { type: 'number', name: 'Total' },
-      Heading: <span>Total</span>,
+      Heading: 'Total',
       renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.total}</span>),
     },
     {
       accessor: 'status',
       active: true,
       field: { type: 'text', name: 'Status' },
-      Heading: <span>Status</span>,
+      Heading: 'Status',
       renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.status}</span>),
     },
     {
       accessor: 'trip',
       active: true,
       field: { type: 'relationship', name: 'Trip', relationTo: 'transaction' },
-      Heading: <span>Trip</span>,
+      Heading: 'Trip',
       renderedCells: transactions.docs.map((tx) => (
         <span key={tx.id}>{typeof tx.trip === 'string' ? tx.trip : tx.trip?.tripAt}</span>
       )),
