@@ -299,5 +299,14 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'Transactions',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/Invoices#TransactionTable',
+        },
+      },
+    },
   ],
 }
