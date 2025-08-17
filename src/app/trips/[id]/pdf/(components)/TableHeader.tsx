@@ -43,7 +43,7 @@ const TableHeader = () => (
       Payment Received
     </Text>
     <Text style={[tableStyles.column, tableStyles.bold, styles.paymentDue]}>Payment Due</Text>
-    <Text style={[tableStyles.column, tableStyles.bold, styles.lastDelivered]}>Last Delivered</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.lastDelivered]}>Priority</Text>
   </View>
 )
 

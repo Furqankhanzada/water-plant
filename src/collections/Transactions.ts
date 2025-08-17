@@ -196,24 +196,51 @@ export const Transaction: CollectionConfig = {
     },
     {
       name: 'analytics',
-      type: 'json',
-      // jsonSchema: {
-      //   fileMatch: ['*'],
-      //   uri: 'http://example.com/analytics.schema.json',
-      //   schema: {
-      //     type: 'object',
-      //     properties: {
-      //       consumptionRate: { type: 'number' },
-      //       adjustedConsumptionRate: { type: 'number' },
-      //       weeklyConsumption: { type: 'number' },
-      //       daysUntilDelivery: { type: 'number' },
-      //       nextDeliveryDate: { type: 'string', format: 'date-time' },
-      //       priority: {
-      //         enum: ['URGENT', 'HIGH', 'MEDIUM', 'LOW'],
-      //       },
-      //     },
-      //   },
-      // },
+      type: 'group',
+      fields: [
+        {
+          type: 'number',
+          name: 'consumptionRate',
+        },
+        {
+          type: 'number',
+          name: 'adjustedConsumptionRate',
+        },
+        {
+          type: 'number',
+          name: 'weeklyConsumption',
+        },
+        {
+          type: 'number',
+          name: 'daysUntilDelivery',
+        },
+        {
+          type: 'date',
+          name: 'nextDeliveryDate',
+        },
+        {
+          type: 'select',
+          name: 'priority',
+          options: [
+            {
+              label: 'URGENT',
+              value: 'URGENT',
+            },
+            {
+              label: 'HIGH',
+              value: 'HIGH',
+            },
+            {
+              label: 'MEDIUM',
+              value: 'MEDIUM',
+            },
+            {
+              label: 'LOW',
+              value: 'LOW',
+            },
+          ],
+        },
+      ],
       admin: {
         disableListColumn: true,
         hidden: true,

@@ -100,7 +100,16 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
           { $sort: { createdAt: -1 } },
           { $limit: 1 },
           { $addFields: { id: { $toString: '$_id' } } },
-          { $project: { status: 1, advanceAmount: 1, remainingAmount: 1, dueAmount: 1, id: 1 } },
+          {
+            $project: {
+              status: 1,
+              advanceAmount: 1,
+              remainingAmount: 1,
+              dueAmount: 1,
+              id: 1,
+              dueAt: 1,
+            },
+          },
         ],
         as: 'customer.invoice.docs',
       },
@@ -141,6 +150,7 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
         bottleGiven: 1,
         bottleTaken: 1,
         remainingBottles: 1,
+        analytics: 1,
       },
     },
   ])

@@ -1,35 +1,20 @@
 import React, { Fragment } from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
+import { isAfter } from 'date-fns'
 
 import { Customer, Invoice, Transaction, Trip } from '@/payload-types'
 import { tableStyles } from './Table'
 import { formatDistanceWithFallback } from '@/lib/utils'
 
 const styles = StyleSheet.create({
-  name: {
-    width: '15%',
-  },
-  address: {
-    width: '20%',
-  },
-  delivered: {
-    width: '9%',
-  },
-  returned: {
-    width: '9%',
-  },
-  remaining: {
-    width: '10%',
-  },
-  paymentReceived: {
-    width: '13%',
-  },
-  paymentDue: {
-    width: '13%',
-  },
-  lastDelivered: {
-    width: '12%',
-  }
+  name: { width: '15%' },
+  address: { width: '20%' },
+  delivered: { width: '9%' },
+  returned: { width: '9%' },
+  remaining: { width: '10%' },
+  paymentReceived: { width: '13%' },
+  paymentDue: { width: '13%' },
+  lastDelivered: { width: '12%' },
 })
 
 const rupee = new Intl.NumberFormat('en-PK', {
@@ -38,62 +23,103 @@ const rupee = new Intl.NumberFormat('en-PK', {
   minimumFractionDigits: 0,
 })
 
+const PARTIALLY_PAID_THRESHOLD = 1000
+
 type CustomerWithLatestTransaction = Customer & {
   latestTransaction?: {
-    transactionAt: Date | undefined
+    transactionAt?: Date
   }
 }
 
-const TableRow = ({
-  blockTransactions,
-  trip,
-}: {
+/** Payment due calculation */
+const getPaymentDue = (invoice?: Invoice): number => {
+  if (!invoice) return 0
+  switch (invoice.status) {
+    case 'paid':
+      return invoice.advanceAmount ?? 0
+    case 'partially-paid':
+      return invoice.remainingAmount ?? 0
+    default:
+      return invoice.dueAmount ?? 0
+  }
+}
+
+/** Invoice cell coloring */
+const getInvoiceCellStyle = (invoice?: Invoice) => {
+  if (!invoice) return {}
+
+  const { status, dueAt } = invoice
+  const isOverdue = dueAt ? isAfter(new Date(), new Date(dueAt)) : false
+  const dueAmount = getPaymentDue(invoice)
+
+  const colors = {
+    unpaidCritical: { backgroundColor: '#e13125ff', color: '#fff' },
+    partialCritical: { backgroundColor: '#ffc3b9ff', color: '#000' },
+  }
+
+  if (status === 'unpaid') return colors.unpaidCritical
+  if (status === 'partially-paid' && isOverdue && dueAmount >= PARTIALLY_PAID_THRESHOLD) {
+    return colors.partialCritical
+  }
+  return {}
+}
+
+/** Priority highlighting */
+type Priority = 'URGENT' | 'HIGH'
+const priorityColors: Record<Priority, { backgroundColor: string; color: string }> = {
+  URGENT: { backgroundColor: '#e13125ff', color: '#fff' },
+  HIGH: { backgroundColor: '#ffc3b9ff', color: '#000' },
+}
+
+interface TableRowProps {
   blockTransactions: Partial<Transaction>[]
   trip: Partial<Trip>
-}) => {
+}
+
+const TableRow: React.FC<TableRowProps> = ({ blockTransactions, trip }) => {
   const rows = blockTransactions.map((transaction, i) => {
     const odd = i % 2 !== 0
     const customer = transaction.customer as CustomerWithLatestTransaction
-    let paymentDue = 0
-    if (customer?.invoice?.docs?.length) {
-      const invoice = customer.invoice?.docs[0] as Invoice
-      if (invoice) {
-        switch (invoice.status) {
-          case 'paid':
-            paymentDue = invoice.advanceAmount!
-            break
-          case 'partially-paid':
-            paymentDue = invoice.remainingAmount!
-            break
-          default:
-            paymentDue = invoice.dueAmount!
-            break
-        }
-      }
-    }
+    if (!customer) return null
 
-    const transactionAt = customer.latestTransaction?.transactionAt;
-    const lastDelivered = formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' });
+    const invoices = customer.invoice?.docs as Invoice[] | undefined
+    const latestInvoice = invoices?.[0]
+    const paymentDue = getPaymentDue(latestInvoice)
+
+    const transactionAt = customer.latestTransaction?.transactionAt
+    const lastDelivered = formatDistanceWithFallback(transactionAt, { fallback: 'Never Delivered' })
+
+    const rowBgColor = getInvoiceCellStyle(latestInvoice)
+    const priority = transaction.analytics?.priority as Priority
 
     return (
-      <View style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]} key={customer.id}>
-        <Text style={[tableStyles.column, styles.name]}>{customer.name}</Text>
+      <View key={customer.id} style={[tableStyles.row, odd ? { backgroundColor: '#f2f2f2' } : {}]}>
+        <Text style={[tableStyles.column, styles.name, rowBgColor]}>{customer.name}</Text>
         <Text style={[tableStyles.column, styles.address]}>{customer.address}</Text>
         <Text style={[tableStyles.column, styles.delivered]}>
-          {trip.status !== 'complete' ? '' : transaction.bottleGiven}
+          {trip.status === 'complete' ? transaction.bottleGiven : ''}
         </Text>
         <Text style={[tableStyles.column, styles.returned]}>
-          {trip.status !== 'complete' ? '' : transaction.bottleTaken}
+          {trip.status === 'complete' ? transaction.bottleTaken : ''}
         </Text>
         <Text style={[tableStyles.column, styles.remaining]}>
-          {trip.status !== 'complete' ? customer.bottlesAtHome : transaction.remainingBottles}
+          {trip.status === 'complete' ? transaction.remainingBottles : ''}
         </Text>
-        <Text style={[tableStyles.column, styles.paymentReceived]}></Text>
+        <Text style={[tableStyles.column, styles.paymentReceived]} />
         <Text style={[tableStyles.column, styles.paymentDue]}>{rupee.format(paymentDue)}</Text>
-        <Text style={[tableStyles.column, styles.lastDelivered]}>{lastDelivered}</Text>
+        <Text
+          style={[
+            tableStyles.column,
+            styles.lastDelivered,
+            priority ? priorityColors[priority] : {},
+          ]}
+        >
+          {`${priority?.charAt(0) ?? ''} | ${lastDelivered}`}
+        </Text>
       </View>
     )
   })
+
   return <Fragment>{rows}</Fragment>
 }
 
