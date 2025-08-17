@@ -1,7 +1,6 @@
-import { BeforeDeleteHook } from 'node_modules/payload/dist/collections/config/types';
-import { APIError } from 'payload'
+import { APIError, CollectionBeforeDeleteHook } from 'payload'
 
-export const checkTripDeletion: BeforeDeleteHook = async ({ req, id }) => {
+export const checkTripDeletion: CollectionBeforeDeleteHook = async ({ req, id }) => {
   // Check for related transactions
   const transactions = await req.payload.find({
     collection: 'transaction',

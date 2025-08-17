@@ -1,7 +1,6 @@
-import { BeforeDeleteHook } from 'node_modules/payload/dist/collections/config/types';
-import { APIError } from 'payload'
+import { APIError, CollectionBeforeDeleteHook } from 'payload'
 
-export const checkInvoiceDeletion: BeforeDeleteHook = async ({ req, id }) => {
+export const checkInvoiceDeletion: CollectionBeforeDeleteHook = async ({ req, id }) => {
   // Get the invoice document to check its transactions
   const invoice = await req.payload.findByID({
     collection: 'invoice',
