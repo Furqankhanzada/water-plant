@@ -278,15 +278,14 @@ export interface Transaction {
   adjustedConsumption?: string | null;
   daysUntilDelivery?: string | null;
   nextDeliveryDate?: string | null;
-  analytics?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  analytics?: {
+    consumptionRate?: number | null;
+    adjustedConsumptionRate?: number | null;
+    weeklyConsumption?: number | null;
+    daysUntilDelivery?: number | null;
+    nextDeliveryDate?: string | null;
+    priority?: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -848,7 +847,16 @@ export interface TransactionSelect<T extends boolean = true> {
   adjustedConsumption?: T;
   daysUntilDelivery?: T;
   nextDeliveryDate?: T;
-  analytics?: T;
+  analytics?:
+    | T
+    | {
+        consumptionRate?: T;
+        adjustedConsumptionRate?: T;
+        weeklyConsumption?: T;
+        daysUntilDelivery?: T;
+        nextDeliveryDate?: T;
+        priority?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
