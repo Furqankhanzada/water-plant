@@ -301,5 +301,15 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'Transactions',
+      type: 'ui',
+      admin: {
+         condition: (__, _, { operation }) => operation === 'update',
+        components: {
+          Field: '/components/Invoices#TransactionTable',
+        },
+      },
+    },
   ],
 }

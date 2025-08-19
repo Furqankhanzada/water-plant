@@ -8,6 +8,7 @@ import { AdjustedConsumptionCell as AdjustedConsumptionCell_52e693fa1feaa9442d7f
 import { DaysUntilDeliveryCell as DaysUntilDeliveryCell_52e693fa1feaa9442d7f4ad03c5825c0 } from '../../../components/Transactions'
 import { GeneratePdfButton as GeneratePdfButton_70a30823add7ef7114b7676ba5a6f720 } from '../../../components/Invoices'
 import { SendInvoiceButton as SendInvoiceButton_70a30823add7ef7114b7676ba5a6f720 } from '../../../components/Invoices'
+import { TransactionTable as TransactionTable_70a30823add7ef7114b7676ba5a6f720 } from '../../../components/Invoices'
 import { QueryPresetsAccessCell as QueryPresetsAccessCell_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { QueryPresetsWhereCell as QueryPresetsWhereCell_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { QueryPresetsWhereField as QueryPresetsWhereField_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
@@ -28,6 +29,7 @@ export const importMap = {
   "/components/Transactions#DaysUntilDeliveryCell": DaysUntilDeliveryCell_52e693fa1feaa9442d7f4ad03c5825c0,
   "/components/Invoices#GeneratePdfButton": GeneratePdfButton_70a30823add7ef7114b7676ba5a6f720,
   "/components/Invoices#SendInvoiceButton": SendInvoiceButton_70a30823add7ef7114b7676ba5a6f720,
+  "/components/Invoices#TransactionTable": TransactionTable_70a30823add7ef7114b7676ba5a6f720,
   "@payloadcms/ui#QueryPresetsAccessCell": QueryPresetsAccessCell_3817bf644402e67bfe6577f60ef982de,
   "@payloadcms/ui#QueryPresetsWhereCell": QueryPresetsWhereCell_3817bf644402e67bfe6577f60ef982de,
   "@payloadcms/ui#QueryPresetsWhereField": QueryPresetsWhereField_3817bf644402e67bfe6577f60ef982de,

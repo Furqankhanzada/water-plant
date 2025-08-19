@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ServerComponentProps } from 'payload'
+import { Column, ServerComponentProps } from 'payload'
 
 import { isWhatsAppEnabled } from '@/lib/sendWhatsAppMessage'
+import { Pill, Table } from '@payloadcms/ui'
 
 export const GeneratePdfButton = async (
   props: ServerComponentProps & { rowData: { id: string } },
@@ -46,4 +47,106 @@ export const SendInvoiceButton = async (
       Send Invoice
     </Link>
   )
+}
+
+export const TransactionTable = async ({ data, payload }: ServerComponentProps) => {
+  const transactions = await payload.find({
+    collection: 'transaction',
+    where: {
+      id: {
+        in: data.transactions,
+      },
+    },
+    sort: '-transactionAt',
+    depth: 2,
+    pagination: false,
+  })
+
+  if (transactions.totalDocs === 0) {
+    return
+  }
+
+  const columns: Column[] = [
+    {
+      accessor: 'transactionAt',
+      active: true,
+      field: { type: 'date', name: 'transactionAt' },
+      Heading: 'Transaction At',
+      renderedCells: transactions.docs.map((tx) => (
+        <span key={tx.id}>{new Date(tx.transactionAt).toLocaleDateString()}</span>
+      )),
+    },
+    {
+      accessor: 'customer',
+      active: true,
+      field: { type: 'relationship', name: 'customer', relationTo: 'customers' },
+      Heading: 'Customer',
+      renderedCells: transactions.docs.map((tx) => (
+        <span key={tx.id}>{typeof tx.customer === 'string' ? tx.customer : tx.customer?.name}</span>
+      )),
+    },
+    {
+      accessor: 'bottleGiven',
+      active: true,
+      field: { type: 'number', name: 'bottleGiven' },
+      Heading: 'Bottle Given',
+      renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.bottleGiven}</span>),
+    },
+    {
+      accessor: 'bottleTaken',
+      active: true,
+      field: { type: 'number', name: 'bottleTaken' },
+      Heading: 'Bottle Taken',
+      renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.bottleTaken}</span>),
+    },
+    {
+      accessor: 'remainingBottles',
+      active: true,
+      field: { type: 'number', name: 'remainingBottles' },
+      Heading: 'Remaining',
+      renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.remainingBottles}</span>),
+    },
+    {
+      accessor: 'total',
+      active: true,
+      field: { type: 'number', name: 'total' },
+      Heading: 'Total',
+      renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.total}</span>),
+    },
+    {
+      accessor: 'status',
+      active: true,
+      field: { type: 'text', name: 'status' },
+      Heading: 'Status',
+      renderedCells: transactions.docs.map((tx) => <span key={tx.id}>{tx.status}</span>),
+    },
+    {
+      accessor: 'trip',
+      active: true,
+      field: { type: 'relationship', name: 'trip', relationTo: 'trips' },
+      Heading: 'Trip',
+      renderedCells: transactions.docs.map((tx) => (
+        <span key={tx.id}>{typeof tx.trip === 'string' ? tx.trip : tx.trip?.tripAt}</span>
+      )),
+    },
+  ]
+
+  columns.unshift({
+    accessor: 'collection',
+    active: true,
+    field: {
+      admin: {
+        disabled: true,
+      },
+      hidden: true,
+    },
+    Heading: 'Type',
+    renderedCells: (transactions?.docs || []).map((doc, i) => (
+      <Pill key={i} size="small">
+        Transactions
+      </Pill>
+    )),
+  } as Column)
+
+  return <Table appearance="condensed" columns={columns} data={(transactions.docs as any) || []} />
 }
