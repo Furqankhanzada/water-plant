@@ -100,7 +100,12 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
   // ----------------------------
   // ✅ 4. Attach customer analytics
   // ----------------------------
-  data.analytics = await customerDeliveryGenerator.fetchAnalyticsByCustomerId(customerId, payload)
+
+  const hasValidAnalytics = data.analytics && Object.values(data.analytics).some(Boolean)
+
+  if (!hasValidAnalytics) {
+    data.analytics = await customerDeliveryGenerator.fetchAnalyticsByCustomerId(customerId, payload)
+  }
 
   // ----------------------------
   // ✅ 5. Send update email (only if bottle counts changed)

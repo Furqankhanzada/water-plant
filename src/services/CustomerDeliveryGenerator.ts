@@ -1,7 +1,6 @@
 import { BasePayload, Where } from 'payload'
-import { addDays, subDays } from 'date-fns'
+import { addDays, startOfDay, subDays } from 'date-fns'
 import { Transaction } from '@/payload-types'
-
 
 /**
  * CustomerDeliveryGenerator is responsible for predicting when each customer will run out of water bottles
@@ -96,7 +95,7 @@ export class CustomerDeliveryGenerator {
   async fetchAnalyticsByCustomerId(
     customer: Transaction['customer'],
     payload: BasePayload,
-  ): Promise<CustomerDeliveryAnalytics | null> {
+  ): Promise<Partial<CustomerDeliveryAnalytics>> {
     if (typeof customer === 'string') {
       customer = await payload.findByID({
         collection: 'customers',
@@ -125,7 +124,7 @@ export class CustomerDeliveryGenerator {
 
     if (txns.length === 0) {
       console.warn(`No recent transactions for customer ${customer.name}`)
-      return null
+      return {}
     }
 
     const latest = txns[0]
@@ -155,36 +154,12 @@ export class CustomerDeliveryGenerator {
     }
   }
 
-  async fetchCustomersAnalytics(payload: BasePayload, where: Where): Promise<CustomerDeliveryAnalytics[]> {
-    const { docs: customers } = await payload.find({
-      collection: 'customers',
-      where: where,
-      limit: 1000,
-    })
-
-    const analyticsList: CustomerDeliveryAnalytics[] = []
-
-    for (const customer of customers) {
-      try {
-        const analytics = await this.fetchAnalyticsByCustomerId(customer, payload)
-
-        if (analytics) {
-          analyticsList.push(analytics)
-        }
-      } catch (err) {
-        console.warn(`Failed to generate analytics for customer ${customer.id}:`, err)
-      }
-    }
-
-    return analyticsList
-  }
-
   async fetchAnalyticsWithAggregation(
     match: any,
     payload: BasePayload,
   ): Promise<CustomerDeliveryAnalytics[]> {
     const db = payload.db
-    const today = new Date()
+    const today = startOfDay(new Date())
     const thirtyDaysAgo = subDays(today, 30)
 
     const seasonalMultiplier = this.getSeasonalMultiplier(new Date().getMonth())
@@ -237,7 +212,6 @@ export class CustomerDeliveryGenerator {
     // Pick latest and oldest transaction from the sorted list
     const extractTransactionInfo = {
       $addFields: {
-        transactionsSorted: '$transactions',
         latestTransaction: { $arrayElemAt: ['$transactions', 0] },
         oldestTransaction: { $arrayElemAt: ['$transactions', -1] },
       },
@@ -330,7 +304,10 @@ export class CustomerDeliveryGenerator {
           $max: [
             0,
             {
-              $divide: ['$remaining', { $max: ['$adjustedConsumptionRate', 0.1] }],
+              $divide: [
+                { $ifNull: ['$remaining', 0] },
+                { $max: [{ $ifNull: ['$adjustedConsumptionRate', 0.1] }, 0.1] },
+              ],
             },
           ],
         },
@@ -340,14 +317,6 @@ export class CustomerDeliveryGenerator {
     // Final calculations: days until delivery, priority, next delivery date
     const computeDeliveryAnalytics = {
       $addFields: {
-        daysUntilDelivery: {
-          $max: [
-            0,
-            {
-              $divide: ['$remaining', { $max: ['$adjustedConsumptionRate', 0.1] }],
-            },
-          ],
-        },
         weeklyConsumption: {
           $ceil: { $multiply: ['$adjustedConsumptionRate', 7] },
         },
@@ -355,7 +324,7 @@ export class CustomerDeliveryGenerator {
           $dateToString: {
             format: '%Y-%m-%dT%H:%M:%SZ',
             date: {
-              $add: [today, { $multiply: [4.5, MILLISECONDS_PER_DAY] }],
+              $add: [today, { $multiply: ['$daysUntilDelivery', MILLISECONDS_PER_DAY] }],
             },
           },
         },
@@ -377,7 +346,6 @@ export class CustomerDeliveryGenerator {
       $project: {
         _id: 0,
         customer: { $toString: '$_id' },
-        customerName: '$name',
         consumptionRate: '$baseRate',
         adjustedConsumptionRate: 1,
         weeklyConsumption: 1,
