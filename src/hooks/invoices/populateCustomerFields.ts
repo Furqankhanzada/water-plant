@@ -16,6 +16,11 @@ export const populateCustomerFieldsHook: CollectionBeforeChangeHook<Invoice> = a
     const customer = await payload.findByID({
       collection: 'customers',
       id: customerId,
+      depth: 0,
+      select: {
+        area: true,
+        block: true,
+      },
     })
     // Populate area and block from customer
     data.area = customer.area
