@@ -5,6 +5,7 @@ import { calculateAmountsHook } from '@/hooks/invoices/calculateAmounts'
 import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransactionsStatusOnRemoval'
 import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
 import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
+import { populateCustomerFieldsHook } from '@/hooks/invoices/populateCustomerFields'
 import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
@@ -14,7 +15,7 @@ export const Invoice: CollectionConfig = {
   hooks: {
     afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
     afterOperation: [changeTransactionsStatusHook],
-    beforeChange: [calculateAmountsHook],
+    beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
     beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
@@ -48,6 +49,24 @@ export const Invoice: CollectionConfig = {
       type: 'relationship',
       relationTo: 'customers',
       required: true,
+    },
+    {
+      name: 'area',
+      type: 'relationship',
+      relationTo: 'areas',
+      admin: {
+        readOnly: true,
+        description: 'Automatically populated from customer area',
+      },
+    },
+    {
+      name: 'block',
+      type: 'relationship',
+      relationTo: 'blocks',
+      admin: {
+        readOnly: true,
+        description: 'Automatically populated from customer block',
+      },
     },
     {
       name: 'transactions',
