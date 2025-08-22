@@ -1,4 +1,5 @@
 import { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-mongodb'
+import { Types } from 'mongoose'
 
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
   try {
@@ -21,7 +22,12 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
           // Fetch customer data
           const customer = await payload.findByID({
             collection: 'customers',
-            id: invoice.customer,
+            id: invoice.customer.toString(),
+            depth: 0,
+            select: {
+              area: true,
+              block: true,
+            },
           })
 
           if (customer && (customer.area || customer.block)) {
@@ -30,8 +36,8 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
               { _id: invoice._id },
               {
                 $set: {
-                  area: customer.area || null,
-                  block: customer.block || null,
+                  area: customer.area ? new Types.ObjectId(customer.area as string) : null,
+                  block: customer.block ? new Types.ObjectId(customer.block as string) : null,
                 }
               }
             )
