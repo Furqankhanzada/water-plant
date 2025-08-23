@@ -393,14 +393,46 @@ export interface Invoice {
  */
 export interface Sale {
   id: string;
-  channel?: ('counter' | 'refiller' | 'retail_bottles' | 'other') | null;
+  channel?: ('counter' | 'filler' | 'bottles' | 'other') | null;
   customer?: (string | null) | Customer;
   date?: string | null;
-  status?: ('pending' | 'paid' | 'partially_paid') | null;
+  status?: ('unpaid' | 'paid' | 'partially_paid' | 'pending') | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    gross?: number | null;
+  };
+  item?: {
+    product?:
+      | (
+          | 'filling-19L'
+          | 'bottle-19L'
+          | 'bottle-6L'
+          | 'other-leaked-bottles'
+          | 'other-plant-accessories'
+          | 'other-other'
+        )
+      | null;
+    description?: string | null;
+    quantity?: number | null;
+    unitPrice?: number | null;
+    taxRate?: number | null;
+    discount?: {
+      enabled?: boolean | null;
+      type?: ('percentage' | 'fixed') | null;
+      value?: number | null;
+      reason?: ('loyalty' | 'promotion' | 'other') | null;
+    };
+  };
   payments?:
     | {
-        type?: ('cash' | 'online') | null;
-        amount?: number | null;
+        type: 'cash' | 'online';
+        amount: number;
         paidAt: string;
         notes?: string | null;
         id?: string | null;
@@ -905,6 +937,32 @@ export interface SalesSelect<T extends boolean = true> {
   customer?: T;
   date?: T;
   status?: T;
+  totals?:
+    | T
+    | {
+        subtotal?: T;
+        discount?: T;
+        net?: T;
+        tax?: T;
+        gross?: T;
+      };
+  item?:
+    | T
+    | {
+        product?: T;
+        description?: T;
+        quantity?: T;
+        unitPrice?: T;
+        taxRate?: T;
+        discount?:
+          | T
+          | {
+              enabled?: T;
+              type?: T;
+              value?: T;
+              reason?: T;
+            };
+      };
   payments?:
     | T
     | {
