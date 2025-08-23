@@ -6,6 +6,7 @@ export const Blocks: CollectionConfig = {
   disableDuplicate: true,
   admin: {
     useAsTitle: 'name', // Display the block name instead of ID
+    groupBy: true,
   },
   access: {
     delete: isAdmin,

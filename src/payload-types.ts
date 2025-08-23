@@ -222,6 +222,7 @@ export interface Customer {
   };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -273,7 +274,6 @@ export interface Transaction {
   transactionAt: string;
   total: number;
   priority?: string | null;
-  consumptionRate?: string | null;
   weeklyConsumption?: string | null;
   adjustedConsumption?: string | null;
   daysUntilDelivery?: string | null;
@@ -384,6 +384,7 @@ export interface Invoice {
   lostBottlesTotalAmount?: number | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -784,6 +785,7 @@ export interface CustomersSelect<T extends boolean = true> {
   invoice?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -850,7 +852,6 @@ export interface TransactionSelect<T extends boolean = true> {
   transactionAt?: T;
   total?: T;
   priority?: T;
-  consumptionRate?: T;
   weeklyConsumption?: T;
   adjustedConsumption?: T;
   daysUntilDelivery?: T;
@@ -903,6 +904,7 @@ export interface InvoiceSelect<T extends boolean = true> {
   lostBottlesTotalAmount?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

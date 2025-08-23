@@ -7,6 +7,7 @@ export const Expenses: CollectionConfig = {
   disableDuplicate: true,
   admin: {
     defaultColumns: ['title', 'type', 'amount', 'expenseAt'],
+    groupBy: true,
   },
   access: {
     delete: isAdmin,
