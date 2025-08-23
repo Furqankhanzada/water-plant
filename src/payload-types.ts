@@ -335,6 +335,14 @@ export interface Invoice {
   id: string;
   isLatest?: boolean | null;
   customer: string | Customer;
+  /**
+   * Automatically populated from customer area
+   */
+  area?: (string | null) | Area;
+  /**
+   * Automatically populated from customer block
+   */
+  block?: (string | null) | Block;
   transactions: (string | Transaction)[];
   status?: ('paid' | 'unpaid' | 'partially-paid') | null;
   netTotal?: number | null;
@@ -867,6 +875,8 @@ export interface TransactionSelect<T extends boolean = true> {
 export interface InvoiceSelect<T extends boolean = true> {
   isLatest?: T;
   customer?: T;
+  area?: T;
+  block?: T;
   transactions?: T;
   status?: T;
   netTotal?: T;
