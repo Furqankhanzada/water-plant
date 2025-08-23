@@ -74,6 +74,7 @@ export interface Config {
     trips: Trip;
     employee: Employee;
     transaction: Transaction;
+    sales: Sale;
     invoice: Invoice;
     media: Media;
     reports: Report;
@@ -109,6 +110,7 @@ export interface Config {
     trips: TripsSelect<false> | TripsSelect<true>;
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
+    sales: SalesSelect<false> | SalesSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
@@ -387,6 +389,28 @@ export interface Invoice {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales".
+ */
+export interface Sale {
+  id: string;
+  channel?: ('counter' | 'refiller' | 'retail_bottles' | 'other') | null;
+  customer?: (string | null) | Customer;
+  date?: string | null;
+  status?: ('pending' | 'paid' | 'partially_paid') | null;
+  payments?:
+    | {
+        type?: ('cash' | 'online') | null;
+        amount?: number | null;
+        paidAt: string;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -617,6 +641,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'transaction';
         value: string | Transaction;
+      } | null)
+    | ({
+        relationTo: 'sales';
+        value: string | Sale;
       } | null)
     | ({
         relationTo: 'invoice';
@@ -864,6 +892,27 @@ export interface TransactionSelect<T extends boolean = true> {
         daysUntilDelivery?: T;
         nextDeliveryDate?: T;
         priority?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales_select".
+ */
+export interface SalesSelect<T extends boolean = true> {
+  channel?: T;
+  customer?: T;
+  date?: T;
+  status?: T;
+  payments?:
+    | T
+    | {
+        type?: T;
+        amount?: T;
+        paidAt?: T;
+        notes?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
