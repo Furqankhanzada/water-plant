@@ -74,6 +74,7 @@ export interface Config {
     trips: Trip;
     employee: Employee;
     transaction: Transaction;
+    sales: Sale;
     invoice: Invoice;
     media: Media;
     reports: Report;
@@ -109,6 +110,7 @@ export interface Config {
     trips: TripsSelect<false> | TripsSelect<true>;
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
+    sales: SalesSelect<false> | SalesSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
@@ -387,6 +389,60 @@ export interface Invoice {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales".
+ */
+export interface Sale {
+  id: string;
+  channel?: ('counter' | 'filler' | 'bottles' | 'other') | null;
+  customer?: (string | null) | Customer;
+  date?: string | null;
+  status?: ('unpaid' | 'paid' | 'partially_paid' | 'pending') | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    gross?: number | null;
+  };
+  item?: {
+    product?:
+      | (
+          | 'filling-19L'
+          | 'bottle-19L'
+          | 'bottle-6L'
+          | 'other-leaked-bottles'
+          | 'other-plant-accessories'
+          | 'other-other'
+        )
+      | null;
+    description?: string | null;
+    quantity?: number | null;
+    unitPrice?: number | null;
+    taxRate?: number | null;
+    discount?: {
+      enabled?: boolean | null;
+      type?: ('percentage' | 'fixed') | null;
+      value?: number | null;
+      reason?: ('loyalty' | 'promotion' | 'other') | null;
+    };
+  };
+  payments?:
+    | {
+        type: 'cash' | 'online';
+        amount: number;
+        paidAt: string;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -617,6 +673,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'transaction';
         value: string | Transaction;
+      } | null)
+    | ({
+        relationTo: 'sales';
+        value: string | Sale;
       } | null)
     | ({
         relationTo: 'invoice';
@@ -864,6 +924,53 @@ export interface TransactionSelect<T extends boolean = true> {
         daysUntilDelivery?: T;
         nextDeliveryDate?: T;
         priority?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales_select".
+ */
+export interface SalesSelect<T extends boolean = true> {
+  channel?: T;
+  customer?: T;
+  date?: T;
+  status?: T;
+  totals?:
+    | T
+    | {
+        subtotal?: T;
+        discount?: T;
+        net?: T;
+        tax?: T;
+        gross?: T;
+      };
+  item?:
+    | T
+    | {
+        product?: T;
+        description?: T;
+        quantity?: T;
+        unitPrice?: T;
+        taxRate?: T;
+        discount?:
+          | T
+          | {
+              enabled?: T;
+              type?: T;
+              value?: T;
+              reason?: T;
+            };
+      };
+  payments?:
+    | T
+    | {
+        type?: T;
+        amount?: T;
+        paidAt?: T;
+        notes?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
