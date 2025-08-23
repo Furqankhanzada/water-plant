@@ -7,15 +7,17 @@ export const Customers: CollectionConfig = {
   slug: 'customers',
   enableQueryPresets: true,
   disableDuplicate: true,
+  disableBulkEdit: true,
+  trash: true,
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'address', 'lastDelivered', 'area', 'block', 'rate'],
     listSearchableFields: ['name', 'address'],
+    groupBy: true
   },
   access: {
     delete: isAdmin,
   },
-  disableBulkEdit: true,
   hooks: {
     beforeDelete: [
       checkCustomerDeletion,
