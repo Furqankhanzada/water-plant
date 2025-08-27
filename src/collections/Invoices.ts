@@ -10,8 +10,10 @@ import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
+  trash: true,
   enableQueryPresets: true,
   disableDuplicate: true,
+  disableBulkEdit: false,
   hooks: {
     afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
     afterOperation: [changeTransactionsStatusHook],
@@ -31,6 +33,7 @@ export const Invoice: CollectionConfig = {
       'pdf',
       'sendInvoice',
     ],
+    groupBy: true
   },
   access: {
     delete: isAdmin,

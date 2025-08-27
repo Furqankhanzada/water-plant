@@ -1,5 +1,5 @@
-import { BasePayload, Where } from 'payload'
-import { addDays, startOfDay, subDays } from 'date-fns'
+import { BasePayload } from 'payload'
+import { addDays, differenceInDays, startOfDay, subDays } from 'date-fns'
 import { Transaction } from '@/payload-types'
 
 /**
@@ -26,6 +26,8 @@ export interface CustomerDeliveryAnalytics {
   nextDeliveryDate: string
   priority: 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'
 }
+
+const BUFFER_BOTTLES = 0 // 🚀 A fixed number of bottles we always want to keep aside as a safety net (e.g. 1 bottles).
 
 export class CustomerDeliveryGenerator {
   private getSeasonalMultiplier(month: number): number {
@@ -83,11 +85,7 @@ export class CustomerDeliveryGenerator {
     return transactions.reduce((sum, txn) => sum + (txn.bottleTaken || 0), 0)
   }
 
-  private nextDeliveryDate(days: number): Date {
-    return addDays(new Date(), Math.ceil(days))
-  }
-
-  private daysUntilDelivery(remaining: number, rate: number, buffer = 0): number {
+  private calculateCoverageDays(remaining: number, rate: number, buffer = BUFFER_BOTTLES): number {
     const net = remaining - buffer
     return Math.max(0, net / Math.max(0.1, rate))
   }
@@ -104,7 +102,8 @@ export class CustomerDeliveryGenerator {
       })
     }
 
-    const thirtyDaysAgo = subDays(new Date(), 30)
+    const today = startOfDay(new Date())
+    const thirtyDaysAgo = subDays(today, 30)
 
     const { docs: txns } = await payload.find({
       collection: 'transaction',
@@ -124,32 +123,45 @@ export class CustomerDeliveryGenerator {
 
     if (txns.length === 0) {
       console.warn(`No recent transactions for customer ${customer.name}`)
+      // must be empty object and not null or undefined
       return {}
     }
 
     const latest = txns[0]
     const oldestDate = new Date(txns[txns.length - 1].transactionAt)
-    const daysDiff = this.calculateDaysDiff(oldestDate, new Date())
+    const daysDiff = this.calculateDaysDiff(oldestDate, today)
 
     const totalBottlesConsumed = this.calculateTotalBottlesConsumed(txns)
     const baseRate = totalBottlesConsumed / daysDiff
     const adjustedRate =
       baseRate *
-      this.getSeasonalMultiplier(new Date().getMonth()) *
+      this.getSeasonalMultiplier(today.getMonth()) *
       this.getWaterConsumptionAdjustmentFactor(baseRate)
 
     const remaining = this.calculateRemainingBottles(latest)
 
-    const daysUntilDelivery = this.daysUntilDelivery(remaining, adjustedRate)
+    // convert “coverage from last delivery” into “days from now”
+    const lastDeliveredAt = startOfDay(latest.transactionAt)
+    const daysSinceLastDelivery = differenceInDays(today, lastDeliveredAt)
+
+    // how many days the remaining bottles would have lasted
+    const coverageFromLastDelivery = this.calculateCoverageDays(remaining, baseRate)
+
+    // now: subtract what’s already elapsed to get “days left from now”
+    const daysUntilDelivery = Math.max(0, coverageFromLastDelivery - daysSinceLastDelivery)
+
+    // nextDeliveryDate: today if overdue, else ceil to whole days ahead
+    const nextDeliveryDate = addDays(today, Math.ceil(daysUntilDelivery))
+
     const priority = this.getPriority(daysUntilDelivery)
 
     return {
       customer: customer.id,
       consumptionRate: baseRate,
       adjustedConsumptionRate: adjustedRate,
-      weeklyConsumption: Math.ceil(adjustedRate * 7),
+      weeklyConsumption: Math.ceil(baseRate * 7),
       daysUntilDelivery: daysUntilDelivery,
-      nextDeliveryDate: this.nextDeliveryDate(daysUntilDelivery).toISOString(),
+      nextDeliveryDate: nextDeliveryDate.toISOString(),
       priority,
     }
   }
@@ -162,7 +174,7 @@ export class CustomerDeliveryGenerator {
     const today = startOfDay(new Date())
     const thirtyDaysAgo = subDays(today, 30)
 
-    const seasonalMultiplier = this.getSeasonalMultiplier(new Date().getMonth())
+    const seasonalMultiplier = this.getSeasonalMultiplier(today.getMonth())
 
     const usageAdjustment = {
       high: 1.1,
@@ -297,19 +309,49 @@ export class CustomerDeliveryGenerator {
       },
     }
 
-    // Final calculations: days until delivery, priority, next delivery date
-    const computeDaysUntilDelivery = {
+    // Compute days since last delivery
+    const computeDaysSinceLastDelivery = {
       $addFields: {
-        daysUntilDelivery: {
+        daysSinceLastDelivery: {
+          $max: [
+            0,
+            {
+              $ceil: {
+                $divide: [
+                  { $subtract: [today, '$latestTransaction.transactionAt'] },
+                  MILLISECONDS_PER_DAY,
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }
+
+    // Compute coverage from last delivery (with buffer bottles)
+    const computeCoverageFromLastDelivery = {
+      $addFields: {
+        coverageFromLastDelivery: {
           $max: [
             0,
             {
               $divide: [
-                { $ifNull: ['$remaining', 0] },
-                { $max: [{ $ifNull: ['$adjustedConsumptionRate', 0.1] }, 0.1] },
+                {
+                  $max: [0, { $subtract: [{ $ifNull: ['$remaining', 0] }, BUFFER_BOTTLES] }],
+                },
+                { $max: [{ $ifNull: ['$baseRate', 0.1] }, 0.1] },
               ],
             },
           ],
+        },
+      },
+    }
+
+    // Final daysUntilDelivery = coverage - daysSinceLastDelivery
+    const computeDaysUntilDelivery = {
+      $addFields: {
+        daysUntilDelivery: {
+          $max: [0, { $subtract: ['$coverageFromLastDelivery', '$daysSinceLastDelivery'] }],
         },
       },
     }
@@ -318,7 +360,7 @@ export class CustomerDeliveryGenerator {
     const computeDeliveryAnalytics = {
       $addFields: {
         weeklyConsumption: {
-          $ceil: { $multiply: ['$adjustedConsumptionRate', 7] },
+          $ceil: { $multiply: ['$baseRate', 7] },
         },
         nextDeliveryDate: {
           $dateToString: {
@@ -365,6 +407,8 @@ export class CustomerDeliveryGenerator {
       applyAdjustments,
       computeAdjustedRateAndBottles,
       calculateRemainingBottles,
+      computeDaysSinceLastDelivery,
+      computeCoverageFromLastDelivery,
       computeDaysUntilDelivery,
       computeDeliveryAnalytics,
       finalProjection,
