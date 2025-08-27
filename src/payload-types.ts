@@ -274,6 +274,7 @@ export interface Transaction {
   transactionAt: string;
   total: number;
   priority?: string | null;
+  consumptionRate?: string | null;
   weeklyConsumption?: string | null;
   adjustedConsumption?: string | null;
   daysUntilDelivery?: string | null;
@@ -852,6 +853,7 @@ export interface TransactionSelect<T extends boolean = true> {
   transactionAt?: T;
   total?: T;
   priority?: T;
+  consumptionRate?: T;
   weeklyConsumption?: T;
   adjustedConsumption?: T;
   daysUntilDelivery?: T;
