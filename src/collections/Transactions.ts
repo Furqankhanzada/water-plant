@@ -138,18 +138,18 @@ export const Transaction: CollectionConfig = {
         hidden: true,
       },
     },
-    // {
-    //   name: 'consumptionRate',
-    //   label: 'Daily Consumption',
-    //   type: 'text',
-    //   virtual: 'analytics.consumptionRate',
-    //   admin: {
-    //     hidden: true,
-    //     components: {
-    //       Cell: '/components/Transactions#DailyConsumptionCell',
-    //     },
-    //   },
-    // },
+    {
+      name: 'consumptionRate',
+      label: 'Daily Consumption',
+      type: 'text',
+      virtual: 'analytics.consumptionRate',
+      admin: {
+        hidden: true,
+        components: {
+          Cell: '/components/Transactions#DailyConsumptionCell',
+        },
+      },
+    },
     {
       name: 'weeklyConsumption',
       type: 'text',
