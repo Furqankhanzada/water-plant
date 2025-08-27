@@ -6,6 +6,7 @@ export const Areas: CollectionConfig = {
   disableDuplicate: true,
   admin: {
     useAsTitle: 'name', // This ensures the 'name' field is displayed instead of the ID
+    groupBy: true,
   },
   access: {
     delete: isAdmin,

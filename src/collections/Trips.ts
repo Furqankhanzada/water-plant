@@ -10,6 +10,7 @@ export const Trips: CollectionConfig = {
   slug: 'trips',
   enableQueryPresets: true,
   admin: {
+    groupBy: true,
     useAsTitle: 'tripAt',
     defaultColumns: ['tripAt', 'from', 'areas', 'bottles', 'employee', 'status', 'pdf'],
   },

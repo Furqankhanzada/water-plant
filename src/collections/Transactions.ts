@@ -22,6 +22,7 @@ export const Transaction: CollectionConfig = {
       'status',
       'trip',
     ],
+    groupBy: true
   },
   access: {
     delete: isAdmin,
