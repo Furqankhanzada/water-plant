@@ -22,7 +22,7 @@ export const WeeklyConsumptionCell = ({ rowData }: DefaultServerCellComponentPro
 
 export const DaysUntilDeliveryCell = ({ rowData }: DefaultServerCellComponentProps) => {
   const { analytics } = rowData
-  if (!analytics?.daysUntilDelivery) return '<No Days Until Delivery>'
+  if (analytics?.daysUntilDelivery == null) return '<No Days Until Delivery>'
   const days = Math.ceil(analytics.daysUntilDelivery)
 
   if (days <= 0) return <span>Today</span>

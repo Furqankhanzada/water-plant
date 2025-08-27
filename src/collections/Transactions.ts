@@ -186,13 +186,13 @@ export const Transaction: CollectionConfig = {
     },
     {
       name: 'nextDeliveryDate',
-      type: 'text',
+      type: 'date',
       virtual: 'analytics.nextDeliveryDate',
-      hooks: {
-        afterRead: [({ data }) => data?.analytics?.nextDeliveryDate],
-      },
       admin: {
         hidden: true,
+        date: {
+          displayFormat: 'd MMM yyyy',
+        }
       },
     },
     {
