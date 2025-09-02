@@ -409,18 +409,15 @@ export interface Sale {
     tax?: number | null;
     gross?: number | null;
   };
-  item?: {
-    product?:
-      | (
-          | 'counter-walk-in-filling'
-          | 'filling-19L'
-          | 'bottle-19L'
-          | 'bottle-6L'
-          | 'other-leaked-bottles'
-          | 'other-plant-accessories'
-          | 'other-other'
-        )
-      | null;
+  item: {
+    product:
+      | 'counter-walk-in-filling'
+      | 'filling-19L'
+      | 'bottle-19L'
+      | 'bottle-6L'
+      | 'other-leaked-bottles'
+      | 'other-plant-accessories'
+      | 'other-other';
     description?: string | null;
     quantity?: number | null;
     unitPrice?: number | null;

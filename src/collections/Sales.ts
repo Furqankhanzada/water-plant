@@ -122,6 +122,7 @@ export const Sales: CollectionConfig = {
         {
           name: 'product',
           type: 'select',
+          required: true,
           options: [
             { label: 'Walk In Filling', value: 'counter-walk-in-filling' },
             { label: 'Filling 19L', value: 'filling-19L' },
