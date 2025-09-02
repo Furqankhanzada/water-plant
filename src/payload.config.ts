@@ -113,6 +113,12 @@ export default buildConfig({
       },
     }),
   }),
+  bin: [
+    {
+      scriptPath: path.resolve(dirname, 'bin/send-invoices.ts'),
+      key: 'send-invoices',
+    },
+  ],
   onInit: () => {
     console.log('### onInit ### PayloadCMS initiated ###')
     new CronService()
