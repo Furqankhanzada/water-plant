@@ -20,6 +20,7 @@ import { Blocks } from './collections/Blocks'
 import { Trips } from './collections/Trips'
 import { Employee } from './collections/Employees'
 import { Transaction } from './collections/Transactions'
+import { Sales } from './collections/Sales'
 import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
 import { Reports } from './collections/Reports'
@@ -62,6 +63,7 @@ export default buildConfig({
     Trips,
     Employee,
     Transaction,
+    Sales,
     Invoice,
     Media,
     Reports,

@@ -74,6 +74,7 @@ export interface Config {
     trips: Trip;
     employee: Employee;
     transaction: Transaction;
+    sales: Sale;
     invoice: Invoice;
     media: Media;
     reports: Report;
@@ -109,6 +110,7 @@ export interface Config {
     trips: TripsSelect<false> | TripsSelect<true>;
     employee: EmployeeSelect<false> | EmployeeSelect<true>;
     transaction: TransactionSelect<false> | TransactionSelect<true>;
+    sales: SalesSelect<false> | SalesSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
@@ -389,6 +391,50 @@ export interface Invoice {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales".
+ */
+export interface Sale {
+  id: string;
+  channel?: ('counter' | 'filler' | 'bottles' | 'other') | null;
+  customer?: (string | null) | Customer;
+  date?: string | null;
+  status?: ('unpaid' | 'paid' | 'partially_paid' | 'pending') | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    gross?: number | null;
+  };
+  item: {
+    product:
+      | 'counter-walk-in-filling'
+      | 'filling-19L'
+      | 'bottle-19L'
+      | 'bottle-6L'
+      | 'other-leaked-bottles'
+      | 'other-plant-accessories'
+      | 'other-other';
+    description?: string | null;
+    quantity?: number | null;
+    unitPrice?: number | null;
+    taxRate?: number | null;
+    discount?: {
+      enabled?: boolean | null;
+      type?: ('percentage' | 'fixed') | null;
+      value?: number | null;
+      reason?: ('loyalty' | 'promotion' | 'other') | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -621,6 +667,10 @@ export interface PayloadLockedDocument {
         value: string | Transaction;
       } | null)
     | ({
+        relationTo: 'sales';
+        value: string | Sale;
+      } | null)
+    | ({
         relationTo: 'invoice';
         value: string | Invoice;
       } | null)
@@ -730,7 +780,7 @@ export interface PayloadQueryPreset {
     | number
     | boolean
     | null;
-  relatedCollection: 'customers' | 'trips' | 'transaction' | 'invoice' | 'expenses';
+  relatedCollection: 'customers' | 'trips' | 'transaction' | 'sales' | 'invoice' | 'expenses';
   /**
    * This is a tempoary field used to determine if updating the preset would remove the user's access to it. When `true`, this record will be deleted after running the preset's `validate` function.
    */
@@ -870,6 +920,45 @@ export interface TransactionSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales_select".
+ */
+export interface SalesSelect<T extends boolean = true> {
+  channel?: T;
+  customer?: T;
+  date?: T;
+  status?: T;
+  totals?:
+    | T
+    | {
+        subtotal?: T;
+        discount?: T;
+        net?: T;
+        tax?: T;
+        gross?: T;
+      };
+  item?:
+    | T
+    | {
+        product?: T;
+        description?: T;
+        quantity?: T;
+        unitPrice?: T;
+        taxRate?: T;
+        discount?:
+          | T
+          | {
+              enabled?: T;
+              type?: T;
+              value?: T;
+              reason?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
