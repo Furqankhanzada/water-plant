@@ -1,11 +1,25 @@
 import type { CollectionConfig, OptionObject } from 'payload'
 
+import { calculateSalesTotals } from '@/hooks/sales/calculateSalesTotals'
+import { setCounterStatus } from '@/hooks/sales/setCounterStatus'
+import { isAdmin } from './access/isAdmin'
+
 export const Sales: CollectionConfig = {
   slug: 'sales',
+  trash: true,
+  enableQueryPresets: true,
+  disableDuplicate: true,
+  disableBulkEdit: true,
   admin: {
-    defaultColumns: ['channel', 'customer', 'date', 'status', 'total'],
+    defaultColumns: ['date', 'channel', 'customer',  'item.product', 'totals.gross', 'status'],
+    useAsTitle: 'channel',
+    groupBy: true,
   },
   access: {
+    delete: isAdmin,
+  },
+  hooks: {
+    beforeChange: [setCounterStatus, calculateSalesTotals],
   },
   fields: [
     {
@@ -104,14 +118,12 @@ export const Sales: CollectionConfig = {
     {
       name: 'item',
       type: 'group',
-      admin: {
-        condition: (data) => data.channel !== 'counter',
-      },
       fields: [
         {
           name: 'product',
           type: 'select',
           options: [
+            { label: 'Walk In Filling', value: 'counter-walk-in-filling' },
             { label: 'Filling 19L', value: 'filling-19L' },
             { label: 'Bottle 19L', value: 'bottle-19L' },
             { label: 'Bottle 6L', value: 'bottle-6L' },
@@ -120,6 +132,12 @@ export const Sales: CollectionConfig = {
             { label: 'Other', value: 'other-other' },
           ],
           filterOptions: ({ options, data }) => {
+            if(data.channel === 'counter') {
+              return options.filter((option) => {
+                option = option as OptionObject
+                return option.value.includes('counter-')
+              })
+            }
             if (data.channel === 'bottles') {
               return options.filter((option) => {
                 option = option as OptionObject
@@ -206,43 +224,5 @@ export const Sales: CollectionConfig = {
         }
       ],
     },
-    {
-      name: 'payments',
-      type: 'array',
-      fields: [
-        {
-          name: 'type',
-          type: 'select',
-          defaultValue: 'cash',
-          required: true,
-          options: [
-            { label: 'Cash', value: 'cash' },
-            { label: 'Online', value: 'online' },
-          ],
-        },
-        {
-          name: 'amount',
-          type: 'number',
-          required: true,
-        },
-        {
-          name: 'paidAt',
-          type: 'date',
-          required: true,
-          defaultValue: new Date(),
-          admin: {
-            date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
-            },
-          },
-        },
-        {
-          name: 'notes',
-          type: 'textarea',
-        },
-      ],
-    },
-
   ],
 }

@@ -412,6 +412,7 @@ export interface Sale {
   item?: {
     product?:
       | (
+          | 'counter-walk-in-filling'
           | 'filling-19L'
           | 'bottle-19L'
           | 'bottle-6L'
@@ -431,17 +432,9 @@ export interface Sale {
       reason?: ('loyalty' | 'promotion' | 'other') | null;
     };
   };
-  payments?:
-    | {
-        type: 'cash' | 'online';
-        amount: number;
-        paidAt: string;
-        notes?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -790,7 +783,7 @@ export interface PayloadQueryPreset {
     | number
     | boolean
     | null;
-  relatedCollection: 'customers' | 'trips' | 'transaction' | 'invoice' | 'expenses';
+  relatedCollection: 'customers' | 'trips' | 'transaction' | 'sales' | 'invoice' | 'expenses';
   /**
    * This is a tempoary field used to determine if updating the preset would remove the user's access to it. When `true`, this record will be deleted after running the preset's `validate` function.
    */
@@ -966,17 +959,9 @@ export interface SalesSelect<T extends boolean = true> {
               reason?: T;
             };
       };
-  payments?:
-    | T
-    | {
-        type?: T;
-        amount?: T;
-        paidAt?: T;
-        notes?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
