@@ -48,6 +48,7 @@ export default buildConfig({
       ],
     },
     components: {
+      beforeDashboard: ['/components/BeforeDashboard'],
       graphics: {
         Icon: '/graphics/Branding.tsx#Icon',
         Logo: '/graphics/Branding.tsx#Logo',
