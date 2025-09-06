@@ -57,33 +57,29 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
           secondaryDescription="For selected period"
         />
       </div>
-      <div className="grid grid-cols-4 gap-4 mt-4">
-        <div className="col-span-2">
-          {overview?.revenue?.channels?.length ? (
-            <BarChartHorizontal
-              title="Revenue by Channels"
-              description="For selected period"
-              secondaryDescription="Most Revenue Collected in: Counter Sell"
-              data={overview?.revenue?.channels?.map((channel) => ({
-                label: channel?.channel ?? '',
-                total: channel?.total ?? 0,
-              }))}
-            />
-          ) : null}
-        </div>
-        <div className="col-span-2">
-          {overview?.expenses?.types?.length ? (
-            <BarChartHorizontal
-              title="Expenses by Types"
-              description="For selected period"
-              secondaryDescription="Most Expenses in: Daily Miscellaneous"
-              data={overview?.expenses?.types?.map((type) => ({
-                label: type?.type ?? '',
-                total: type?.total ?? 0, 
-              }))}
-            />
-          ) : null}
-        </div>
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        {overview?.revenue?.channels?.length ? (
+          <BarChartHorizontal
+            title="Revenue by Channels"
+            description="For selected period"
+            secondaryDescription="Most Revenue Collected in: Counter Sell"
+            data={overview?.revenue?.channels?.map((channel) => ({
+              label: channel?.channel ?? '',
+              total: channel?.total ?? 0,
+            }))}
+          />
+        ) : null}
+        {overview?.expenses?.types?.length ? (
+          <BarChartHorizontal
+            title="Expenses by Types"
+            description="For selected period"
+            secondaryDescription="Most Expenses in: Daily Miscellaneous"
+            data={overview?.expenses?.types?.map((type) => ({
+              label: type?.type ?? '',
+              total: type?.total ?? 0,
+            }))}
+          />
+        ) : null}
       </div>
     </div>
   )
