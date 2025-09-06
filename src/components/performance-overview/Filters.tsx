@@ -8,17 +8,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback } from 'react'
 
 export const Filters = () => {
-    const [timeRange, setTimeRange] = useState('this-month')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  const timeRange = searchParams.get('duration') || 'this-month'
+
+  const handleDurationChange = useCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('duration', value)
+    router.push(`?${params.toString()}`)
+  }, [router, searchParams])
 
   return (
     <div className="filters">
       <ToggleGroup
         type="single"
         value={timeRange}
-        onValueChange={setTimeRange}
+        onValueChange={handleDurationChange}
         variant="outline"
         className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/main:flex"
       >
@@ -26,7 +36,7 @@ export const Filters = () => {
         <ToggleGroupItem value="this-month">This Month</ToggleGroupItem>
         <ToggleGroupItem value="last-month">Last Month</ToggleGroupItem>
       </ToggleGroup>
-      <Select value={timeRange} onValueChange={setTimeRange}>
+      <Select value={timeRange} onValueChange={handleDurationChange}>
         <SelectTrigger
           className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/main:hidden"
           size="sm"

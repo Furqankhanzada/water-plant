@@ -1234,6 +1234,62 @@ export interface PerformanceOverview {
       averageRevenue?: number | null;
     };
   };
+  lastMonth?: {
+    revenue?: {
+      total?: number | null;
+      channels?:
+        | {
+            channel?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    expenses?: {
+      total?: number | null;
+      types?:
+        | {
+            type?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    profit?: number | null;
+    bottlesDelivered?: {
+      total?: number | null;
+      expectedRevenue?: number | null;
+      averageRevenue?: number | null;
+    };
+  };
+  thisWeek?: {
+    revenue?: {
+      total?: number | null;
+      channels?:
+        | {
+            channel?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    expenses?: {
+      total?: number | null;
+      types?:
+        | {
+            type?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    profit?: number | null;
+    bottlesDelivered?: {
+      total?: number | null;
+      expectedRevenue?: number | null;
+      averageRevenue?: number | null;
+    };
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1272,6 +1328,78 @@ export interface CompanySelect<T extends boolean = true> {
  */
 export interface PerformanceOverviewSelect<T extends boolean = true> {
   thisMonth?:
+    | T
+    | {
+        revenue?:
+          | T
+          | {
+              total?: T;
+              channels?:
+                | T
+                | {
+                    channel?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        expenses?:
+          | T
+          | {
+              total?: T;
+              types?:
+                | T
+                | {
+                    type?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        profit?: T;
+        bottlesDelivered?:
+          | T
+          | {
+              total?: T;
+              expectedRevenue?: T;
+              averageRevenue?: T;
+            };
+      };
+  lastMonth?:
+    | T
+    | {
+        revenue?:
+          | T
+          | {
+              total?: T;
+              channels?:
+                | T
+                | {
+                    channel?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        expenses?:
+          | T
+          | {
+              total?: T;
+              types?:
+                | T
+                | {
+                    type?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        profit?: T;
+        bottlesDelivered?:
+          | T
+          | {
+              total?: T;
+              expectedRevenue?: T;
+              averageRevenue?: T;
+            };
+      };
+  thisWeek?:
     | T
     | {
         revenue?:

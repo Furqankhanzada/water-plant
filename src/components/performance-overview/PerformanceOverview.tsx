@@ -25,9 +25,6 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
     return null
   }
 
-  console.log('activeDuration', activeDuration)
-  console.log('overview', overview)
-
   return (
     <div className="@container/main">
       <div className="flex items-center justify-between gap-2 mb-4 mt-4">

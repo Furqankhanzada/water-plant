@@ -1,6 +1,6 @@
 import { Transaction } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths } from 'date-fns'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -20,39 +20,61 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
   try {
     const payload = req.payload
     const currentDate = new Date()
-    const monthStart = startOfMonth(currentDate)
-    const monthEnd = endOfMonth(currentDate)
+    
+    // Calculate date ranges for all time periods
+    const thisMonthStart = startOfMonth(currentDate)
+    const thisMonthEnd = endOfMonth(currentDate)
+    
+    const lastMonthStart = startOfMonth(subMonths(currentDate, 1))
+    const lastMonthEnd = endOfMonth(subMonths(currentDate, 1))
+    
+    const thisWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
+    const thisWeekEnd = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
 
-    // Aggregate transactions for the current month (same logic as generateReport.ts)
-    const bottlesDelivered = await payload.db.collections['transaction'].aggregate([
-      {
-        $match: {
-          transactionAt: { $gte: monthStart, $lte: monthEnd },
+    // Helper function to aggregate bottles delivered for a time period
+    const aggregateBottlesDelivered = async (startDate: Date, endDate: Date) => {
+      const result = await payload.db.collections['transaction'].aggregate([
+        {
+          $match: {
+            transactionAt: { $gte: startDate, $lte: endDate },
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          totalBottlesDelivered: { $sum: '$bottleGiven' },
-          totalExpectedIncome: { $sum: '$total' },
+        {
+          $group: {
+            _id: null,
+            totalBottlesDelivered: { $sum: '$bottleGiven' },
+            totalExpectedIncome: { $sum: '$total' },
+          },
         },
-      },
-    ])
+      ])
+
+      const bottlesData = result[0] || {
+        totalBottlesDelivered: 0,
+        totalExpectedIncome: 0,
+      }
+
+      const totalBottles = bottlesData.totalBottlesDelivered
+      const expectedRevenue = bottlesData.totalExpectedIncome
+      const averageRevenue = totalBottles > 0 ? expectedRevenue / totalBottles : 0
+
+      return {
+        total: totalBottles,
+        expectedRevenue: expectedRevenue,
+        averageRevenue: averageRevenue,
+      }
+    }
 
     // Get current performance overview data
     const performanceOverview = await payload.findGlobal({
       slug: 'performance-overview',
     })
 
-    // Calculate bottles delivered metrics
-    const bottlesData = bottlesDelivered[0] || {
-      totalBottlesDelivered: 0,
-      totalExpectedIncome: 0,
-    }
-
-    const totalBottles = bottlesData.totalBottlesDelivered
-    const expectedRevenue = bottlesData.totalExpectedIncome
-    const averageRevenue = totalBottles > 0 ? expectedRevenue / totalBottles : 0
+    // Calculate bottles delivered metrics for all time periods
+    const [thisMonthBottles, lastMonthBottles, thisWeekBottles] = await Promise.all([
+      aggregateBottlesDelivered(thisMonthStart, thisMonthEnd),
+      aggregateBottlesDelivered(lastMonthStart, lastMonthEnd),
+      aggregateBottlesDelivered(thisWeekStart, thisWeekEnd),
+    ])
 
     // Update the performance overview
     await payload.updateGlobal({
@@ -60,16 +82,20 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
       data: {
         thisMonth: {
           ...performanceOverview.thisMonth,
-          bottlesDelivered: {
-            total: totalBottles,
-            expectedRevenue: expectedRevenue,
-            averageRevenue: averageRevenue,
-          },
+          bottlesDelivered: thisMonthBottles,
+        },
+        lastMonth: {
+          ...performanceOverview.lastMonth,
+          bottlesDelivered: lastMonthBottles,
+        },
+        thisWeek: {
+          ...performanceOverview.thisWeek,
+          bottlesDelivered: thisWeekBottles,
         },
       },
     })
 
-    console.log('✅ Performance overview updated with bottles delivered metrics')
+    console.log('✅ Performance overview updated with bottles delivered metrics for all time periods')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the transaction creation/update
