@@ -6,6 +6,7 @@ import { changeTransactionsStatusOnRemoval } from '@/hooks/invoices/changeTransa
 import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
 import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
 import { populateCustomerFieldsHook } from '@/hooks/invoices/populateCustomerFields'
+import { updatePerformanceOverview } from '@/hooks/invoices/updatePerformanceOverview'
 import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
@@ -15,7 +16,7 @@ export const Invoice: CollectionConfig = {
   disableDuplicate: true,
   disableBulkEdit: false,
   hooks: {
-    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval],
+    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
     beforeDelete: [checkInvoiceDeletion],

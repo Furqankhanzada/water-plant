@@ -128,9 +128,11 @@ export interface Config {
   };
   globals: {
     company: Company;
+    'performance-overview': PerformanceOverview;
   };
   globalsSelect: {
     company: CompanySelect<false> | CompanySelect<true>;
+    'performance-overview': PerformanceOverviewSelect<false> | PerformanceOverviewSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1200,6 +1202,43 @@ export interface Company {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "performance-overview".
+ */
+export interface PerformanceOverview {
+  id: string;
+  thisMonth?: {
+    revenue?: {
+      total?: number | null;
+      channels?:
+        | {
+            channel?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    expenses?: {
+      total?: number | null;
+      types?:
+        | {
+            type?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    profit?: number | null;
+    bottlesDelivered?: {
+      total?: number | null;
+      expectedRevenue?: number | null;
+      averageRevenue?: number | null;
+    };
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "company_select".
  */
 export interface CompanySelect<T extends boolean = true> {
@@ -1223,6 +1262,51 @@ export interface CompanySelect<T extends boolean = true> {
         id?: T;
       };
   invoiceMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "performance-overview_select".
+ */
+export interface PerformanceOverviewSelect<T extends boolean = true> {
+  thisMonth?:
+    | T
+    | {
+        revenue?:
+          | T
+          | {
+              total?: T;
+              channels?:
+                | T
+                | {
+                    channel?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        expenses?:
+          | T
+          | {
+              total?: T;
+              types?:
+                | T
+                | {
+                    type?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        profit?: T;
+        bottlesDelivered?:
+          | T
+          | {
+              total?: T;
+              expectedRevenue?: T;
+              averageRevenue?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

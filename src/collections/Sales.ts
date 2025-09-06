@@ -2,6 +2,7 @@ import type { CollectionConfig, OptionObject } from 'payload'
 
 import { calculateSalesTotals } from '@/hooks/sales/calculateSalesTotals'
 import { setCounterStatus } from '@/hooks/sales/setCounterStatus'
+import { updatePerformanceOverview } from '@/hooks/sales/updatePerformanceOverview'
 import { isAdmin } from './access/isAdmin'
 
 export const Sales: CollectionConfig = {
@@ -20,15 +21,16 @@ export const Sales: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setCounterStatus, calculateSalesTotals],
+    afterChange: [updatePerformanceOverview],
   },
   fields: [
     {
       name: 'channel',
       type: 'select',
       options: [
-        { label: 'Counter Sell', value: 'counter' },
+        { label: 'Counter Sales', value: 'counter' },
         { label: 'Filler', value: 'filler' },
-        { label: 'Bottles', value: 'bottles' },
+        { label: 'Bottles Sold', value: 'bottles' },
         { label: 'Other', value: 'other' },
       ],
     },
