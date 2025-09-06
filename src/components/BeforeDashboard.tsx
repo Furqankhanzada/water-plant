@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { TrendingUp } from 'lucide-react'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
 
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   Card,
   CardDescription,
@@ -30,100 +29,10 @@ import {
 } from '@/components/ui/chart'
 
 const BeforeDashboard: React.FC = () => {
-  const [timeRange, setTimeRange] = useState('this-week')
 
   return (
     <div className="@container/main flex flex-1 flex-col gap-2">
-      <div className="@container/card flex items-center justify-between gap-2 mb-4 mt-4">
-        <h2>Performance Overview</h2>
-        <div className="filters">
-          <ToggleGroup
-            type="single"
-            value={timeRange}
-            onValueChange={setTimeRange}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
-          >
-            <ToggleGroupItem value="this-week">This Week</ToggleGroupItem>
-            <ToggleGroupItem value="this-month">This Month</ToggleGroupItem>
-            <ToggleGroupItem value="last-month">Last Month</ToggleGroupItem>
-          </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
-              size="sm"
-              aria-label="Select a value"
-            >
-              <SelectValue placeholder="Today" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="this-week" className="rounded-lg">
-                This Week
-              </SelectItem>
-              <SelectItem value="this-month" className="rounded-lg">
-                This Month
-              </SelectItem>
-              <SelectItem value="last-month" className="rounded-lg">
-                Last Month
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription>Total Revenue Collected</CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              Rs1,250.00
-            </CardTitle>
-          </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">
-              Includes delivery, counter, fillers, and bottles sold.
-            </div>
-            <div className="text-muted-foreground">For selected period</div>
-          </CardFooter>
-        </Card>
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription>Total Expenses</CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              Rs1,234.00
-            </CardTitle>
-          </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">Down 20% this period</div>
-            <div className="text-muted-foreground">For selected period</div>
-          </CardFooter>
-        </Card>
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription>Profit</CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              Rs1,234.00
-            </CardTitle>
-          </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">Down 20% this period</div>
-            <div className="text-muted-foreground">For selected period</div>
-          </CardFooter>
-        </Card>
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription>Bottles Delivered</CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              500
-            </CardTitle>
-          </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">
-              Estimated revenue: Rs 1,234.00 (≈ Rs 2.47 per bottle)
-            </div>
-            <div className="text-muted-foreground">For selected period</div>
-          </CardFooter>
-        </Card>
-      </div>
+      
       <div className="grid grid-cols-4 gap-4 mt-4">
         <div className="col-span-1">
           <TotalRevenueCollectedBarChart />

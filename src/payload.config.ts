@@ -49,7 +49,7 @@ export default buildConfig({
       ],
     },
     components: {
-      beforeDashboard: ['/components/BeforeDashboard'],
+      beforeDashboard: ['/components/performance-overview/PerformanceOverview'],
       graphics: {
         Icon: '/graphics/Branding.tsx#Icon',
         Logo: '/graphics/Branding.tsx#Logo',
