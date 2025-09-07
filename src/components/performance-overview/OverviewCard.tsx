@@ -3,8 +3,8 @@ import { Card, CardHeader, CardDescription, CardTitle, CardFooter } from '../ui/
 interface OverviewCardProps {
   title: string
   value: string
-  description: string
-  secondaryDescription: string
+  description?: string
+  secondaryDescription?: string
 }
 
 export const OverviewCard = ({
@@ -21,10 +21,12 @@ export const OverviewCard = ({
           {value}
         </CardTitle>
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="line-clamp-1 flex gap-2 font-medium">{description}</div>
-        <div className="text-muted-foreground">{secondaryDescription}</div>
-      </CardFooter>
+      {description && secondaryDescription && (
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">{description}</div>
+          <div className="text-muted-foreground">{secondaryDescription}</div>
+        </CardFooter>
+      )}
     </Card>
   )
 }

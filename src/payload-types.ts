@@ -1346,6 +1346,8 @@ export interface PerformanceOverview {
       averageRevenue?: number | null;
     };
   };
+  estimatedBottlesCustomerHolds?: number | null;
+  totalActiveCustomers?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1563,6 +1565,8 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               averageRevenue?: T;
             };
       };
+  estimatedBottlesCustomerHolds?: T;
+  totalActiveCustomers?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

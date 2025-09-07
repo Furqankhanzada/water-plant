@@ -2,17 +2,17 @@ import React from 'react'
 import { CustomComponent, PayloadServerReactComponent } from 'payload'
 import { PerformanceOverview } from '@/payload-types'
 import { rupee } from '@/collections/Reports'
-import { 
-  startOfWeek, 
-  endOfWeek, 
-  startOfMonth, 
-  endOfMonth, 
-  subMonths, 
-  startOfQuarter, 
-  endOfQuarter, 
-  startOfYear, 
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfQuarter,
+  endOfQuarter,
+  startOfYear,
   endOfYear,
-  format 
+  format,
 } from 'date-fns'
 
 import { Filters } from './Filters'
@@ -24,7 +24,7 @@ import { BarChartHorizontal } from './BarChartHorizontal'
  */
 const getDateRangeForDuration = (duration: string): string => {
   const currentDate = new Date()
-  
+
   switch (duration) {
     case 'this-week': {
       const start = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
@@ -74,10 +74,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
   })
 
   const duration = (searchParams?.duration as string) || 'this-month'
-  const activeDuration = duration.replace(
-    /-([a-z])/g,
-    (_, letter) => letter.toUpperCase(),
-  )
+  const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
   const overview = performanceOverview[activeDuration as keyof PerformanceOverview]
   const dateRange = getDateRangeForDuration(duration)
 
@@ -140,6 +137,16 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
             }))}
           />
         ) : null}
+      </div>
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-4 @5xl/main:grid-cols-5 mt-4">
+        <OverviewCard
+          title="Total Active Customers"
+          value={(performanceOverview?.totalActiveCustomers ?? 0) + ''}
+        />
+        <OverviewCard
+          title="Estimated Bottles Active Customer Holds"
+          value={(performanceOverview?.estimatedBottlesCustomerHolds ?? 0) + ''}
+        />
       </div>
     </div>
   )

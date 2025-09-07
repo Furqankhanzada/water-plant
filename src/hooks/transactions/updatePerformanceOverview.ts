@@ -70,18 +70,60 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
       }
     }
 
+    // Helper function to calculate estimated bottles customer holds
+    const calculateEstimatedBottlesCustomerHolds = async () => {
+      // Use aggregation to efficiently get the latest transaction for each active customer
+      const result = await payload.db.collections['transaction'].aggregate([
+        // Match transactions from active customers only
+        {
+          $lookup: {
+            from: 'customers',
+            localField: 'customer',
+            foreignField: '_id',
+            as: 'customerData',
+          },
+        },
+        {
+          $match: {
+            'customerData.deletedAt': { $exists: false }, // Not soft deleted
+            'customerData.status': 'active', // Not archived
+          },
+        },
+        // Group by customer and get the latest transaction for each
+        {
+          $sort: { customer: 1, transactionAt: -1 },
+        },
+        {
+          $group: {
+            _id: '$customer',
+            latestRemainingBottles: { $first: '$remainingBottles' },
+          },
+        },
+        // Sum up all the latest remaining bottles
+        {
+          $group: {
+            _id: null,
+            totalEstimatedBottles: { $sum: '$latestRemainingBottles' },
+          },
+        },
+      ])
+
+      return result[0]?.totalEstimatedBottles || 0
+    }
+
     // Get current performance overview data
     const performanceOverview = await payload.findGlobal({
       slug: 'performance-overview',
     })
 
-    // Calculate bottles delivered metrics for all time periods
-    const [thisMonthBottles, lastMonthBottles, thisWeekBottles, thisQuarterBottles, thisYearBottles] = await Promise.all([
+    // Calculate bottles delivered metrics for all time periods and estimated bottles customer holds
+    const [thisMonthBottles, lastMonthBottles, thisWeekBottles, thisQuarterBottles, thisYearBottles, estimatedBottlesCustomerHolds] = await Promise.all([
       aggregateBottlesDelivered(thisMonthStart, thisMonthEnd),
       aggregateBottlesDelivered(lastMonthStart, lastMonthEnd),
       aggregateBottlesDelivered(thisWeekStart, thisWeekEnd),
       aggregateBottlesDelivered(thisQuarterStart, thisQuarterEnd),
       aggregateBottlesDelivered(thisYearStart, thisYearEnd),
+      calculateEstimatedBottlesCustomerHolds(),
     ])
 
     // Update the performance overview
@@ -108,10 +150,11 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
           ...performanceOverview.thisYear,
           bottlesDelivered: thisYearBottles,
         },
+        estimatedBottlesCustomerHolds: estimatedBottlesCustomerHolds,
       },
     })
 
-    console.log('✅ Performance overview updated with bottles delivered metrics for all time periods')
+    console.log(`✅ Performance overview updated with bottles delivered metrics for all time periods and estimated bottles customer holds: ${estimatedBottlesCustomerHolds}`)
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the transaction creation/update

@@ -390,5 +390,13 @@ export const PerformanceOverview: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'estimatedBottlesCustomerHolds',
+      type: 'number',
+    },
+    {
+      name: 'totalActiveCustomers',
+      type: 'number',
+    },
   ],
 }
