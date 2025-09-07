@@ -16,6 +16,7 @@ import { QueryPresetsColumnsCell as QueryPresetsColumnsCell_3817bf644402e67bfe65
 import { QueryPresetsColumnField as QueryPresetsColumnField_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { Icon as Icon_f9f58eabab541759fc9306399f740359 } from '../../../graphics/Branding.tsx'
 import { Logo as Logo_f9f58eabab541759fc9306399f740359 } from '../../../graphics/Branding.tsx'
+import { default as default_233cffcda5b6a9cd29a5311e6976ccfd } from '../../../components/performance-overview/PerformanceOverview'
 import { UploadthingClientUploadHandler as UploadthingClientUploadHandler_749dcaa11bb61b873d113cb6c609bc10 } from '@payloadcms/storage-uploadthing/client'
 
 export const importMap = {
@@ -37,5 +38,6 @@ export const importMap = {
   "@payloadcms/ui#QueryPresetsColumnField": QueryPresetsColumnField_3817bf644402e67bfe6577f60ef982de,
   "/graphics/Branding.tsx#Icon": Icon_f9f58eabab541759fc9306399f740359,
   "/graphics/Branding.tsx#Logo": Logo_f9f58eabab541759fc9306399f740359,
+  "/components/performance-overview/PerformanceOverview#default": default_233cffcda5b6a9cd29a5311e6976ccfd,
   "@payloadcms/storage-uploadthing/client#UploadthingClientUploadHandler": UploadthingClientUploadHandler_749dcaa11bb61b873d113cb6c609bc10
 }

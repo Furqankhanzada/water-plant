@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 import { generateReport } from '@/hooks/reports/generateReport'
 import { isAdmin } from './access/isAdmin'
 
-const rupee = new Intl.NumberFormat('en-PK', {
+export const rupee = new Intl.NumberFormat('en-PK', {
   style: 'currency',
   currency: 'PKR',
   minimumFractionDigits: 0,

@@ -12,6 +12,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
 import { isWhatsAppEnabled } from './lib/sendWhatsAppMessage'
 import { Company } from './globals/Company'
+import { PerformanceOverview } from './globals/PerformanceOverview'
 import { sendEmailTask } from './tasks/sendEmail'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
@@ -48,13 +49,14 @@ export default buildConfig({
       ],
     },
     components: {
+      beforeDashboard: ['/components/performance-overview/PerformanceOverview'],
       graphics: {
         Icon: '/graphics/Branding.tsx#Icon',
         Logo: '/graphics/Branding.tsx#Logo',
       },
     },
   },
-  globals: [Company],
+  globals: [Company, PerformanceOverview],
   collections: [
     Users,
     Customers,
