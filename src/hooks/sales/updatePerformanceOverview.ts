@@ -59,6 +59,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
               $gte: startDate,
               $lte: endDate,
             },
+            deletedAt: { $exists: false }, // Exclude soft-deleted records
           },
         },
         {

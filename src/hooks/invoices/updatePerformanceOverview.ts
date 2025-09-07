@@ -35,6 +35,11 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     const aggregateDeliveryRevenue = async (startDate: Date, endDate: Date) => {
       const deliveryRevenue = await payload.db.collections['invoice'].aggregate([
         {
+          $match: {
+            deletedAt: { $exists: false }, // Exclude soft-deleted records
+          },
+        },
+        {
           $unwind: '$payments',
         },
         {
