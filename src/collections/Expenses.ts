@@ -72,8 +72,16 @@ export const Expenses: CollectionConfig = {
           value: 'maintenance_vehicle',
         },
         {
+          label: 'Parking',
+          value: 'parking',
+        },
+        {
           label: 'Minerals',
           value: 'minerals',
+        },
+        {
+          label: 'Bottle Caps',
+          value: 'bottle_caps',
         },
         {
           label: 'Bottles',
