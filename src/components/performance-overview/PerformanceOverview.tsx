@@ -57,7 +57,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
           secondaryDescription="For selected period"
         />
       </div>
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 gap-4 mt-4 @xl/main:grid-cols-1 @5xl/main:grid-cols-2">
         {overview?.revenue?.channels?.length ? (
           <BarChartHorizontal
             title="Revenue by Channels"
