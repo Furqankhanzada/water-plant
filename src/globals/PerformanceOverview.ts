@@ -238,5 +238,157 @@ export const PerformanceOverview: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'thisQuarter',
+      type: 'group',
+      fields: [
+        {
+          name: 'revenue',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'channels',
+              type: 'array',
+              fields: [
+                {
+                  name: 'channel',
+                  type: 'text',
+                },
+                {
+                  name: 'total',
+                  type: 'number',
+                }
+              ],
+            },
+          ],
+        },
+        {
+          name: 'expenses',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'types',
+              type: 'array',
+              fields: [
+                {
+                  name: 'type',
+                  type: 'text',
+                },
+                {
+                  name: 'total',
+                  type: 'number',
+                }
+              ],
+            },
+          ],
+        },
+        {
+          name: 'profit',
+          type: 'number',
+        },
+        {
+          name: 'bottlesDelivered',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'expectedRevenue',
+              type: 'number',
+            },
+            {
+              name: 'averageRevenue',
+              type: 'number',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'thisYear',
+      type: 'group',
+      fields: [
+        {
+          name: 'revenue',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'channels',
+              type: 'array',
+              fields: [
+                {
+                  name: 'channel',
+                  type: 'text',
+                },
+                {
+                  name: 'total',
+                  type: 'number',
+                }
+              ],
+            },
+          ],
+        },
+        {
+          name: 'expenses',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'types',
+              type: 'array',
+              fields: [
+                {
+                  name: 'type',
+                  type: 'text',
+                },
+                {
+                  name: 'total',
+                  type: 'number',
+                }
+              ],
+            },
+          ],
+        },
+        {
+          name: 'profit',
+          type: 'number',
+        },
+        {
+          name: 'bottlesDelivered',
+          type: 'group',
+          fields: [
+            {
+              name: 'total',
+              type: 'number',
+            },
+            {
+              name: 'expectedRevenue',
+              type: 'number',
+            },
+            {
+              name: 'averageRevenue',
+              type: 'number',
+            },
+          ],
+        },
+      ],
+    },
   ],
 }

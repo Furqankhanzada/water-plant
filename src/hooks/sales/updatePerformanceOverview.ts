@@ -1,6 +1,6 @@
 import { Sale } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
 import { Sales } from '@/collections/Sales'
 
 /**
@@ -49,6 +49,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     
     const thisWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
     const thisWeekEnd = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
+    
+    const thisQuarterStart = startOfQuarter(currentDate)
+    const thisQuarterEnd = endOfQuarter(currentDate)
+    
+    const thisYearStart = startOfYear(currentDate)
+    const thisYearEnd = endOfYear(currentDate)
 
     // Helper function to aggregate sales by channel for a time period
     const aggregateSalesByChannel = async (startDate: Date, endDate: Date) => {
@@ -89,10 +95,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     })
 
     // Aggregate sales for all time periods
-    const [thisMonthSales, lastMonthSales, thisWeekSales] = await Promise.all([
+    const [thisMonthSales, lastMonthSales, thisWeekSales, thisQuarterSales, thisYearSales] = await Promise.all([
       aggregateSalesByChannel(thisMonthStart, thisMonthEnd),
       aggregateSalesByChannel(lastMonthStart, lastMonthEnd),
       aggregateSalesByChannel(thisWeekStart, thisWeekEnd),
+      aggregateSalesByChannel(thisQuarterStart, thisQuarterEnd),
+      aggregateSalesByChannel(thisYearStart, thisYearEnd),
     ])
 
     // Helper function to update revenue for a time period
@@ -127,6 +135,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
         thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthSales),
         lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthSales),
         thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekSales),
+        thisQuarter: updateRevenueForPeriod(performanceOverview.thisQuarter, thisQuarterSales),
+        thisYear: updateRevenueForPeriod(performanceOverview.thisYear, thisYearSales),
       },
     })
 

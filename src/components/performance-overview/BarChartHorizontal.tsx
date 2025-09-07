@@ -91,9 +91,6 @@ export const BarChartHorizontal = ({
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">{secondaryDescription}</div>
-      </CardFooter>
     </Card>
   )
 }

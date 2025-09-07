@@ -1,6 +1,6 @@
 import { Invoice } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -30,6 +30,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     
     const thisWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
     const thisWeekEnd = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
+    
+    const thisQuarterStart = startOfQuarter(currentDate)
+    const thisQuarterEnd = endOfQuarter(currentDate)
+    
+    const thisYearStart = startOfYear(currentDate)
+    const thisYearEnd = endOfYear(currentDate)
 
     // Helper function to aggregate delivery revenue for a time period
     const aggregateDeliveryRevenue = async (startDate: Date, endDate: Date) => {
@@ -67,10 +73,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     })
 
     // Aggregate delivery revenue for all time periods
-    const [thisMonthDelivery, lastMonthDelivery, thisWeekDelivery] = await Promise.all([
+    const [thisMonthDelivery, lastMonthDelivery, thisWeekDelivery, thisQuarterDelivery, thisYearDelivery] = await Promise.all([
       aggregateDeliveryRevenue(thisMonthStart, thisMonthEnd),
       aggregateDeliveryRevenue(lastMonthStart, lastMonthEnd),
       aggregateDeliveryRevenue(thisWeekStart, thisWeekEnd),
+      aggregateDeliveryRevenue(thisQuarterStart, thisQuarterEnd),
+      aggregateDeliveryRevenue(thisYearStart, thisYearEnd),
     ])
 
     // Helper function to update revenue for a time period
@@ -113,6 +121,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
         thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthDelivery),
         lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthDelivery),
         thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekDelivery),
+        thisQuarter: updateRevenueForPeriod(performanceOverview.thisQuarter, thisQuarterDelivery),
+        thisYear: updateRevenueForPeriod(performanceOverview.thisYear, thisYearDelivery),
       },
     })
 

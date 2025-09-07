@@ -1,6 +1,6 @@
 import { Transaction } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -30,6 +30,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     
     const thisWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
     const thisWeekEnd = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
+    
+    const thisQuarterStart = startOfQuarter(currentDate)
+    const thisQuarterEnd = endOfQuarter(currentDate)
+    
+    const thisYearStart = startOfYear(currentDate)
+    const thisYearEnd = endOfYear(currentDate)
 
     // Helper function to aggregate bottles delivered for a time period
     const aggregateBottlesDelivered = async (startDate: Date, endDate: Date) => {
@@ -70,10 +76,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     })
 
     // Calculate bottles delivered metrics for all time periods
-    const [thisMonthBottles, lastMonthBottles, thisWeekBottles] = await Promise.all([
+    const [thisMonthBottles, lastMonthBottles, thisWeekBottles, thisQuarterBottles, thisYearBottles] = await Promise.all([
       aggregateBottlesDelivered(thisMonthStart, thisMonthEnd),
       aggregateBottlesDelivered(lastMonthStart, lastMonthEnd),
       aggregateBottlesDelivered(thisWeekStart, thisWeekEnd),
+      aggregateBottlesDelivered(thisQuarterStart, thisQuarterEnd),
+      aggregateBottlesDelivered(thisYearStart, thisYearEnd),
     ])
 
     // Update the performance overview
@@ -91,6 +99,14 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
         thisWeek: {
           ...performanceOverview.thisWeek,
           bottlesDelivered: thisWeekBottles,
+        },
+        thisQuarter: {
+          ...performanceOverview.thisQuarter,
+          bottlesDelivered: thisQuarterBottles,
+        },
+        thisYear: {
+          ...performanceOverview.thisYear,
+          bottlesDelivered: thisYearBottles,
         },
       },
     })

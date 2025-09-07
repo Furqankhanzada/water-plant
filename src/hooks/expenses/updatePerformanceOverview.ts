@@ -1,6 +1,6 @@
 import { Expense } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
 import { Expenses } from '@/collections/Expenses'
 
 /**
@@ -48,6 +48,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     
     const thisWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
     const thisWeekEnd = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
+    
+    const thisQuarterStart = startOfQuarter(currentDate)
+    const thisQuarterEnd = endOfQuarter(currentDate)
+    
+    const thisYearStart = startOfYear(currentDate)
+    const thisYearEnd = endOfYear(currentDate)
 
     // Helper function to aggregate expenses by type for a time period
     const aggregateExpensesByType = async (startDate: Date, endDate: Date) => {
@@ -96,10 +102,12 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     })
 
     // Aggregate expenses for all time periods
-    const [thisMonthExpenses, lastMonthExpenses, thisWeekExpenses] = await Promise.all([
+    const [thisMonthExpenses, lastMonthExpenses, thisWeekExpenses, thisQuarterExpenses, thisYearExpenses] = await Promise.all([
       aggregateExpensesByType(thisMonthStart, thisMonthEnd),
       aggregateExpensesByType(lastMonthStart, lastMonthEnd),
       aggregateExpensesByType(thisWeekStart, thisWeekEnd),
+      aggregateExpensesByType(thisQuarterStart, thisQuarterEnd),
+      aggregateExpensesByType(thisYearStart, thisYearEnd),
     ])
 
     // Update the performance overview
@@ -117,6 +125,14 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
         thisWeek: {
           ...performanceOverview.thisWeek,
           expenses: thisWeekExpenses,
+        },
+        thisQuarter: {
+          ...performanceOverview.thisQuarter,
+          expenses: thisQuarterExpenses,
+        },
+        thisYear: {
+          ...performanceOverview.thisYear,
+          expenses: thisYearExpenses,
         },
       },
     })

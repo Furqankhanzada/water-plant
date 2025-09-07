@@ -2,10 +2,68 @@ import React from 'react'
 import { CustomComponent, PayloadServerReactComponent } from 'payload'
 import { PerformanceOverview } from '@/payload-types'
 import { rupee } from '@/collections/Reports'
+import { 
+  startOfWeek, 
+  endOfWeek, 
+  startOfMonth, 
+  endOfMonth, 
+  subMonths, 
+  startOfQuarter, 
+  endOfQuarter, 
+  startOfYear, 
+  endOfYear,
+  format 
+} from 'date-fns'
 
 import { Filters } from './Filters'
 import { OverviewCard } from './OverviewCard'
 import { BarChartHorizontal } from './BarChartHorizontal'
+
+/**
+ * Generate readable date range for a given duration
+ */
+const getDateRangeForDuration = (duration: string): string => {
+  const currentDate = new Date()
+  
+  switch (duration) {
+    case 'this-week': {
+      const start = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
+      const end = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
+      // If same month, show: "Jan 1 - 7, 2024"
+      if (start.getMonth() === end.getMonth()) {
+        return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`
+      }
+      // If different months, show: "Jan 29 - Feb 4, 2024"
+      return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+    }
+    case 'this-month': {
+      const start = startOfMonth(currentDate)
+      const end = endOfMonth(currentDate)
+      // Show: "Jan 1 - 31, 2024"
+      return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`
+    }
+    case 'last-month': {
+      const start = startOfMonth(subMonths(currentDate, 1))
+      const end = endOfMonth(subMonths(currentDate, 1))
+      // Show: "Dec 1 - 31, 2023"
+      return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`
+    }
+    case 'this-quarter': {
+      const start = startOfQuarter(currentDate)
+      const end = endOfQuarter(currentDate)
+      // Show: "Jan 1 - Mar 31, 2024"
+      return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+    }
+    case 'this-year': {
+      const start = startOfYear(currentDate)
+      const end = endOfYear(currentDate)
+      // Show: "Jan 1 - Dec 31, 2024"
+      return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+    }
+    default:
+      return 'For selected period'
+  }
+}
 
 const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent> = async ({
   payload,
@@ -15,11 +73,13 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
     slug: 'performance-overview',
   })
 
-  const activeDuration = ((searchParams?.duration as string) || 'this-month').replace(
+  const duration = (searchParams?.duration as string) || 'this-month'
+  const activeDuration = duration.replace(
     /-([a-z])/g,
     (_, letter) => letter.toUpperCase(),
   )
   const overview = performanceOverview[activeDuration as keyof PerformanceOverview]
+  const dateRange = getDateRangeForDuration(duration)
 
   if (typeof overview !== 'object' || !overview) {
     return null
@@ -36,32 +96,32 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
           title="Total Revenue Collected"
           value={rupee.format(overview?.revenue?.total ?? 0)}
           description="Includes delivery, counter, fillers, and bottles sold."
-          secondaryDescription="For selected period"
+          secondaryDescription={dateRange}
         />
         <OverviewCard
           title="Total Expenses"
           value={rupee.format(overview?.expenses?.total ?? 0)}
           description="Includes all expenses."
-          secondaryDescription="For selected period"
+          secondaryDescription={dateRange}
         />
         <OverviewCard
           title="Total Profit"
           value={rupee.format(overview?.profit ?? 0)}
           description="Includes total revenue minus total expenses."
-          secondaryDescription="For selected period"
+          secondaryDescription={dateRange}
         />
         <OverviewCard
           title="Total Bottles Delivered"
           value={(overview?.bottlesDelivered?.total ?? 0) + ''}
           description={`Estimated revenue: ${rupee.format(overview?.bottlesDelivered?.expectedRevenue ?? 0 * 2.47)} (≈ ${rupee.format(overview?.bottlesDelivered?.averageRevenue ?? 0)} per bottle)`}
-          secondaryDescription="For selected period"
+          secondaryDescription={dateRange}
         />
       </div>
       <div className="grid grid-cols-1 gap-4 mt-4 @xl/main:grid-cols-1 @5xl/main:grid-cols-2">
         {overview?.revenue?.channels?.length ? (
           <BarChartHorizontal
             title="Revenue by Channels"
-            description="For selected period"
+            description={dateRange}
             secondaryDescription="Most Revenue Collected in: Counter Sell"
             data={overview?.revenue?.channels?.map((channel) => ({
               label: channel?.channel ?? '',
@@ -72,7 +132,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
         {overview?.expenses?.types?.length ? (
           <BarChartHorizontal
             title="Expenses by Types"
-            description="For selected period"
+            description={dateRange}
             secondaryDescription="Most Expenses in: Daily Miscellaneous"
             data={overview?.expenses?.types?.map((type) => ({
               label: type?.type ?? '',
