@@ -145,4 +145,5 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the sales creation/update
   }
+  return doc;
 }

@@ -58,4 +58,5 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Customer> = as
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the customer creation/update
   }
+  return doc;
 }

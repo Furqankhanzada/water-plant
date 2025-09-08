@@ -142,4 +142,5 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the expense creation/update
   }
+  return doc;
 }

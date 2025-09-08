@@ -159,4 +159,5 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the transaction creation/update
   }
+  return doc;
 }
