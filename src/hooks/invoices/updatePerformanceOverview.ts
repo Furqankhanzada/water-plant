@@ -131,4 +131,5 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the invoice creation/update
   }
+  return doc;
 }

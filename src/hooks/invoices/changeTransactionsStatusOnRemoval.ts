@@ -14,13 +14,13 @@ import type { CollectionAfterChangeHook } from 'payload'
 export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = async ({
   req: { payload },
   operation,
-  data,
+  doc,
   previousDoc,
 }) => {
-  if (operation !== 'update') return data
+  if (operation !== 'update') return doc;
 
   const previousTransactions = previousDoc.transactions || []
-  const currentTransactions = data.transactions || []
+  const currentTransactions = doc.transactions || []
 
   // Find transactions that existed before but were removed in this update
   const removedTransactionIds = previousTransactions.filter(
@@ -40,5 +40,5 @@ export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = asyn
     })
   }
 
-  return data
+  return doc;
 }

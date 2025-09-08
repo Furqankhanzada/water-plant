@@ -26,4 +26,5 @@ export const unsetOldLatestInvoices: CollectionAfterChangeHook<Invoice> = async 
       $set: { isLatest: false },
     }
   );
+  return doc;
 };
