@@ -494,7 +494,9 @@ export interface Expense {
     | 'gate_pass'
     | 'maintenance_plant'
     | 'maintenance_vehicle'
+    | 'parking'
     | 'minerals'
+    | 'bottle_caps'
     | 'bottles'
     | 'psqca';
   expenseAt: string;
