@@ -12,15 +12,18 @@ if (!REMOTE_URI || !LOCAL_URI) {
   process.exit(1);
 }
 
+const DB_NAME = new URL(LOCAL_URI).pathname.replace(/^\//, '');
+
+
 try {
-  console.log("📤 Dumping 'test' database from remote...");
+  console.log("📤 Dumping 'All' database from remote...");
   execSync(`mongodump --uri="${REMOTE_URI}" --out="${DUMP_DIR}"`, { stdio: "inherit" });
 
-  console.log("🗑 Dropping local 'test' database...");
+  console.log(`🗑 Dropping local ${DB_NAME} database...`);
   execSync(`mongosh "${LOCAL_URI}" --eval "db.dropDatabase()"`, { stdio: "inherit" });
 
-  console.log("📥 Restoring 'test' database to local...");
-  execSync(`mongorestore --uri="${LOCAL_URI}" "${DUMP_DIR}/test"`, { stdio: "inherit" });
+  console.log(`📥 Restoring ${DB_NAME} database to local...`);
+  execSync(`mongorestore --uri="${LOCAL_URI}" "${DUMP_DIR}/${DB_NAME}"`, { stdio: "inherit" });
 
   console.log("🧹 Cleaning up dump folder...");
   if (process.platform === "win32") {
@@ -29,7 +32,7 @@ try {
     execSync(`rm -rf "${DUMP_DIR}"`, { stdio: "inherit" }); // Mac/Linux
   }
 
-  console.log("✅ Done — 'test' database synced from remote to local.");
+  console.log(`✅ Done — ${DB_NAME} database synced from remote to local.`);
 } catch (err) {
   console.error("❌ Error:", err);
   process.exit(1);

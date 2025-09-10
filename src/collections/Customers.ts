@@ -8,7 +8,6 @@ export const Customers: CollectionConfig = {
   slug: 'customers',
   enableQueryPresets: true,
   disableDuplicate: true,
-  disableBulkEdit: true,
   trash: true,
   admin: {
     useAsTitle: 'name',
