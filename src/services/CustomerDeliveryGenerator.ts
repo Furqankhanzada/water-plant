@@ -1,6 +1,7 @@
 import { BasePayload } from 'payload'
 import { addDays, differenceInDays, startOfDay, subDays } from 'date-fns'
 import { Transaction } from '@/payload-types'
+import { Types } from 'mongoose'
 
 /**
  * CustomerDeliveryGenerator is responsible for predicting when each customer will run out of water bottles
@@ -64,13 +65,6 @@ export class CustomerDeliveryGenerator {
     const bottleGiven = latest.bottleGiven ?? 0
 
     return Math.max(remainingBottles, bottleGiven)
-  }
-
-  private getPriority(daysUntilDelivery: number): CustomerDeliveryAnalytics['priority'] {
-    if (daysUntilDelivery <= 1) return 'URGENT'
-    if (daysUntilDelivery <= 2) return 'HIGH'
-    if (daysUntilDelivery <= 3) return 'MEDIUM'
-    return 'LOW'
   }
 
   private calculateDaysDiff(startDate: Date, endDate: Date): number {
@@ -153,8 +147,6 @@ export class CustomerDeliveryGenerator {
     // nextDeliveryDate: today if overdue, else ceil to whole days ahead
     const nextDeliveryDate = addDays(today, Math.ceil(daysUntilDelivery))
 
-    const priority = this.getPriority(daysUntilDelivery)
-
     return {
       customer: customer.id,
       consumptionRate: baseRate,
@@ -162,13 +154,14 @@ export class CustomerDeliveryGenerator {
       weeklyConsumption: Math.ceil(baseRate * 7),
       daysUntilDelivery: daysUntilDelivery,
       nextDeliveryDate: nextDeliveryDate.toISOString(),
-      priority,
+      priority: 'URGENT', // when add single customer mark him urgent by default
     }
   }
 
   async fetchAnalyticsWithAggregation(
-    match: any,
     payload: BasePayload,
+    match: any,
+    tripId: string
   ): Promise<CustomerDeliveryAnalytics[]> {
     const db = payload.db
     const today = startOfDay(new Date())
@@ -187,6 +180,35 @@ export class CustomerDeliveryGenerator {
     const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24
 
     const matchCustomers = { $match: match }
+
+    // Lookup to check if the customer already has a transaction in the given trip
+    const lookupTripTransaction = {
+      $lookup: {
+        from: 'transactions',
+        let: { customerId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$customer', '$$customerId'] },
+                  { $eq: ['$trip', new Types.ObjectId(tripId)] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 },
+        ],
+        as: 'tripTransaction',
+      },
+    }
+
+    // Keep only customers that do NOT already have a transaction in the trip
+    const excludeCustomersWithTripTransaction = {
+      $match: {
+        'tripTransaction.0': { $exists: false },
+      },
+    }
 
     // Join last 30 days of transactions for each customer
     const joinTransactions = {
@@ -211,13 +233,6 @@ export class CustomerDeliveryGenerator {
           { $limit: 30 },
         ],
         as: 'transactions',
-      },
-    }
-
-    // Filter out customers without any transactions
-    const filterCustomersWithTransactions = {
-      $match: {
-        'transactions.0': { $exists: true },
       },
     }
 
@@ -397,10 +412,11 @@ export class CustomerDeliveryGenerator {
       },
     }
 
-    const customers = await db.collections['customers'].aggregate([
+    const customers: CustomerDeliveryAnalytics[] = await db.collections['customers'].aggregate([
       matchCustomers,
+      lookupTripTransaction,
+      excludeCustomersWithTripTransaction,
       joinTransactions,
-      filterCustomersWithTransactions,
       extractTransactionInfo,
       computeConsumptionMetrics,
       calculateBaseRate,
