@@ -15,7 +15,7 @@ export const Filters = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  const timeRange = searchParams.get('duration') || 'this-month'
+  const timeRange = searchParams.get('duration') || 'today'
 
   const handleDurationChange = useCallback((value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -32,6 +32,7 @@ export const Filters = () => {
         variant="outline"
         className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/main:flex"
       >
+        <ToggleGroupItem value="today">Today</ToggleGroupItem>
         <ToggleGroupItem value="this-week">This Week</ToggleGroupItem>
         <ToggleGroupItem value="this-month">This Month</ToggleGroupItem>
         <ToggleGroupItem value="last-month">Last Month</ToggleGroupItem>
@@ -47,6 +48,9 @@ export const Filters = () => {
           <SelectValue placeholder="Today" />
         </SelectTrigger>
         <SelectContent className="rounded-xl">
+          <SelectItem value="today" className="rounded-lg">
+            Today
+          </SelectItem>
           <SelectItem value="this-week" className="rounded-lg">
             This Week
           </SelectItem>

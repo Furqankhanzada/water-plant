@@ -1,6 +1,6 @@
 import { Sale } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
 import { Sales } from '@/collections/Sales'
 
 /**
@@ -41,6 +41,9 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     const currentDate = new Date()
     
     // Calculate date ranges for all time periods
+    const todayStart = startOfDay(currentDate)
+    const todayEnd = endOfDay(currentDate)
+    
     const thisMonthStart = startOfMonth(currentDate)
     const thisMonthEnd = endOfMonth(currentDate)
     
@@ -95,7 +98,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     })
 
     // Aggregate sales for all time periods
-    const [thisMonthSales, lastMonthSales, thisWeekSales, thisQuarterSales, thisYearSales] = await Promise.all([
+    const [todaySales, thisMonthSales, lastMonthSales, thisWeekSales, thisQuarterSales, thisYearSales] = await Promise.all([
+      aggregateSalesByChannel(todayStart, todayEnd),
       aggregateSalesByChannel(thisMonthStart, thisMonthEnd),
       aggregateSalesByChannel(lastMonthStart, lastMonthEnd),
       aggregateSalesByChannel(thisWeekStart, thisWeekEnd),
@@ -132,6 +136,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     await payload.updateGlobal({
       slug: 'performance-overview',
       data: {
+        today: updateRevenueForPeriod(performanceOverview.today, todaySales),
         thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthSales),
         lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthSales),
         thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekSales),
@@ -140,7 +145,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
       },
     })
 
-    console.log('✅ Performance overview updated with sales data for all time periods')
+    console.log('✅ Performance overview updated with sales data for all time periods (including today)')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the sales creation/update

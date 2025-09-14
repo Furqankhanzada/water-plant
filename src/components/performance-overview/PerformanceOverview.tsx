@@ -26,6 +26,10 @@ const getDateRangeForDuration = (duration: string): string => {
   const currentDate = new Date()
 
   switch (duration) {
+    case 'today': {
+      // Show: "Jan 15, 2024"
+      return format(currentDate, 'MMM d, yyyy')
+    }
     case 'this-week': {
       const start = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
       const end = endOfWeek(currentDate, { weekStartsOn: 1 }) // Sunday
@@ -73,7 +77,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
     slug: 'performance-overview',
   })
 
-  const duration = (searchParams?.duration as string) || 'this-month'
+  const duration = (searchParams?.duration as string) || 'today'
   const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
   const overview = performanceOverview[activeDuration as keyof PerformanceOverview]
   const dateRange = getDateRangeForDuration(duration)

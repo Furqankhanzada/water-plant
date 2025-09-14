@@ -28,13 +28,14 @@ export const calculateProfit: GlobalBeforeChangeHook = async ({
     }
 
     // Calculate profit for all time periods
+    const todayProfit = calculateProfitForPeriod(data.today)
     const thisMonthProfit = calculateProfitForPeriod(data.thisMonth)
     const lastMonthProfit = calculateProfitForPeriod(data.lastMonth)
     const thisWeekProfit = calculateProfitForPeriod(data.thisWeek)
     const thisQuarterProfit = calculateProfitForPeriod(data.thisQuarter)
     const thisYearProfit = calculateProfitForPeriod(data.thisYear)
 
-    console.log(`✅ Profit calculated - This Month: ${thisMonthProfit}, Last Month: ${lastMonthProfit}, This Week: ${thisWeekProfit}, This Quarter: ${thisQuarterProfit}, This Year: ${thisYearProfit}`)
+    console.log(`✅ Profit calculated - Today: ${todayProfit}, This Month: ${thisMonthProfit}, Last Month: ${lastMonthProfit}, This Week: ${thisWeekProfit}, This Quarter: ${thisQuarterProfit}, This Year: ${thisYearProfit}`)
   } catch (error) {
     console.error('❌ Error calculating profit:', error)
     // Don't throw the error to avoid breaking the global update

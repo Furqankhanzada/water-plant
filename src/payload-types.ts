@@ -1208,6 +1208,34 @@ export interface Company {
  */
 export interface PerformanceOverview {
   id: string;
+  today?: {
+    revenue?: {
+      total?: number | null;
+      channels?:
+        | {
+            channel?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    expenses?: {
+      total?: number | null;
+      types?:
+        | {
+            type?: string | null;
+            total?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    profit?: number | null;
+    bottlesDelivered?: {
+      total?: number | null;
+      expectedRevenue?: number | null;
+      averageRevenue?: number | null;
+    };
+  };
   thisMonth?: {
     revenue?: {
       total?: number | null;
@@ -1387,6 +1415,42 @@ export interface CompanySelect<T extends boolean = true> {
  * via the `definition` "performance-overview_select".
  */
 export interface PerformanceOverviewSelect<T extends boolean = true> {
+  today?:
+    | T
+    | {
+        revenue?:
+          | T
+          | {
+              total?: T;
+              channels?:
+                | T
+                | {
+                    channel?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        expenses?:
+          | T
+          | {
+              total?: T;
+              types?:
+                | T
+                | {
+                    type?: T;
+                    total?: T;
+                    id?: T;
+                  };
+            };
+        profit?: T;
+        bottlesDelivered?:
+          | T
+          | {
+              total?: T;
+              expectedRevenue?: T;
+              averageRevenue?: T;
+            };
+      };
   thisMonth?:
     | T
     | {

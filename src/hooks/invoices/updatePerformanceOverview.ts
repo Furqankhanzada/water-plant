@@ -1,6 +1,6 @@
 import { Invoice } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -22,6 +22,9 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     const currentDate = new Date()
     
     // Calculate date ranges for all time periods
+    const todayStart = startOfDay(currentDate)
+    const todayEnd = endOfDay(currentDate)
+    
     const thisMonthStart = startOfMonth(currentDate)
     const thisMonthEnd = endOfMonth(currentDate)
     
@@ -73,7 +76,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     })
 
     // Aggregate delivery revenue for all time periods
-    const [thisMonthDelivery, lastMonthDelivery, thisWeekDelivery, thisQuarterDelivery, thisYearDelivery] = await Promise.all([
+    const [todayDelivery, thisMonthDelivery, lastMonthDelivery, thisWeekDelivery, thisQuarterDelivery, thisYearDelivery] = await Promise.all([
+      aggregateDeliveryRevenue(todayStart, todayEnd),
       aggregateDeliveryRevenue(thisMonthStart, thisMonthEnd),
       aggregateDeliveryRevenue(lastMonthStart, lastMonthEnd),
       aggregateDeliveryRevenue(thisWeekStart, thisWeekEnd),
@@ -118,6 +122,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     await payload.updateGlobal({
       slug: 'performance-overview',
       data: {
+        today: updateRevenueForPeriod(performanceOverview.today, todayDelivery),
         thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthDelivery),
         lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthDelivery),
         thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekDelivery),
@@ -126,7 +131,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
       },
     })
 
-    console.log('✅ Performance overview updated with delivery revenue for all time periods')
+    console.log('✅ Performance overview updated with delivery revenue for all time periods (including today)')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the invoice creation/update

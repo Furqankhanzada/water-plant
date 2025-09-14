@@ -1,6 +1,6 @@
 import { Transaction } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -22,6 +22,9 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     const currentDate = new Date()
     
     // Calculate date ranges for all time periods
+    const todayStart = startOfDay(currentDate)
+    const todayEnd = endOfDay(currentDate)
+    
     const thisMonthStart = startOfMonth(currentDate)
     const thisMonthEnd = endOfMonth(currentDate)
     
@@ -117,7 +120,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     })
 
     // Calculate bottles delivered metrics for all time periods and estimated bottles customer holds
-    const [thisMonthBottles, lastMonthBottles, thisWeekBottles, thisQuarterBottles, thisYearBottles, estimatedBottlesCustomerHolds] = await Promise.all([
+    const [todayBottles, thisMonthBottles, lastMonthBottles, thisWeekBottles, thisQuarterBottles, thisYearBottles, estimatedBottlesCustomerHolds] = await Promise.all([
+      aggregateBottlesDelivered(todayStart, todayEnd),
       aggregateBottlesDelivered(thisMonthStart, thisMonthEnd),
       aggregateBottlesDelivered(lastMonthStart, lastMonthEnd),
       aggregateBottlesDelivered(thisWeekStart, thisWeekEnd),
@@ -130,6 +134,10 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
     await payload.updateGlobal({
       slug: 'performance-overview',
       data: {
+        today: {
+          ...performanceOverview.today,
+          bottlesDelivered: todayBottles,
+        },
         thisMonth: {
           ...performanceOverview.thisMonth,
           bottlesDelivered: thisMonthBottles,
@@ -154,7 +162,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
       },
     })
 
-    console.log(`✅ Performance overview updated with bottles delivered metrics for all time periods and estimated bottles customer holds: ${estimatedBottlesCustomerHolds}`)
+    console.log(`✅ Performance overview updated with bottles delivered metrics for all time periods (including today) and estimated bottles customer holds: ${estimatedBottlesCustomerHolds}`)
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the transaction creation/update

@@ -1,6 +1,6 @@
 import { Expense } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns'
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
 import { Expenses } from '@/collections/Expenses'
 
 /**
@@ -40,6 +40,9 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     const currentDate = new Date()
     
     // Calculate date ranges for all time periods
+    const todayStart = startOfDay(currentDate)
+    const todayEnd = endOfDay(currentDate)
+    
     const thisMonthStart = startOfMonth(currentDate)
     const thisMonthEnd = endOfMonth(currentDate)
     
@@ -102,7 +105,8 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     })
 
     // Aggregate expenses for all time periods
-    const [thisMonthExpenses, lastMonthExpenses, thisWeekExpenses, thisQuarterExpenses, thisYearExpenses] = await Promise.all([
+    const [todayExpenses, thisMonthExpenses, lastMonthExpenses, thisWeekExpenses, thisQuarterExpenses, thisYearExpenses] = await Promise.all([
+      aggregateExpensesByType(todayStart, todayEnd),
       aggregateExpensesByType(thisMonthStart, thisMonthEnd),
       aggregateExpensesByType(lastMonthStart, lastMonthEnd),
       aggregateExpensesByType(thisWeekStart, thisWeekEnd),
@@ -114,6 +118,10 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
     await payload.updateGlobal({
       slug: 'performance-overview',
       data: {
+        today: {
+          ...performanceOverview.today,
+          expenses: todayExpenses,
+        },
         thisMonth: {
           ...performanceOverview.thisMonth,
           expenses: thisMonthExpenses,
@@ -137,7 +145,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Expense> = asy
       },
     })
 
-    console.log('✅ Performance overview updated with expenses data for all time periods')
+    console.log('✅ Performance overview updated with expenses data for all time periods (including today)')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the expense creation/update
