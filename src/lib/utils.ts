@@ -23,3 +23,23 @@ export function formatDistanceWithFallback(
 
   return formatDistance(new Date(date), now, { addSuffix: true, ...otherOptions });
 };
+
+/**
+ * Extracts property number from customer address string
+ * Finds the first number in the address string
+ * @param address - The customer address string
+ * @returns The property number as a number, or 0 if not found
+ */
+export function extractPropertyNumber(address: string | null | undefined): number {
+  if (!address || typeof address !== 'string') {
+    return 0;
+  }
+
+  // Extract the first number found in the address
+  const numberMatch = address.match(/\d+/);
+  if (numberMatch) {
+    return parseInt(numberMatch[0], 10);
+  }
+
+  return 0;
+}

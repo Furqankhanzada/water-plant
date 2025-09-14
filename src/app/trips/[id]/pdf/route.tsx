@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 import QRCode from 'qrcode'
 import { Area, Block, Customer, Transaction, Trip } from '@/payload-types'
 import { generateTripReport } from '@/aggregations/trips'
+import { extractPropertyNumber } from '@/lib/utils'
 
 import TripInfo from './(components)/TripInfo'
 import Table from './(components)/Table'
@@ -55,13 +56,30 @@ const TripPDF = ({ trip, transactions, blocks, qrDataURI }: TripProps) => {
                   const customerBlock = customer.block as Block
                   return customerBlock.id === block.id
                 })
-                if (!blockTransactions.length) return
+                
+                // Sort blockTransactions by property number extracted from customer address
+                const sortedBlockTransactions = blockTransactions.sort((a, b) => {
+                  const customerA = a.customer as Customer
+                  const customerB = b.customer as Customer
+                  
+                  const propertyNumberA = extractPropertyNumber(customerA.address)
+                  const propertyNumberB = extractPropertyNumber(customerB.address)
+                  
+                  // If property numbers are the same or both 0, sort by customer name
+                  if (propertyNumberA === propertyNumberB) {
+                    return customerA.name.localeCompare(customerB.name)
+                  }
+                  
+                  return propertyNumberA - propertyNumberB
+                })
+                
+                if (!sortedBlockTransactions.length) return
                 return (
                   <>
                     <Text style={{ marginTop: 8, fontFamily: 'Helvetica-BoldOblique' }}>
                       {block.name}
                     </Text>
-                    <Table key={a.id} blockTransactions={blockTransactions} trip={trip} />
+                    <Table key={a.id} blockTransactions={sortedBlockTransactions} trip={trip} />
                   </>
                 )
               })}
