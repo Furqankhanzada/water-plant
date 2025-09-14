@@ -33,7 +33,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -109,7 +173,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -185,7 +313,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -261,7 +453,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -337,7 +593,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -413,7 +733,71 @@ export const PerformanceOverview: GlobalConfig = {
                 {
                   name: 'total',
                   type: 'number',
-                }
+                },
+                {
+                  name: 'paymentMethods',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'cash',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'online',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: 'areas',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'areaId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'areaName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'collected',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'remaining',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                    {
+                      name: 'blocks',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'blockId',
+                          type: 'text',
+                        },
+                        {
+                          name: 'blockName',
+                          type: 'text',
+                        },
+                        {
+                          name: 'collected',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                        {
+                          name: 'remaining',
+                          type: 'number',
+                          defaultValue: 0,
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],

@@ -1215,6 +1215,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1243,6 +1265,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1271,6 +1315,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1299,6 +1365,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1327,6 +1415,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1355,6 +1465,28 @@ export interface PerformanceOverview {
         | {
             channel?: string | null;
             total?: number | null;
+            paymentMethods?: {
+              cash?: number | null;
+              online?: number | null;
+            };
+            areas?:
+              | {
+                  areaId?: string | null;
+                  areaName?: string | null;
+                  collected?: number | null;
+                  remaining?: number | null;
+                  blocks?:
+                    | {
+                        blockId?: string | null;
+                        blockName?: string | null;
+                        collected?: number | null;
+                        remaining?: number | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
           }[]
         | null;
@@ -1427,6 +1559,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };
@@ -1463,6 +1619,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };
@@ -1499,6 +1679,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };
@@ -1535,6 +1739,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };
@@ -1571,6 +1799,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };
@@ -1607,6 +1859,30 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
                 | {
                     channel?: T;
                     total?: T;
+                    paymentMethods?:
+                      | T
+                      | {
+                          cash?: T;
+                          online?: T;
+                        };
+                    areas?:
+                      | T
+                      | {
+                          areaId?: T;
+                          areaName?: T;
+                          collected?: T;
+                          remaining?: T;
+                          blocks?:
+                            | T
+                            | {
+                                blockId?: T;
+                                blockName?: T;
+                                collected?: T;
+                                remaining?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                        };
                     id?: T;
                   };
             };

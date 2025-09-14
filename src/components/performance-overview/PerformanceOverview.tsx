@@ -18,6 +18,8 @@ import {
 import { Filters } from './Filters'
 import { OverviewCard } from './OverviewCard'
 import { BarChartHorizontal } from './BarChartHorizontal'
+import { PaymentMethodBreakdown } from './PaymentMethodBreakdown'
+import { GeographicCollection } from './GeographicCollection'
 
 /**
  * Generate readable date range for a given duration
@@ -77,7 +79,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
     slug: 'performance-overview',
   })
 
-  const duration = (searchParams?.duration as string) || 'today'
+  const duration = (searchParams?.duration as string) || 'this-month'
   const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
   const overview = performanceOverview[activeDuration as keyof PerformanceOverview]
   const dateRange = getDateRangeForDuration(duration)
@@ -85,6 +87,11 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
   if (typeof overview !== 'object' || !overview) {
     return null
   }
+  const deliveryChannel = overview?.revenue?.channels?.find(
+    (channel) => channel?.channel === 'Delivery',
+  )
+
+  const totalRemaining = deliveryChannel?.areas?.reduce((sum, area) => sum + (area.remaining || 0), 0) ?? 0
 
   return (
     <div className="@container/main">
@@ -92,7 +99,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
         <h2>Performance Overview</h2>
         <Filters />
       </div>
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
         <OverviewCard
           title="Total Revenue Collected"
           value={rupee.format(overview?.revenue?.total ?? 0)}
@@ -116,6 +123,12 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
           value={(overview?.bottlesDelivered?.total ?? 0) + ''}
           description={`Estimated revenue: ${rupee.format(overview?.bottlesDelivered?.expectedRevenue ?? 0 * 2.47)} (≈ ${rupee.format(overview?.bottlesDelivered?.averageRevenue ?? 0)} per bottle)`}
           secondaryDescription={dateRange}
+        />
+        <OverviewCard
+          title="Total Remaining"
+          value={rupee.format(totalRemaining)}
+          description="Outstanding amounts"
+          secondaryDescription={'Calculated from active customers invoices only'}
         />
       </div>
       <div className="grid grid-cols-1 gap-4 mt-4 @xl/main:grid-cols-1 @5xl/main:grid-cols-2">
@@ -142,7 +155,45 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
           />
         ) : null}
       </div>
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-4 @5xl/main:grid-cols-5 mt-4">
+
+      {/* Enhanced Delivery Revenue Breakdown */}
+      {(() => {
+        const deliveryChannel = overview?.revenue?.channels?.find(
+          (channel) => channel?.channel === 'Delivery',
+        )
+        if (!deliveryChannel) return null
+
+        return (
+          <div className="space-y-6 mt-6">
+            {/* Payment Method Breakdown */}
+            {deliveryChannel.paymentMethods && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Delivery Revenue - Payment Methods</h3>
+                <PaymentMethodBreakdown
+                  cash={deliveryChannel.paymentMethods.cash || 0}
+                  online={deliveryChannel.paymentMethods.online || 0}
+                  total={deliveryChannel.total || 0}
+                  secondaryDescription={dateRange}
+                />
+              </div>
+            )}
+
+            {/* Geographic Collection Breakdown */}
+            {deliveryChannel.areas && deliveryChannel.areas.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Delivery Revenue - Collection by Area & Block
+                </h3>
+                <GeographicCollection
+                  areas={deliveryChannel.areas as any}
+                  secondaryDescription={dateRange}
+                />
+              </div>
+            )}
+          </div>
+        )
+      })()}
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-4 @5xl/main:grid-cols-4 mt-4">
         <OverviewCard
           title="Total Active Customers"
           value={(performanceOverview?.totalActiveCustomers ?? 0) + ''}

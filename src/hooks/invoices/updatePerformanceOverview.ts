@@ -1,6 +1,11 @@
 import { Invoice } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
+import { 
+  calculatePaymentMethodBreakdown, 
+  calculateGeographicCollection, 
+  calculateDeliveryRevenue 
+} from '@/lib/performanceAggregations'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -40,34 +45,19 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     const thisYearStart = startOfYear(currentDate)
     const thisYearEnd = endOfYear(currentDate)
 
-    // Helper function to aggregate delivery revenue for a time period
-    const aggregateDeliveryRevenue = async (startDate: Date, endDate: Date) => {
-      const deliveryRevenue = await payload.db.collections['invoice'].aggregate([
-        {
-          $match: {
-            deletedAt: { $exists: false }, // Exclude soft-deleted records
-          },
-        },
-        {
-          $unwind: '$payments',
-        },
-        {
-          $match: {
-            'payments.paidAt': {
-              $gte: startDate,
-              $lte: endDate,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            totalDelivery: { $sum: '$payments.amount' },
-          },
-        },
+    // Helper function to aggregate delivery revenue with enhanced breakdown for a time period
+    const aggregateDeliveryRevenueEnhanced = async (startDate: Date, endDate: Date) => {
+      const [totalRevenue, paymentMethods, geographicData] = await Promise.all([
+        calculateDeliveryRevenue(payload, startDate, endDate),
+        calculatePaymentMethodBreakdown(payload, startDate, endDate),
+        calculateGeographicCollection(payload, startDate, endDate),
       ])
 
-      return deliveryRevenue[0]?.totalDelivery || 0
+      return {
+        total: totalRevenue,
+        paymentMethods,
+        areas: geographicData,
+      }
     }
 
     // Get current performance overview data
@@ -75,18 +65,18 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
       slug: 'performance-overview',
     })
 
-    // Aggregate delivery revenue for all time periods
+    // Aggregate delivery revenue for all time periods with enhanced breakdown
     const [todayDelivery, thisMonthDelivery, lastMonthDelivery, thisWeekDelivery, thisQuarterDelivery, thisYearDelivery] = await Promise.all([
-      aggregateDeliveryRevenue(todayStart, todayEnd),
-      aggregateDeliveryRevenue(thisMonthStart, thisMonthEnd),
-      aggregateDeliveryRevenue(lastMonthStart, lastMonthEnd),
-      aggregateDeliveryRevenue(thisWeekStart, thisWeekEnd),
-      aggregateDeliveryRevenue(thisQuarterStart, thisQuarterEnd),
-      aggregateDeliveryRevenue(thisYearStart, thisYearEnd),
+      aggregateDeliveryRevenueEnhanced(todayStart, todayEnd),
+      aggregateDeliveryRevenueEnhanced(thisMonthStart, thisMonthEnd),
+      aggregateDeliveryRevenueEnhanced(lastMonthStart, lastMonthEnd),
+      aggregateDeliveryRevenueEnhanced(thisWeekStart, thisWeekEnd),
+      aggregateDeliveryRevenueEnhanced(thisQuarterStart, thisQuarterEnd),
+      aggregateDeliveryRevenueEnhanced(thisYearStart, thisYearEnd),
     ])
 
-    // Helper function to update revenue for a time period
-    const updateRevenueForPeriod = (period: any, deliveryTotal: number) => {
+    // Helper function to update revenue for a time period with enhanced breakdown
+    const updateRevenueForPeriod = (period: any, deliveryData: any) => {
       if (!period) return period
 
       // Get existing channels and preserve them
@@ -97,12 +87,14 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
         (channel: any) => channel.channel !== 'Delivery'
       )
 
-      // Add the new "Delivery" channel
+      // Add the new "Delivery" channel with enhanced breakdown
       const updatedChannels = [
         ...channelsWithoutDelivery,
         {
           channel: 'Delivery',
-          total: deliveryTotal,
+          total: deliveryData.total,
+          paymentMethods: deliveryData.paymentMethods,
+          areas: deliveryData.areas,
         },
       ]
 
