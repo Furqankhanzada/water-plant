@@ -146,6 +146,44 @@ export const PerformanceOverview: GlobalConfig = {
               name: 'averageRevenue',
               type: 'number',
             },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
@@ -285,6 +323,44 @@ export const PerformanceOverview: GlobalConfig = {
             {
               name: 'averageRevenue',
               type: 'number',
+            },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -426,6 +502,44 @@ export const PerformanceOverview: GlobalConfig = {
               name: 'averageRevenue',
               type: 'number',
             },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
@@ -565,6 +679,44 @@ export const PerformanceOverview: GlobalConfig = {
             {
               name: 'averageRevenue',
               type: 'number',
+            },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -706,6 +858,44 @@ export const PerformanceOverview: GlobalConfig = {
               name: 'averageRevenue',
               type: 'number',
             },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
@@ -846,6 +1036,44 @@ export const PerformanceOverview: GlobalConfig = {
               name: 'averageRevenue',
               type: 'number',
             },
+            {
+              name: 'byArea',
+              type: 'array',
+              fields: [
+                {
+                  name: 'areaId',
+                  type: 'text',
+                },
+                {
+                  name: 'areaName',
+                  type: 'text',
+                },
+                {
+                  name: 'totalBottles',
+                  type: 'number',
+                  defaultValue: 0,
+                },
+                {
+                  name: 'blocks',
+                  type: 'array',
+                  fields: [
+                    {
+                      name: 'blockId',
+                      type: 'text',
+                    },
+                    {
+                      name: 'blockName',
+                      type: 'text',
+                    },
+                    {
+                      name: 'totalBottles',
+                      type: 'number',
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
@@ -857,6 +1085,44 @@ export const PerformanceOverview: GlobalConfig = {
     {
       name: 'totalActiveCustomers',
       type: 'number',
+    },
+    {
+      name: 'customersByArea',
+      type: 'array',
+      fields: [
+        {
+          name: 'areaId',
+          type: 'text',
+        },
+        {
+          name: 'areaName',
+          type: 'text',
+        },
+        {
+          name: 'totalCustomers',
+          type: 'number',
+          defaultValue: 0,
+        },
+        {
+          name: 'blocks',
+          type: 'array',
+          fields: [
+            {
+              name: 'blockId',
+              type: 'text',
+            },
+            {
+              name: 'blockName',
+              type: 'text',
+            },
+            {
+              name: 'customerCount',
+              type: 'number',
+              defaultValue: 0,
+            },
+          ],
+        },
+      ],
     },
   ],
 }

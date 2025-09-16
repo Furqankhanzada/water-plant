@@ -1,5 +1,6 @@
 import { Customer } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
+import { calculateCustomersByArea } from '@/lib/performanceAggregations'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -41,8 +42,11 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Customer> = as
       slug: 'performance-overview',
     })
 
-    // Calculate total active customers
-    const totalActiveCustomers = await calculateTotalActiveCustomers()
+    // Calculate total active customers and customers by area
+    const [totalActiveCustomers, customersByArea] = await Promise.all([
+      calculateTotalActiveCustomers(),
+      calculateCustomersByArea(payload)
+    ])
 
     // Update the performance overview
     await payload.updateGlobal({
@@ -50,6 +54,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Customer> = as
       data: {
         ...performanceOverview,
         totalActiveCustomers: totalActiveCustomers,
+        customersByArea: customersByArea,
       },
     })
 

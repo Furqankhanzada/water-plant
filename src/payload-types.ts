@@ -1256,6 +1256,22 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   thisMonth?: {
@@ -1306,6 +1322,22 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   lastMonth?: {
@@ -1356,6 +1388,22 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   thisWeek?: {
@@ -1406,6 +1454,22 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   thisQuarter?: {
@@ -1456,6 +1520,22 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   thisYear?: {
@@ -1506,10 +1586,42 @@ export interface PerformanceOverview {
       total?: number | null;
       expectedRevenue?: number | null;
       averageRevenue?: number | null;
+      byArea?:
+        | {
+            areaId?: string | null;
+            areaName?: string | null;
+            totalBottles?: number | null;
+            blocks?:
+              | {
+                  blockId?: string | null;
+                  blockName?: string | null;
+                  totalBottles?: number | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+          }[]
+        | null;
     };
   };
   estimatedBottlesCustomerHolds?: number | null;
   totalActiveCustomers?: number | null;
+  customersByArea?:
+    | {
+        areaId?: string | null;
+        areaName?: string | null;
+        totalCustomers?: number | null;
+        blocks?:
+          | {
+              blockId?: string | null;
+              blockName?: string | null;
+              customerCount?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1605,6 +1717,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   thisMonth?:
@@ -1665,6 +1793,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   lastMonth?:
@@ -1725,6 +1869,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   thisWeek?:
@@ -1785,6 +1945,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   thisQuarter?:
@@ -1845,6 +2021,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   thisYear?:
@@ -1905,10 +2097,42 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               total?: T;
               expectedRevenue?: T;
               averageRevenue?: T;
+              byArea?:
+                | T
+                | {
+                    areaId?: T;
+                    areaName?: T;
+                    totalBottles?: T;
+                    blocks?:
+                      | T
+                      | {
+                          blockId?: T;
+                          blockName?: T;
+                          totalBottles?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
             };
       };
   estimatedBottlesCustomerHolds?: T;
   totalActiveCustomers?: T;
+  customersByArea?:
+    | T
+    | {
+        areaId?: T;
+        areaName?: T;
+        totalCustomers?: T;
+        blocks?:
+          | T
+          | {
+              blockId?: T;
+              blockName?: T;
+              customerCount?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

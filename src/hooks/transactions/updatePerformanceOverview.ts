@@ -1,6 +1,7 @@
 import { Transaction } from '@/payload-types'
 import type { CollectionAfterChangeHook } from 'payload'
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns'
+import { calculateBottlesDeliveredByArea } from '@/lib/performanceAggregations'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
@@ -42,19 +43,22 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
 
     // Helper function to aggregate bottles delivered for a time period
     const aggregateBottlesDelivered = async (startDate: Date, endDate: Date) => {
-      const result = await payload.db.collections['transaction'].aggregate([
-        {
-          $match: {
-            transactionAt: { $gte: startDate, $lte: endDate },
+      const [result, bottlesByArea] = await Promise.all([
+        payload.db.collections['transaction'].aggregate([
+          {
+            $match: {
+              transactionAt: { $gte: startDate, $lte: endDate },
+            },
           },
-        },
-        {
-          $group: {
-            _id: null,
-            totalBottlesDelivered: { $sum: '$bottleGiven' },
-            totalExpectedIncome: { $sum: '$total' },
+          {
+            $group: {
+              _id: null,
+              totalBottlesDelivered: { $sum: '$bottleGiven' },
+              totalExpectedIncome: { $sum: '$total' },
+            },
           },
-        },
+        ]),
+        calculateBottlesDeliveredByArea(payload, startDate, endDate)
       ])
 
       const bottlesData = result[0] || {
@@ -70,6 +74,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> =
         total: totalBottles,
         expectedRevenue: expectedRevenue,
         averageRevenue: averageRevenue,
+        byArea: bottlesByArea,
       }
     }
 

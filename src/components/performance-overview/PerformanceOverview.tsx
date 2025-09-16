@@ -20,6 +20,8 @@ import { OverviewCard } from './OverviewCard'
 import { BarChartHorizontal } from './BarChartHorizontal'
 import { PaymentMethodBreakdown } from './PaymentMethodBreakdown'
 import { GeographicCollection } from './GeographicCollection'
+import { BottlesDeliveredByArea } from './BottlesDeliveredByArea'
+import { CustomersByArea } from './CustomersByArea'
 
 /**
  * Generate readable date range for a given duration
@@ -81,7 +83,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
 
   const duration = (searchParams?.duration as string) || 'this-month'
   const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-  const overview = performanceOverview[activeDuration as keyof PerformanceOverview]
+  const overview = performanceOverview[activeDuration as keyof PerformanceOverview] as any
   const dateRange = getDateRangeForDuration(duration)
 
   if (typeof overview !== 'object' || !overview) {
@@ -178,18 +180,47 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
               </div>
             )}
 
-            {/* Geographic Collection Breakdown */}
-            {deliveryChannel.areas && deliveryChannel.areas.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  Delivery Revenue - Collection by Area & Block
-                </h3>
-                <GeographicCollection
-                  areas={deliveryChannel.areas as any}
-                  secondaryDescription={dateRange}
-                />
-              </div>
-            )}
+            {/* Geographic Collection, Bottles Delivered, and Customers Side by Side */}
+            <div className="grid grid-cols-1 gap-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-3 w-full">
+              {/* Geographic Collection Breakdown */}
+              {deliveryChannel.areas && deliveryChannel.areas.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Delivery Revenue - Collection by Area & Block
+                  </h3>
+                  <GeographicCollection
+                    areas={deliveryChannel.areas as any}
+                    secondaryDescription={dateRange}
+                  />
+                </div>
+              )}
+
+              {/* Bottles Delivered Breakdown */}
+              {overview?.bottlesDelivered?.byArea && overview.bottlesDelivered.byArea.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Bottles Delivered - Distribution by Area & Block
+                  </h3>
+                  <BottlesDeliveredByArea
+                    areas={overview.bottlesDelivered.byArea as any}
+                    secondaryDescription={dateRange}
+                  />
+                </div>
+              )}
+
+              {/* Customers Breakdown */}
+              {performanceOverview?.customersByArea && performanceOverview.customersByArea.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Customers - Distribution by Area & Block
+                  </h3>
+                  <CustomersByArea
+                    areas={performanceOverview.customersByArea as any}
+                    secondaryDescription="Current active customer distribution"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         )
       })()}

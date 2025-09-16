@@ -15,7 +15,7 @@ export const Filters = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  const timeRange = searchParams.get('duration') || 'today'
+  const timeRange = searchParams.get('duration') || 'this-month'
 
   const handleDurationChange = useCallback((value: string) => {
     const params = new URLSearchParams(searchParams.toString())

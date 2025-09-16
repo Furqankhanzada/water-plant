@@ -4,34 +4,32 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { rupee } from '@/collections/Reports'
 
-interface BlockCollection {
+interface BlockCustomers {
   blockId?: string | null
   blockName?: string | null
-  collected?: number | null
-  remaining?: number | null
+  customerCount?: number | null
 }
 
-interface AreaCollection {
+interface AreaCustomers {
   areaId?: string | null
   areaName?: string | null
-  collected?: number | null
-  remaining?: number | null
-  blocks?: BlockCollection[]
+  totalCustomers?: number | null
+  blocks?: BlockCustomers[]
 }
 
-interface GeographicCollectionProps {
-  areas: AreaCollection[]
+interface CustomersByAreaProps {
+  areas: AreaCustomers[]
   title?: string
   description?: string
   secondaryDescription?: string
 }
 
-export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
+export const CustomersByArea: React.FC<CustomersByAreaProps> = ({
   areas,
-  title = "Collection by Area & Block",
-  description = "Revenue collection breakdown by geographic location",
+  title = "Customers by Area & Block",
+  description = "Customer distribution breakdown by geographic location",
+  secondaryDescription,
 }) => {
   const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set())
 
@@ -45,6 +43,9 @@ export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
     setExpandedAreas(newExpanded)
   }
 
+  // Calculate total customers across all areas
+  const totalCustomers = areas.reduce((sum, area) => sum + (area.totalCustomers || 0), 0)
+
   return (
     <div className="w-full">
       {/* Area Breakdown */}
@@ -52,18 +53,30 @@ export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
         <CardHeader>
           <CardTitle className="text-lg font-semibold">{title}</CardTitle>
           <p className="text-sm text-muted-foreground">{description}</p>
+          {secondaryDescription && (
+            <p className="text-xs text-muted-foreground">{secondaryDescription}</p>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Total Summary */}
+          <div className="bg-muted/30 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-base">Total Active Customers</span>
+              <Badge variant="default" className="text-lg px-3 py-1">
+                {totalCustomers.toLocaleString()}
+              </Badge>
+            </div>
+          </div>
+
           {areas.map((area) => {
             const areaId = area.areaId || ''
             const areaName = area.areaName || 'Unknown Area'
-            const collected = area.collected || 0
-            const remaining = area.remaining || 0
+            const areaCustomers = area.totalCustomers || 0
             const blocks = area.blocks || []
             
             const isExpanded = expandedAreas.has(areaId)
-            const collectionRate = collected + remaining > 0 
-              ? ((collected / (collected + remaining)) * 100).toFixed(1)
+            const percentage = totalCustomers > 0 && areaCustomers > 0 
+              ? ((areaCustomers / totalCustomers) * 100).toFixed(1)
               : '0.0'
 
             return (
@@ -75,14 +88,11 @@ export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
                   <div className="flex-1">
                     <h3 className="font-medium text-base">{areaName}</h3>
                     <div className="flex items-center gap-4 mt-1">
-                      <Badge variant="outline" className="text-green-600">
-                        Collected: {rupee.format(collected)}
-                      </Badge>
-                      <Badge variant="outline" className="text-orange-600">
-                        Remaining: {rupee.format(remaining)}
+                      <Badge variant="outline" className="text-purple-600">
+                        {areaCustomers.toLocaleString()} customers
                       </Badge>
                       <Badge variant="secondary">
-                        {collectionRate}% collected
+                        {percentage}% of total
                       </Badge>
                     </div>
                   </div>
@@ -103,11 +113,10 @@ export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
                     {blocks.map((block) => {
                       const blockId = block.blockId || ''
                       const blockName = block.blockName || 'Unknown Block'
-                      const blockCollected = block.collected || 0
-                      const blockRemaining = block.remaining || 0
+                      const blockCustomers = block.customerCount || 0
                       
-                      const blockCollectionRate = blockCollected + blockRemaining > 0
-                        ? ((blockCollected / (blockCollected + blockRemaining)) * 100).toFixed(1)
+                      const blockPercentage = areaCustomers > 0
+                        ? ((blockCustomers / areaCustomers) * 100).toFixed(1)
                         : '0.0'
 
                       return (
@@ -116,14 +125,11 @@ export const GeographicCollection: React.FC<GeographicCollectionProps> = ({
                             <span className="font-medium text-sm">{blockName}</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs text-green-600">
-                              {rupee.format(blockCollected)}
-                            </span>
-                            <span className="text-xs text-orange-600">
-                              {rupee.format(blockRemaining)}
+                            <span className="text-xs text-purple-600 font-medium">
+                              {blockCustomers.toLocaleString()} customers
                             </span>
                             <Badge variant="outline" className="text-xs">
-                              {blockCollectionRate}%
+                              {blockPercentage}%
                             </Badge>
                           </div>
                         </div>
