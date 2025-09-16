@@ -90,10 +90,10 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
     return null
   }
   const deliveryChannel = overview?.revenue?.channels?.find(
-    (channel) => channel?.channel === 'Delivery',
+    (channel: any) => channel?.channel === 'Delivery',
   )
 
-  const totalRemaining = deliveryChannel?.areas?.reduce((sum, area) => sum + (area.remaining || 0), 0) ?? 0
+  const totalRemaining = deliveryChannel?.areas?.reduce((sum: number, area: any) => sum + (area.remaining || 0), 0) ?? 0
 
   return (
     <div className="@container/main">
@@ -139,7 +139,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
             title="Revenue by Channels"
             description={dateRange}
             secondaryDescription="Most Revenue Collected in: Counter Sell"
-            data={overview?.revenue?.channels?.map((channel) => ({
+            data={overview?.revenue?.channels?.map((channel: any) => ({
               label: channel?.channel ?? '',
               total: channel?.total ?? 0,
             }))}
@@ -150,7 +150,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
             title="Expenses by Types"
             description={dateRange}
             secondaryDescription="Most Expenses in: Daily Miscellaneous"
-            data={overview?.expenses?.types?.map((type) => ({
+            data={overview?.expenses?.types?.map((type: any) => ({
               label: type?.type ?? '',
               total: type?.total ?? 0,
             }))}
@@ -161,7 +161,7 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
       {/* Enhanced Delivery Revenue Breakdown */}
       {(() => {
         const deliveryChannel = overview?.revenue?.channels?.find(
-          (channel) => channel?.channel === 'Delivery',
+          (channel: any) => channel?.channel === 'Delivery',
         )
         if (!deliveryChannel) return null
 
