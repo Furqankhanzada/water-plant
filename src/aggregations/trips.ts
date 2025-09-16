@@ -17,12 +17,14 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
   const matchStage = {
     area: { $in: areaIds },
     status: 'active',
+    $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     ...(blockIds.length && { block: { $in: blockIds } }),
   }
 
   const customers = await customerDeliveryGenerator.fetchAnalyticsWithAggregation(
-    matchStage,
     payload,
+    matchStage,
+    trip.id
   )
 
   const filteredCustomers = customers.filter((c) => trip.priority.includes(c.priority))
