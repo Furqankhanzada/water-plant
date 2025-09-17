@@ -13,7 +13,8 @@ export const Sales: CollectionConfig = {
   disableBulkEdit: true,
   admin: {
     defaultColumns: ['date', 'channel', 'customer',  'item.product', 'totals.gross', 'status'],
-    useAsTitle: 'channel',
+    useAsTitle: 'date',
+    listSearchableFields: ['channel'],
     groupBy: true,
   },
   access: {
