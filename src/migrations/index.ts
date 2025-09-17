@@ -1,6 +1,7 @@
 import * as migration_20250725_204953_customers_deliveryFrequencyDays from './20250725_204953_customers_deliveryFrequencyDays';
 import * as migration_20250728_143449_invoices_isLatest from './20250728_143449_invoices_isLatest';
 import * as migration_20250127_000000_populate_invoice_area_block from './20250127_000000_populate_invoice_area_block';
+import * as migration_20250128_120000_migrate_invoice_transactions_structure from './20250128_120000_migrate_invoice_transactions_structure';
 
 export const migrations = [
   {
@@ -17,5 +18,10 @@ export const migrations = [
     up: migration_20250127_000000_populate_invoice_area_block.up,
     down: migration_20250127_000000_populate_invoice_area_block.down,
     name: '20250127_000000_populate_invoice_area_block'
+  },
+  {
+    up: migration_20250128_120000_migrate_invoice_transactions_structure.up,
+    down: migration_20250128_120000_migrate_invoice_transactions_structure.down,
+    name: '20250128_120000_migrate_invoice_transactions_structure'
   },
 ];

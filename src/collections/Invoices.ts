@@ -75,7 +75,7 @@ export const Invoice: CollectionConfig = {
     {
       name: 'transactions',
       type: 'relationship',
-      relationTo: 'transaction',
+      relationTo: ['transaction', 'sales'],
       hasMany: true,
       required: true,
       filterOptions: ({ data }) => {
@@ -324,15 +324,15 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
-    {
-      name: 'Transactions',
-      type: 'ui',
-      admin: {
-         condition: (__, _, { operation }) => operation === 'update',
-        components: {
-          Field: '/components/Invoices#TransactionTable',
-        },
-      },
-    },
+    // {
+    //   name: 'Transactions',
+    //   type: 'ui',
+    //   admin: {
+    //      condition: (__, _, { operation }) => operation === 'update',
+    //     components: {
+    //       Field: '/components/Invoices#TransactionTable',
+    //     },
+    //   },
+    // },
   ],
 }
