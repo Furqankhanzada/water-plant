@@ -204,9 +204,10 @@ export interface Customer {
   rate: number;
   balance?: number | null;
   advance?: number | null;
-  status: 'active' | 'archive';
   bottlesAtHome?: number | null;
   deliveryFrequencyDays?: number | null;
+  status: 'active' | 'archive';
+  type: 'delivery' | 'refill' | 'filler' | 'shop';
   contactNumbers?:
     | {
         type?: 'whatsapp' | null;
@@ -835,9 +836,10 @@ export interface CustomersSelect<T extends boolean = true> {
   rate?: T;
   balance?: T;
   advance?: T;
-  status?: T;
   bottlesAtHome?: T;
   deliveryFrequencyDays?: T;
+  status?: T;
+  type?: T;
   contactNumbers?:
     | T
     | {

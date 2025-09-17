@@ -50,26 +50,37 @@ export const Customers: CollectionConfig = {
                   name: 'name',
                   type: 'text',
                   required: true,
+                  admin: {
+                    width: '50%',
+                  },
                 },
                 {
                   name: 'email',
                   type: 'email',
+                  admin: {
+                    width: '50%',
+                  },
                 },
               ],
             },
-
             {
               type: 'row',
               fields: [
                 {
                   name: 'address',
                   type: 'text',
+                  admin: {
+                    width: '33.33%',
+                  },
                 },
                 {
                   name: 'area',
                   type: 'relationship',
                   relationTo: 'areas',
                   required: true,
+                  admin: {
+                    width: '33.33%',
+                  },
                 },
                 {
                   name: 'block',
@@ -81,6 +92,9 @@ export const Customers: CollectionConfig = {
                     return {
                       area: { equals: data.area || '' },
                     }
+                  },
+                  admin: {
+                    width: '33.33%',
                   },
                 },
               ],
@@ -95,6 +109,7 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter rate per bottel rate',
+                    width: '33.33%',
                   },
                 },
 
@@ -104,6 +119,7 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter the balance amount',
+                    width: '33.33%',
                   },
                 },
                 {
@@ -113,6 +129,30 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter advance payment amount',
+                    width: '33.33%',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'bottlesAtHome',
+                  type: 'number',
+                  defaultValue: 0,
+                  admin: {
+                    placeholder: 'Enter number of bottles at home',
+                    width: '50%',
+                  },
+                },
+                {
+                  name: 'deliveryFrequencyDays',
+                  type: 'number',
+                  defaultValue: 4,
+                  admin: {
+                    placeholder: 'Enter number of delivery frequency days',
+                    width: '50%',
                   },
                 },
               ],
@@ -135,23 +175,37 @@ export const Customers: CollectionConfig = {
                     },
                   ],
                   defaultValue: 'active',
-                },
-                {
-                  name: 'bottlesAtHome',
-                  type: 'number',
-                  defaultValue: 0,
                   admin: {
-                    placeholder: 'Enter number of bottles at home',
+                    width: '50%',
                   },
                 },
                 {
-                  name: 'deliveryFrequencyDays',
-                  type: 'number',
-                  defaultValue: 4,
+                  name: 'type',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    {
+                      label: 'Regular Delivery',
+                      value: 'delivery',
+                    },
+                    {
+                      label: 'Delivery - Refill',
+                      value: 'refill',
+                    },
+                    {
+                      label: 'Filler',
+                      value: 'filler',
+                    },
+                    {
+                      label: 'Shop',
+                      value: 'shop',
+                    }
+                  ],
+                  defaultValue: 'delivery',
                   admin: {
-                    placeholder: 'Enter number of delivery frequency days',
+                    width: '50%',
                   },
-                },
+                }
               ],
             },
             {
