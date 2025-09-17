@@ -348,7 +348,16 @@ export interface Invoice {
    * Automatically populated from customer block
    */
   block?: (string | null) | Block;
-  transactions: (string | Transaction)[];
+  transactions: (
+    | {
+        relationTo: 'transaction';
+        value: string | Transaction;
+      }
+    | {
+        relationTo: 'sales';
+        value: string | Sale;
+      }
+  )[];
   status?: ('paid' | 'unpaid' | 'partially-paid') | null;
   netTotal?: number | null;
   /**

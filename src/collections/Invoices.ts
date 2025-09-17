@@ -75,7 +75,7 @@ export const Invoice: CollectionConfig = {
     {
       name: 'transactions',
       type: 'relationship',
-      relationTo: 'transaction',
+      relationTo: ['transaction', 'sales'],
       hasMany: true,
       required: true,
       filterOptions: ({ data }) => {
