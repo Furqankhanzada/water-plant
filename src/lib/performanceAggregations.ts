@@ -103,8 +103,6 @@ export const calculatePaymentMethodBreakdown = async (
       },
     ])
 
-    console.log('💳 Payment method aggregation result:', result)
-
     const breakdown: PaymentMethodBreakdown = { cash: 0, online: 0 }
     
     result.forEach((item) => {
@@ -115,7 +113,6 @@ export const calculatePaymentMethodBreakdown = async (
       }
     })
 
-    console.log('💳 Payment breakdown:', breakdown)
     return breakdown
   } catch (error) {
     console.error('❌ Error in payment method breakdown calculation:', error)
@@ -268,8 +265,6 @@ export const calculateGeographicCollection = async (
         },
       },
     ])
-
-    console.log('📊 Aggregation result:', JSON.stringify(result, null, 2))
 
     // Transform result to match our interface
     const areaCollections: AreaCollection[] = result.map((area) => ({
@@ -457,7 +452,6 @@ export const calculateBottlesDeliveredByArea = async (
       },
     ])
 
-    console.log('🍼 Bottles delivered aggregation result:', JSON.stringify(result, null, 2))
 
     // Transform result to match our interface
     const areaBottlesDelivered: AreaBottlesDelivered[] = result.map((area) => ({
@@ -564,8 +558,6 @@ export const calculateCustomersByArea = async (
         },
       },
     ])
-
-    console.log('👥 Customers by area aggregation result:', JSON.stringify(result, null, 2))
 
     // Transform result to match our interface
     const areaCustomers: AreaCustomers[] = result.map((area) => ({

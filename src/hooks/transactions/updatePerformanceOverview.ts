@@ -16,8 +16,12 @@ import { calculateBottlesDeliveredByArea } from '@/lib/performanceAggregations'
 
 export const updatePerformanceOverview: CollectionAfterChangeHook<Transaction> = async ({
   doc,
+  previousDoc,
+  operation,
   req,
 }) => {
+  if (operation === 'create' && doc.bottleGiven === 0 && doc.bottleTaken === 0) return doc;
+  if (operation === 'update' && previousDoc.bottleGiven === doc.bottleGiven && previousDoc.bottleTaken === doc.bottleTaken) return doc;
   try {
     const payload = req.payload
     const currentDate = new Date()
