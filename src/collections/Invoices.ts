@@ -34,7 +34,7 @@ export const Invoice: CollectionConfig = {
       'pdf',
       'sendInvoice',
     ],
-    groupBy: true
+    groupBy: true,
   },
   access: {
     delete: isAdmin,
@@ -108,7 +108,6 @@ export const Invoice: CollectionConfig = {
         return true
       },
     },
-
     {
       name: 'status',
       type: 'select',
@@ -193,6 +192,82 @@ export const Invoice: CollectionConfig = {
         description: 'Customer needs to pay this amount to clear billig/invoice.',
         readOnly: true,
       },
+    },
+    {
+      name: 'totals',
+      type: 'group',
+      admin: {
+        readOnly: true,
+        description: 'Calculated totals for the sale',
+      },
+      fields: [
+        {
+          name: 'subtotal',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'discount',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'net',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'tax',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'previous',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          label: 'Total',
+          name: 'total',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+            description: 'Final amount that customer needs to pay',
+          },
+        },
+        {
+          name: 'paid',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'balance',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+      ],
     },
     {
       name: 'paidAt',
