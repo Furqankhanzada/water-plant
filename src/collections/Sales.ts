@@ -109,11 +109,13 @@ export const Sales: CollectionConfig = {
           },
         },
         {
-          name: 'gross',
+          label: 'Total',
+          name: 'gross', // TODO: chnage it to total in future
           type: 'number',
           defaultValue: 0,
           admin: {
             readOnly: true,
+            description: 'Final amount that customer needs to pay',
           },
         },
       ],
