@@ -379,6 +379,22 @@ export interface Invoice {
    * Customer needs to pay this amount to clear billig/invoice.
    */
   remainingAmount?: number | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    previous?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
+    total?: number | null;
+    paid?: number | null;
+    balance?: number | null;
+  };
   paidAt?: string | null;
   dueAt: string;
   sent?: boolean | null;
@@ -419,6 +435,9 @@ export interface Sale {
     discount?: number | null;
     net?: number | null;
     tax?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
     gross?: number | null;
   };
   item: {
@@ -993,6 +1012,18 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAmount?: T;
   advanceAmount?: T;
   remainingAmount?: T;
+  totals?:
+    | T
+    | {
+        subtotal?: T;
+        discount?: T;
+        net?: T;
+        tax?: T;
+        previous?: T;
+        total?: T;
+        paid?: T;
+        balance?: T;
+      };
   paidAt?: T;
   dueAt?: T;
   sent?: T;
