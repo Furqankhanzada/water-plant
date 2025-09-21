@@ -16,10 +16,10 @@ export const Invoice: CollectionConfig = {
   disableDuplicate: true,
   disableBulkEdit: false,
   hooks: {
-    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
-    afterOperation: [changeTransactionsStatusHook],
+    // afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
+    // afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
-    beforeDelete: [checkInvoiceDeletion],
+    // beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
     defaultColumns: [
@@ -34,7 +34,7 @@ export const Invoice: CollectionConfig = {
       'pdf',
       'sendInvoice',
     ],
-    groupBy: true,
+    groupBy: true
   },
   access: {
     delete: isAdmin,
@@ -137,6 +137,7 @@ export const Invoice: CollectionConfig = {
       defaultValue: 0,
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -146,6 +147,7 @@ export const Invoice: CollectionConfig = {
       admin: {
         description:
           'This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )',
+          hidden: true,
       },
     },
     {
@@ -156,6 +158,7 @@ export const Invoice: CollectionConfig = {
         description:
           'Customer paid more then invoice amount in previous month which will be adjust on this invoice.',
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -164,6 +167,7 @@ export const Invoice: CollectionConfig = {
       label: 'Due Amount',
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -172,6 +176,7 @@ export const Invoice: CollectionConfig = {
       defaultValue: 0,
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -182,6 +187,7 @@ export const Invoice: CollectionConfig = {
         description:
           'Customer paid more then invoice amount which will be adjust on next billig/invoice.',
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -191,13 +197,13 @@ export const Invoice: CollectionConfig = {
       admin: {
         description: 'Customer needs to pay this amount to clear billig/invoice.',
         readOnly: true,
+        hidden: true,
       },
     },
     {
       name: 'totals',
       type: 'group',
       admin: {
-        readOnly: true,
         description: 'Calculated totals for the sale',
       },
       fields: [
@@ -213,9 +219,7 @@ export const Invoice: CollectionConfig = {
           name: 'discount',
           type: 'number',
           defaultValue: 0,
-          admin: {
-            readOnly: true,
-          },
+          admin: {},
         },
         {
           name: 'net',
@@ -229,9 +233,7 @@ export const Invoice: CollectionConfig = {
           name: 'tax',
           type: 'number',
           defaultValue: 0,
-          admin: {
-            readOnly: true,
-          },
+          admin: {},
         },
         {
           name: 'previous',
@@ -239,6 +241,15 @@ export const Invoice: CollectionConfig = {
           defaultValue: 0,
           admin: {
             readOnly: true,
+          },
+        },
+        {
+          name: 'other',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+            description: 'Bottles lost/Damaged/Other',
           },
         },
         {
@@ -344,21 +355,52 @@ export const Invoice: CollectionConfig = {
       ],
     },
     {
-      label: 'Lost Bottles',
+      label: 'Advance Features',
       type: 'collapsible',
       admin: {
         initCollapsed: true,
       },
       fields: [
         {
+          label: 'Lost Bottles',
+          name: 'lost',
+          type: 'group',
+          fields: [
+            {
+              name: 'count',
+              label: 'How Many Bottles are Lost?',
+              type: 'number',
+            },
+            {
+              name: 'amount',
+              label: 'Amount Per Bottle',
+              type: 'number',
+            },
+            {
+              name: 'total',
+              label: 'Total Amount',
+              type: 'number',
+              admin: {
+                readOnly: true,
+              },
+            },
+          ],
+        },
+        {
           name: 'lostBottlesCount',
           label: 'How Many Bottles are Lost?',
           type: 'number',
+          admin: {
+            hidden: true,
+          },
         },
         {
           name: 'lostBottleAmount',
           label: 'Amount Per Bottle',
           type: 'number',
+          admin: {
+            hidden: true,
+          },
         },
         {
           name: 'lostBottlesTotalAmount',
@@ -366,6 +408,7 @@ export const Invoice: CollectionConfig = {
           defaultValue: 0,
           admin: {
             readOnly: true,
+            hidden: true,
           },
         },
       ],

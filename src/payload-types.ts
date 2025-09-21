@@ -389,6 +389,10 @@ export interface Invoice {
     tax?: number | null;
     previous?: number | null;
     /**
+     * Bottles lost/Damaged/Other
+     */
+    other?: number | null;
+    /**
      * Final amount that customer needs to pay
      */
     total?: number | null;
@@ -410,6 +414,11 @@ export interface Invoice {
         id?: string | null;
       }[]
     | null;
+  lost?: {
+    count?: number | null;
+    amount?: number | null;
+    total?: number | null;
+  };
   lostBottlesCount?: number | null;
   lostBottleAmount?: number | null;
   lostBottlesTotalAmount?: number | null;
@@ -1020,6 +1029,7 @@ export interface InvoiceSelect<T extends boolean = true> {
         net?: T;
         tax?: T;
         previous?: T;
+        other?: T;
         total?: T;
         paid?: T;
         balance?: T;
@@ -1035,6 +1045,13 @@ export interface InvoiceSelect<T extends boolean = true> {
         paidAt?: T;
         comments?: T;
         id?: T;
+      };
+  lost?:
+    | T
+    | {
+        count?: T;
+        amount?: T;
+        total?: T;
       };
   lostBottlesCount?: T;
   lostBottleAmount?: T;
