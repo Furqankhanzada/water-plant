@@ -21,16 +21,18 @@ export const checkInvoiceDeletion: CollectionBeforeDeleteHook = async ({ req, id
     throw new APIError('Cannot delete invoice: Invoice has payments. Please remove all payments first.', 400);
   }
 
-  // If invoice has transactions, rollback their status to 'pending' before deletion
+  // If invoice has transactions/sales, rollback their status to 'unpaid' before deletion
   if (invoice.transactions && invoice.transactions.length) {
     try {
-      // Update all associated transactions to 'pending' status
-      for (const transaction of invoice.transactions) {
-        const transactionId = typeof transaction === 'string' ? transaction : transaction.id;
-        if (transactionId) {
+      // Update all associated transactions and sales to 'unpaid' status
+      for (const item of invoice.transactions) {
+        if (typeof item === 'object' && item.relationTo && item.value) {
+          const collection = item.relationTo as 'transaction' | 'sales';
+          const itemId = item.value as string;
+          
           await req.payload.update({
-            collection: 'transaction',
-            id: transactionId,
+            collection,
+            id: itemId,
             data: {
               status: 'unpaid',
             },
@@ -38,7 +40,7 @@ export const checkInvoiceDeletion: CollectionBeforeDeleteHook = async ({ req, id
         }
       }
     } catch (error) {
-      throw new APIError('Failed to rollback transaction status. Cannot delete invoice.', 500);
+      throw new APIError('Failed to rollback items status. Cannot delete invoice.', 500);
     }
   }
 }

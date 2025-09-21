@@ -1,17 +1,21 @@
+import { Invoice } from '@/payload-types';
 import type { CollectionAfterChangeHook } from 'payload'
+
 
 /**
  * Hook: changeTransactionsStatusOnRemoval
  *
  * Purpose:
- * When updating an invoice, if any linked transactions are removed
- * from the `transactions` array, we assume those transactions are no longer associated
+ * When updating an invoice, if any linked transactions or sales are removed
+ * from the `transactions` array, we assume those items are no longer associated
  * with the invoice and should revert to `unpaid` status.
  *
- * This ensures transactional integrity, so that removed transactions
+ * This ensures transactional integrity, so that removed items
  * do not remain in an incorrect state (e.g., still marked as 'paid' or 'pending').
+ * 
+ * Now supports both 'transaction' and 'sales' relationships.
  */
-export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = async ({
+export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook<Invoice> = async ({
   req: { payload },
   operation,
   doc,
@@ -22,17 +26,43 @@ export const changeTransactionsStatusOnRemoval: CollectionAfterChangeHook = asyn
   const previousTransactions = previousDoc.transactions || []
   const currentTransactions = doc.transactions || []
 
-  // Find transactions that existed before but were removed in this update
-  const removedTransactionIds = previousTransactions.filter(
-    (prevId: string) => !currentTransactions.includes(prevId),
+  // Find removed items by comparing IDs and collections
+  const removedItems = previousTransactions.filter(prevItem => 
+    !currentTransactions.some(currentItem => 
+      prevItem.relationTo === currentItem.relationTo && 
+      (typeof prevItem.value === 'string' ? prevItem.value : prevItem.value.id) === 
+      (typeof currentItem.value === 'string' ? currentItem.value : currentItem.value.id)
+    )
   )
 
-  if (removedTransactionIds.length > 0) {
-    // Set removed transactions back to 'unpaid'
+  // Group removed items by collection type
+  const removedTransactions = removedItems
+    .filter(item => item.relationTo === 'transaction')
+    .map(item => typeof item.value === 'string' ? item.value : item.value.id)
+
+  const removedSales = removedItems
+    .filter(item => item.relationTo === 'sales')
+    .map(item => typeof item.value === 'string' ? item.value : item.value.id)
+
+  // Update removed transactions to 'unpaid'
+  if (removedTransactions.length) {
     await payload.update({
       collection: 'transaction',
       where: {
-        id: { in: removedTransactionIds },
+        id: { in: removedTransactions },
+      },
+      data: {
+        status: 'unpaid',
+      },
+    })
+  }
+
+  // Update removed sales to 'unpaid'
+  if (removedSales.length) {
+    await payload.update({
+      collection: 'sales',
+      where: {
+        id: { in: removedSales },
       },
       data: {
         status: 'unpaid',

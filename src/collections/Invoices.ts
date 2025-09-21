@@ -17,9 +17,10 @@ export const Invoice: CollectionConfig = {
   disableBulkEdit: false,
   hooks: {
     // afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
-    // afterOperation: [changeTransactionsStatusHook],
+    afterChange: [changeTransactionsStatusOnRemoval],
+    afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
-    // beforeDelete: [checkInvoiceDeletion],
+    beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
     defaultColumns: [
