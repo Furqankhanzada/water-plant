@@ -290,6 +290,20 @@ export const Customers: CollectionConfig = {
           ],
         },
         {
+          label: 'Sales',
+          fields: [
+            {
+              name: 'sales',
+              type: 'join',
+              on: 'customer',
+              collection: 'sales',
+              defaultLimit: 30,
+              defaultSort: '-date',
+              admin: {},
+            },
+          ],
+        },
+        {
           label: 'Invoices',
           fields: [
             {

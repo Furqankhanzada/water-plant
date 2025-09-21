@@ -90,6 +90,7 @@ export interface Config {
   collectionsJoins: {
     customers: {
       transaction: 'transaction';
+      sales: 'sales';
       invoice: 'invoice';
     };
     areas: {
@@ -220,6 +221,11 @@ export interface Customer {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  sales?: {
+    docs?: (string | Sale)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   invoice?: {
     docs?: (string | Invoice)[];
     hasNextPage?: boolean;
@@ -335,6 +341,53 @@ export interface Employee {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales".
+ */
+export interface Sale {
+  id: string;
+  channel?: ('counter' | 'filler' | 'bottles' | 'other') | null;
+  customer?: (string | null) | Customer;
+  date?: string | null;
+  status?: ('unpaid' | 'paid' | 'partially_paid' | 'pending') | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
+    gross?: number | null;
+  };
+  item: {
+    product:
+      | 'counter-walk-in-filling'
+      | 'filling-19L'
+      | 'bottle-19L'
+      | 'bottle-6L'
+      | 'other-leaked-bottles'
+      | 'other-plant-accessories'
+      | 'other-other';
+    description?: string | null;
+    quantity?: number | null;
+    unitPrice?: number | null;
+    taxRate?: number | null;
+    discount?: {
+      enabled?: boolean | null;
+      type?: ('percentage' | 'fixed') | null;
+      value?: number | null;
+      reason?: ('loyalty' | 'promotion' | 'other') | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "invoice".
  */
 export interface Invoice {
@@ -422,53 +475,6 @@ export interface Invoice {
   lostBottlesCount?: number | null;
   lostBottleAmount?: number | null;
   lostBottlesTotalAmount?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sales".
- */
-export interface Sale {
-  id: string;
-  channel?: ('counter' | 'filler' | 'bottles' | 'other') | null;
-  customer?: (string | null) | Customer;
-  date?: string | null;
-  status?: ('unpaid' | 'paid' | 'partially_paid' | 'pending') | null;
-  /**
-   * Calculated totals for the sale
-   */
-  totals?: {
-    subtotal?: number | null;
-    discount?: number | null;
-    net?: number | null;
-    tax?: number | null;
-    /**
-     * Final amount that customer needs to pay
-     */
-    gross?: number | null;
-  };
-  item: {
-    product:
-      | 'counter-walk-in-filling'
-      | 'filling-19L'
-      | 'bottle-19L'
-      | 'bottle-6L'
-      | 'other-leaked-bottles'
-      | 'other-plant-accessories'
-      | 'other-other';
-    description?: string | null;
-    quantity?: number | null;
-    unitPrice?: number | null;
-    taxRate?: number | null;
-    discount?: {
-      enabled?: boolean | null;
-      type?: ('percentage' | 'fixed') | null;
-      value?: number | null;
-      reason?: ('loyalty' | 'promotion' | 'other') | null;
-    };
-  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -876,6 +882,7 @@ export interface CustomersSelect<T extends boolean = true> {
         id?: T;
       };
   transaction?: T;
+  sales?: T;
   invoice?: T;
   updatedAt?: T;
   createdAt?: T;
