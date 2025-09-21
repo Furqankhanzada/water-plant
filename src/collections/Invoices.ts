@@ -16,8 +16,7 @@ export const Invoice: CollectionConfig = {
   disableDuplicate: true,
   disableBulkEdit: false,
   hooks: {
-    // afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
-    afterChange: [changeTransactionsStatusOnRemoval],
+    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
     beforeDelete: [checkInvoiceDeletion],

@@ -27,8 +27,8 @@ const getChannelLabel = (value: string): string => {
  * This hook runs after creating or updating a Sale. It calculates revenue
  * metrics for the current month and updates the performance overview global.
  *
- * 1. 📊 Aggregates sales data by channel for the current month
- * 2. 💰 Calculates total revenue per channel
+ * 1. 📊 Aggregates sales data by channel for the current month (Counter and Other channels only)
+ * 2. 💰 Calculates total revenue per channel (excludes Filler and Bottles which are handled by invoice hook)
  * 3. 🔄 Updates the performance overview global
  */
 
@@ -59,7 +59,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     const thisYearStart = startOfYear(currentDate)
     const thisYearEnd = endOfYear(currentDate)
 
-    // Helper function to aggregate sales by channel for a time period
+    // Helper function to aggregate sales by channel for a time period (Counter and Other channels only)
     const aggregateSalesByChannel = async (startDate: Date, endDate: Date) => {
       const channelTotals = await payload.db.collections['sales'].aggregate([
         {
@@ -69,6 +69,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
               $lte: endDate,
             },
             deletedAt: { $exists: false }, // Exclude soft-deleted records
+            channel: { $in: ['counter', 'other'] }, // Only include counter and other channels
           },
         },
         {
@@ -111,10 +112,10 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
     const updateRevenueForPeriod = (period: any, salesChannels: any[]) => {
       if (!period) return period
 
-      // Get existing channels and preserve non-sales channels (like "Delivery")
+      // Get existing channels and preserve non-sales channels (like "Delivery", "Filler", "Bottles Sold")
       const existingChannels = period.revenue?.channels || []
       const nonSalesChannels = existingChannels.filter(
-        (channel: any) => !['Counter Sales', 'Filler', 'Bottles Sold', 'Other'].includes(channel.channel)
+        (channel: any) => !['Counter Sales', 'Other'].includes(channel.channel)
       )
 
       // Combine sales channels with preserved non-sales channels
@@ -145,7 +146,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
       },
     })
 
-    console.log('✅ Performance overview updated with sales data for all time periods (including today)')
+    console.log('✅ Performance overview updated with counter/other sales data for all time periods (including today)')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the sales creation/update
