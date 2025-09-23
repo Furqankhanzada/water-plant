@@ -66,7 +66,7 @@ export const InvoiceTableSalesRows = ({ invoice }: { invoice: Invoice }) => {
     return (
       <View style={tableStyles.row} key={sale.id} break={i === 30}>
         <Text style={[tableStyles.column, styles.description]}>
-          Filling - 19 Liter Bottles - {format(sale.date!, 'EEE, MMM dd	yyyy')}
+          {sale.item.product} - {format(sale.date!, 'EEE, MMM dd	yyyy')}
         </Text>
         <Text style={[tableStyles.column, styles.qty]}>+{sale.item.quantity}</Text>
         <Text style={[tableStyles.column, styles.rate]}>{rupee.format(sale.item.unitPrice || 0)}</Text>
