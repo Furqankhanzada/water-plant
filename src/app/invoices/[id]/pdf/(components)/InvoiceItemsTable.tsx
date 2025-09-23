@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, StyleSheet } from '@react-pdf/renderer'
-import InvoiceTableHeader from './InvoiceTableHeader'
-import InvoiceTableRow from './InvoiceTableRow'
+import { InvoiceTableTransactionHeader, InvoiceTableSalesHeader } from './InvoiceTableHeader'
+import { InvoiceTableTransactionRows, InvoiceTableSalesRows } from './InvoiceTableRow'
 import InvoiceTableFooter from './InvoiceTableFooter'
 import { Invoice } from '@/payload-types'
 
@@ -44,8 +44,16 @@ export const tableStyles = StyleSheet.create({
 const InvoiceItemsTable = ({ invoice }: { invoice: Invoice }) => {
   return (
     <View style={tableStyles.tableContainer}>
-      <InvoiceTableHeader />
-      <InvoiceTableRow invoice={invoice} />
+      {typeof invoice.customer !== 'string' && invoice.customer.type === 'delivery' ? (
+        <InvoiceTableTransactionHeader />
+      ) : (
+        <InvoiceTableSalesHeader />
+      )}
+      {typeof invoice.customer !== 'string' && invoice.customer.type === 'delivery' ? (
+        <InvoiceTableTransactionRows invoice={invoice} />
+      ) : (
+        <InvoiceTableSalesRows invoice={invoice} />
+      )}
       <InvoiceTableFooter invoice={invoice} />
     </View>
   )
