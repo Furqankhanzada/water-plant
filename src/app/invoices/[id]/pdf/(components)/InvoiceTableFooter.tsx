@@ -95,6 +95,24 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
           </Text>
         </View>
       ) : null}
+      {invoice.lost?.count && invoice.lost.amount ? (
+        <View style={tableStyles.row}>
+          <Text
+            style={[tableStyles.column, tableStyles.bold, styles.description, { width: '66%' }]}
+          >
+            Lost/Damaged Bottles
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>
+            {invoice.lost.count}
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>
+            {rupee.format(invoice.lost.amount)}
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.lost.count * invoice.lost.amount)}
+          </Text>
+        </View>
+      ) : null}
       <View style={tableStyles.row}>
         <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>Total</Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
@@ -108,24 +126,6 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
           </Text>
           <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
             {rupee.format(invoice.totals?.paid || 0)}
-          </Text>
-        </View>
-      ) : null}
-      {invoice.lostBottlesCount && invoice.lostBottleAmount ? (
-        <View style={tableStyles.row}>
-          <Text
-            style={[tableStyles.column, tableStyles.bold, styles.description, { width: '66%' }]}
-          >
-            Lost Bottles
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>
-            {invoice.lostBottlesCount}
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>
-            {rupee.format(invoice.lostBottleAmount)}
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-            {rupee.format(invoice.lostBottlesCount * invoice.lostBottleAmount)}
           </Text>
         </View>
       ) : null}
