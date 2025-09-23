@@ -2,7 +2,7 @@ import { BasePayload, getPayload } from 'payload'
 import { endOfMonth, format, isSameMonth, setDate, startOfMonth, subMonths } from 'date-fns'
 import configPromise from '@payload-config'
 
-import { Transaction, Customer, Invoice } from '@/payload-types'
+import { Transaction, Customer, Invoice, Sale } from '@/payload-types'
 import { isWhatsAppEnabled, sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
 
 const getLastMonthTransactions = async (payload: BasePayload, customerId: string) => {
@@ -40,6 +40,41 @@ const getLastMonthTransactions = async (payload: BasePayload, customerId: string
   return transactions.docs
 }
 
+const getLastMonthSales = async (payload: BasePayload, customerId: string) => {
+  const currentDate = new Date()
+  const sales = await payload.find({
+    collection: 'sales',
+    pagination: false,
+    sort: 'date',
+    where: {
+      customer: {
+        equals: customerId,
+      },
+      status: {
+        equals: 'unpaid',
+      },
+      and: [
+        {
+          date: {
+            greater_than_equal: startOfMonth(subMonths(currentDate, 1)),
+          },
+        },
+        {
+          date: {
+            less_than_equal: endOfMonth(subMonths(currentDate, 1)),
+          },
+        },
+      ],
+    },
+    depth: 0,
+    select: {
+      date: true,
+      customer: true,
+    },
+  })
+  return sales.docs
+}
+
 const rupee = new Intl.NumberFormat('en-PK', {
   style: 'currency',
   currency: 'PKR',
@@ -50,13 +85,20 @@ const createAndSendInvoice = async (
   payload: BasePayload,
   customer: Partial<Customer>,
   transactions: Partial<Transaction>[],
+  sales: Partial<Sale>[],
   currentDate: Date
 ) => {
+  // Create the transactions array with proper relationTo structure
+  const invoiceTransactions = [
+    ...transactions.map((t) => ({ relationTo: 'transaction' as const, value: t.id! })),
+    ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! }))
+  ]
+
   const newInvoice = await payload.create({
     collection: 'invoice',
     data: {
       customer: customer.id!,
-      transactions: transactions.map((t) => t.id!),
+      transactions: invoiceTransactions,
       dueAt: setDate(currentDate, 10).toISOString(),
     },
   })
@@ -121,6 +163,7 @@ export const generateAndSendInvoices = async () => {
       contactNumbers: true,
       email: true,
       rate: true,
+      type: true,
     },
   })
 
@@ -142,14 +185,30 @@ export const generateAndSendInvoices = async () => {
       }
     }
     
-    // For both new and existing customers, get last month transactions
-    const transactions = await getLastMonthTransactions(payload, customer.id)
-    if (!transactions.length) {
-      console.log(`Skipping ${customer.name} - no last month transactions`)
+    let transactions: Partial<Transaction>[] = []
+    let sales: Partial<Sale>[] = []
+
+    // Generate invoices based on customer type
+    if (customer.type === 'delivery' || customer.type === 'refill') {
+      // For delivery and refill customers, use transactions
+      transactions = await getLastMonthTransactions(payload, customer.id)
+      if (!transactions.length) {
+        console.log(`Skipping ${customer.name} - no last month transactions`)
+        continue
+      }
+    } else if (customer.type === 'filler' || customer.type === 'shop') {
+      // For filler customers, use sales with 'filler' channel
+      sales = await getLastMonthSales(payload, customer.id)
+      if (!sales.length) {
+        console.log(`Skipping ${customer.name} - no last month filler sales`)
+        continue
+      }
+    } else {
+      console.log(`Skipping ${customer.name} - unknown customer type: ${customer.type}`)
       continue
     }
     
-    await createAndSendInvoice(payload, customer, transactions, currentDate)
-    console.log(`completed for ${customer.name} - ${customer.id}`)
+    await createAndSendInvoice(payload, customer, transactions, sales, currentDate)
+    console.log(`completed for ${customer.name} (${customer.type}) - ${customer.id}`)
   }
 }
