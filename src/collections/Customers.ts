@@ -315,9 +315,10 @@ export const Customers: CollectionConfig = {
               admin: {
                 defaultColumns: [
                   'status',
-                  'netTotal',
-                  'dueAmount',
-                  'paidAmount',
+                  'totals.subtotal',
+                  'totals.total',
+                  'totals.paid',
+                  'totals.balance',
                   'dueAt',
                   'payments',
                   'sent',
