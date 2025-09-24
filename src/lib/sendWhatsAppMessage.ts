@@ -122,10 +122,10 @@ export const getInvoiceCaption = (invoice: Invoice) => {
   let caption
   switch (invoice.status) {
     case 'unpaid':
-      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.totals?.total!)}*/-.`
       break
     case 'partially-paid':
-      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.dueAmount!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.totals?.balance!)}*/-.`
       break
   }
   return caption

@@ -36,11 +36,10 @@ const getPaymentDue = (invoice?: Invoice): number => {
   if (!invoice) return 0
   switch (invoice.status) {
     case 'paid':
-      return invoice.advanceAmount ?? 0
     case 'partially-paid':
-      return invoice.remainingAmount ?? 0
+      return invoice.totals?.balance ?? 0
     default:
-      return invoice.dueAmount ?? 0
+      return invoice.totals?.total ?? 0
   }
 }
 
