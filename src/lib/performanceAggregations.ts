@@ -220,7 +220,7 @@ export const calculateGeographicCollection = async (
                   { $in: ['$status', ['unpaid', 'partially-paid']] },
                 ],
               },
-              then: '$remainingAmount',
+              then: '$totals.balance',
               else: 0,
             },
           },
