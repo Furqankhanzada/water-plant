@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { Invoice } from '@/payload-types'
 
-type Payload = {}
+type Payload = Record<string, unknown>
 export const sendMessage = (payload: Payload) => {
   return fetch(
     `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -122,10 +122,10 @@ export const getInvoiceCaption = (invoice: Invoice) => {
   let caption
   switch (invoice.status) {
     case 'unpaid':
-      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.totals?.total!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and total dues are *${rupee.format(invoice.totals?.total || 0)}*/-.`
       break
     case 'partially-paid':
-      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.totals?.balance!)}*/-.`
+      caption = `Dear *Customer*,\nYour Invoice for the current month is attached and remaining dues are *${rupee.format(invoice.totals?.balance || 0)}*/-.`
       break
   }
   return caption

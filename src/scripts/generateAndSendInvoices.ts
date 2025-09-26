@@ -121,7 +121,7 @@ const createAndSendInvoice = async (
         },
         {
           type: 'text',
-          text: rupee.format(newInvoice.totals?.total!),
+          text: rupee.format(newInvoice.totals?.total || 0),
         },
         {
           type: 'text',

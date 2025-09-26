@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, StyleSheet } from '@react-pdf/renderer'
-import { Invoice, Transaction } from '@/payload-types'
+import { Invoice } from '@/payload-types'
 import { tableStyles } from './InvoiceItemsTable'
 
 const styles = StyleSheet.create({
@@ -135,8 +135,8 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
           {invoice.status !== 'paid' && invoice.totals?.paid
-            ? rupee.format(invoice.totals?.total! - invoice.totals?.paid)
-            : rupee.format(invoice.totals?.balance!)}
+            ? rupee.format((invoice.totals?.total || 0) - (invoice.totals?.paid || 0))
+            : rupee.format(invoice.totals?.balance || 0)}
         </Text>
       </View>
     </>

@@ -52,7 +52,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       },
       {
         type: 'text',
-        text: rupee.format(invoice.totals?.total!),
+        text: rupee.format(invoice.totals?.total || 0),
       },
       {
         type: 'text',
