@@ -90,6 +90,7 @@ export interface Config {
   collectionsJoins: {
     customers: {
       transaction: 'transaction';
+      sales: 'sales';
       invoice: 'invoice';
     };
     areas: {
@@ -204,9 +205,10 @@ export interface Customer {
   rate: number;
   balance?: number | null;
   advance?: number | null;
-  status: 'active' | 'archive';
   bottlesAtHome?: number | null;
   deliveryFrequencyDays?: number | null;
+  status: 'active' | 'archive';
+  type: 'delivery' | 'refill' | 'filler' | 'shop';
   contactNumbers?:
     | {
         type?: 'whatsapp' | null;
@@ -216,6 +218,11 @@ export interface Customer {
     | null;
   transaction?: {
     docs?: (string | Transaction)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  sales?: {
+    docs?: (string | Sale)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
@@ -334,65 +341,6 @@ export interface Employee {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "invoice".
- */
-export interface Invoice {
-  id: string;
-  isLatest?: boolean | null;
-  customer: string | Customer;
-  /**
-   * Automatically populated from customer area
-   */
-  area?: (string | null) | Area;
-  /**
-   * Automatically populated from customer block
-   */
-  block?: (string | null) | Block;
-  transactions: (string | Transaction)[];
-  status?: ('paid' | 'unpaid' | 'partially-paid') | null;
-  netTotal?: number | null;
-  /**
-   * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
-   */
-  previousBalance?: number | null;
-  /**
-   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
-   */
-  previousAdvanceAmount?: number | null;
-  dueAmount?: number | null;
-  paidAmount?: number | null;
-  /**
-   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
-   */
-  advanceAmount?: number | null;
-  /**
-   * Customer needs to pay this amount to clear billig/invoice.
-   */
-  remainingAmount?: number | null;
-  paidAt?: string | null;
-  dueAt: string;
-  sent?: boolean | null;
-  payments?:
-    | {
-        type?: ('online' | 'cash') | null;
-        amount: number;
-        paidAt: string;
-        /**
-         * Anything speacial that you want to mention?
-         */
-        comments?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  lostBottlesCount?: number | null;
-  lostBottleAmount?: number | null;
-  lostBottlesTotalAmount?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sales".
  */
 export interface Sale {
@@ -409,6 +357,9 @@ export interface Sale {
     discount?: number | null;
     net?: number | null;
     tax?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
     gross?: number | null;
   };
   item: {
@@ -431,6 +382,99 @@ export interface Sale {
       reason?: ('loyalty' | 'promotion' | 'other') | null;
     };
   };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice".
+ */
+export interface Invoice {
+  id: string;
+  isLatest?: boolean | null;
+  customer: string | Customer;
+  /**
+   * Automatically populated from customer area
+   */
+  area?: (string | null) | Area;
+  /**
+   * Automatically populated from customer block
+   */
+  block?: (string | null) | Block;
+  transactions: (
+    | {
+        relationTo: 'transaction';
+        value: string | Transaction;
+      }
+    | {
+        relationTo: 'sales';
+        value: string | Sale;
+      }
+  )[];
+  status?: ('paid' | 'unpaid' | 'partially-paid') | null;
+  netTotal?: number | null;
+  /**
+   * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
+   */
+  previousBalance?: number | null;
+  /**
+   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
+   */
+  previousAdvanceAmount?: number | null;
+  dueAmount?: number | null;
+  paidAmount?: number | null;
+  /**
+   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
+   */
+  advanceAmount?: number | null;
+  /**
+   * Customer needs to pay this amount to clear billig/invoice.
+   */
+  remainingAmount?: number | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    previous?: number | null;
+    /**
+     * Bottles lost/Damaged/Other
+     */
+    other?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
+    total?: number | null;
+    paid?: number | null;
+    balance?: number | null;
+  };
+  paidAt?: string | null;
+  dueAt: string;
+  sent?: boolean | null;
+  payments?:
+    | {
+        type?: ('online' | 'cash') | null;
+        amount: number;
+        paidAt: string;
+        /**
+         * Anything speacial that you want to mention?
+         */
+        comments?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  lost?: {
+    count?: number | null;
+    amount?: number | null;
+    total?: number | null;
+  };
+  lostBottlesCount?: number | null;
+  lostBottleAmount?: number | null;
+  lostBottlesTotalAmount?: number | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -826,9 +870,10 @@ export interface CustomersSelect<T extends boolean = true> {
   rate?: T;
   balance?: T;
   advance?: T;
-  status?: T;
   bottlesAtHome?: T;
   deliveryFrequencyDays?: T;
+  status?: T;
+  type?: T;
   contactNumbers?:
     | T
     | {
@@ -837,6 +882,7 @@ export interface CustomersSelect<T extends boolean = true> {
         id?: T;
       };
   transaction?: T;
+  sales?: T;
   invoice?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -982,6 +1028,19 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAmount?: T;
   advanceAmount?: T;
   remainingAmount?: T;
+  totals?:
+    | T
+    | {
+        subtotal?: T;
+        discount?: T;
+        net?: T;
+        tax?: T;
+        previous?: T;
+        other?: T;
+        total?: T;
+        paid?: T;
+        balance?: T;
+      };
   paidAt?: T;
   dueAt?: T;
   sent?: T;
@@ -993,6 +1052,13 @@ export interface InvoiceSelect<T extends boolean = true> {
         paidAt?: T;
         comments?: T;
         id?: T;
+      };
+  lost?:
+    | T
+    | {
+        count?: T;
+        amount?: T;
+        total?: T;
       };
   lostBottlesCount?: T;
   lostBottleAmount?: T;

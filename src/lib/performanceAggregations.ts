@@ -220,7 +220,7 @@ export const calculateGeographicCollection = async (
                   { $in: ['$status', ['unpaid', 'partially-paid']] },
                 ],
               },
-              then: '$remainingAmount',
+              then: '$totals.balance',
               else: 0,
             },
           },
@@ -469,6 +469,85 @@ export const calculateBottlesDeliveredByArea = async (
     return areaBottlesDelivered
   } catch (error) {
     console.error('❌ Error in bottles delivered by area calculation:', error)
+    return []
+  }
+}
+
+/**
+ * Calculate sales revenue from invoices (filler and bottles channels only)
+ * This excludes counter and other channels which are handled separately
+ */
+export const calculateInvoiceSalesRevenue = async (
+  payload: Payload,
+  startDate: Date,
+  endDate: Date
+): Promise<Array<{ channel: string; total: number }>> => {
+  console.log('💰 Calculating invoice sales revenue for period:', startDate.toISOString(), 'to', endDate.toISOString())
+  
+  try {
+    const result = await payload.db.collections['invoice'].aggregate([
+      {
+        $match: {
+          deletedAt: { $exists: false },
+        },
+      },
+      // Lookup customer information to filter by active customers
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customer',
+          foreignField: '_id',
+          as: 'customerInfo',
+        },
+      },
+      // Unwind customer info to work with single customer object
+      {
+        $unwind: '$customerInfo',
+      },
+      // Filter for active customers with specific types (filler and shop)
+      {
+        $match: {
+          'customerInfo.status': 'active',
+          'customerInfo.deletedAt': { $exists: false },
+          'customerInfo.type': {
+            $in: ['filler', 'shop'],
+          },
+        },
+      },
+      // Unwind payments to process each payment
+      {
+        $unwind: '$payments',
+      },
+      // Filter for payments in the date range
+      {
+        $match: {
+          'payments.paidAt': {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      // Group by customer type and sum payment amounts
+      {
+        $group: {
+          _id: '$customerInfo.type',
+          total: { $sum: '$payments.amount' },
+        },
+      },
+      // Project to match expected format
+      {
+        $project: {
+          channel: '$_id',
+          total: 1,
+          _id: 0,
+        },
+      },
+    ])
+
+    console.log('💰 Invoice sales revenue calculated:', result)
+    return result
+  } catch (error) {
+    console.error('❌ Error in invoice sales revenue calculation:', error)
     return []
   }
 }

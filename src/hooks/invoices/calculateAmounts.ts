@@ -1,3 +1,4 @@
+import { Invoice } from '@/payload-types'
 import type { CollectionBeforeChangeHook } from 'payload'
 
 /**
@@ -30,16 +31,31 @@ import type { CollectionBeforeChangeHook } from 'payload'
  * reflect historical balances and real-time payments and losses.
  */
 
-export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
+export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async ({
   data,
   originalDoc,
   req: { payload },
 }) => {
+  const transactionIds = data.transactions
+    ?.filter((t) => t.relationTo === 'transaction')
+    .map((t) => t.value)
+  const salesIds = data.transactions?.filter((t) => t.relationTo === 'sales').map((t) => t.value)
+
   const transactions = await payload.find({
     collection: 'transaction',
     where: {
       id: {
-        in: data.transactions,
+        in: transactionIds,
+      },
+    },
+    pagination: false,
+  })
+
+  const sales = await payload.find({
+    collection: 'sales',
+    where: {
+      id: {
+        in: salesIds,
       },
     },
     pagination: false,
@@ -52,7 +68,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
         contains: data.customer,
       },
       id: {
-        not_equals: originalDoc.id,
+        not_equals: originalDoc?.id,
       },
       dueAt: {
         less_than: data.dueAt,
@@ -64,46 +80,63 @@ export const calculateAmountsHook: CollectionBeforeChangeHook = async ({
     select: {
       advanceAmount: true,
       remainingAmount: true,
+      totals: true,
     },
     pagination: false,
   })
 
+  let previous = 0
+  let paid = 0;
+  let other = 0;
   if (invoices.docs.length) {
     const previousInvoice = invoices.docs[0]
-    data.previousBalance = previousInvoice.remainingAmount
-    data.previousAdvanceAmount = previousInvoice.advanceAmount
+    previous = (previousInvoice.totals?.balance || 0)
   }
 
-  // Calculate total from multiple transactions
-  const totalAmount = transactions.docs.reduce((sum, transaction) => {
+  // Calculate transactions total from multiple transactions
+  const transactionsTotalAmount = transactions.docs.reduce((sum, transaction) => {
     return sum + transaction.total
   }, 0)
 
+  // Calculate transactions total from multiple transactions
+  const salesTotalAmount = sales.docs.reduce((sum, sale) => {
+    return sum + (sale.totals?.gross || 0)
+  }, 0)
+
+  if (data.lost?.count && data.lost?.amount) {
+    data.lost.total = data.lost?.count * data.lost?.amount
+    other = data.lost.total
+  } else if (data.lost?.total) {
+    data.lost.total = 0
+  }
+
   if (data.payments) {
-    data.paidAmount = data.payments.reduce((sum: number, payment: { amount: number }) => {
+    paid = data.payments.reduce((sum: number, payment: { amount: number }) => {
       return sum + payment.amount
     }, 0)
   }
 
-  // Calculate due amount
-  data.netTotal = totalAmount
-  data.dueAmount = data.netTotal + (data.previousBalance || data.previousAdvanceAmount)
-  data.remainingAmount = data.dueAmount - data.paidAmount > 0 ? data.dueAmount - data.paidAmount : 0
-  data.advanceAmount = data.dueAmount - data.paidAmount < 0 ? data.dueAmount - data.paidAmount : 0
+  const subtotal = transactionsTotalAmount + salesTotalAmount;
+  const net = subtotal - (data.totals?.discount || 0);
+  const total = net + previous + (data.totals?.tax || 0) + other;
 
-  if (data.lostBottlesCount && data.lostBottleAmount) {
-    data.lostBottlesTotalAmount = data.lostBottlesCount * data.lostBottleAmount
-    data.dueAmount += data.lostBottlesTotalAmount
-  } else if (data.lostBottlesTotalAmount) {
-    data.lostBottlesTotalAmount = 0
+  data.totals = {
+    ...data.totals,
+    subtotal,
+    net, 
+    previous,
+    other,
+    total,
+    paid,
+    balance: total - paid
   }
 
   // Set status based on due amount and paid amount
-  if (data.paidAmount === data.dueAmount || data.paidAmount > data.dueAmount) {
+  if (data.totals.paid! === data.totals.total! || data.totals.paid! > data.totals.total!) {
     data.status = 'paid'
-  } else if (data.paidAmount > 0 && data.paidAmount < data.dueAmount) {
+  } else if (data.totals.paid! > 0 && data.totals.paid! < data.totals.total!) {
     data.status = 'partially-paid'
-  } else if (data.paidAmount === 0) {
+  } else if (data.totals.paid === 0) {
     data.status = 'unpaid'
   }
 

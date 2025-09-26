@@ -37,14 +37,19 @@ const rupee = new Intl.NumberFormat('en-PK', {
 
 const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
   const totalBottlesCounts = invoice.transactions.reduce((total, item) => {
-    item = item as Transaction
-    return total + item.bottleGiven
+    if (item.relationTo === 'transaction' && typeof item.value !== 'string' ) {
+      return total + item.value.bottleGiven
+    }
+    if (item.relationTo === 'sales' && typeof item.value !== 'string' ) {
+      return total + (item.value.item.quantity || 0)
+    }
+    return total
   }, 0)
   return (
     <>
       <View style={tableStyles.row}>
         <Text style={[tableStyles.column, tableStyles.bold, styles.description2]}>
-          Total Bottles Delivered
+          Total Bottles Delivered/Filled
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>{totalBottlesCounts}</Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.qty]} />
@@ -53,63 +58,85 @@ const InvoiceTableFooter = ({ invoice }: { invoice: Invoice }) => {
         <Text style={[tableStyles.column, tableStyles.bold, styles.amount]} />
       </View>
       <View style={tableStyles.row}>
-        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>Net Total</Text>
-        <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {rupee.format(invoice.netTotal!)}
-        </Text>
-      </View>
-      <View style={tableStyles.row}>
         <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
-          Previous Balance
+          Subtotal
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {rupee.format(invoice.previousBalance!)}
+          {rupee.format(invoice.totals?.subtotal || 0)}
         </Text>
       </View>
+      {invoice.totals?.previous ? (
+        <View style={tableStyles.row}>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+            Previous Balance
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.totals?.previous || 0)}
+          </Text>
+        </View>
+      ) : null}
+      {invoice.totals?.discount ? (
+        <View style={tableStyles.row}>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+            Discount
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.totals?.discount || 0)}
+          </Text>
+        </View>
+      ) : null}
+            {invoice.totals?.tax ? (
+        <View style={tableStyles.row}>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+            Tax
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.totals?.tax || 0)}
+          </Text>
+        </View>
+      ) : null}
+      {invoice.lost?.count && invoice.lost.amount ? (
+        <View style={tableStyles.row}>
+          <Text
+            style={[tableStyles.column, tableStyles.bold, styles.description, { width: '66%' }]}
+          >
+            Lost/Damaged Bottles
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>
+            {invoice.lost.count}
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>
+            {rupee.format(invoice.lost.amount)}
+          </Text>
+          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
+            {rupee.format(invoice.lost.count * invoice.lost.amount)}
+          </Text>
+        </View>
+      ) : null}
       <View style={tableStyles.row}>
-        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
-          Previous Advance Balance
-        </Text>
+        <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>Total</Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {rupee.format(invoice.previousAdvanceAmount!)}
+          {rupee.format(invoice.totals?.total || 0)}
         </Text>
       </View>
-      {invoice.status !== 'paid' && invoice.paidAmount ? (
+      {invoice.totals?.paid ? (
         <View style={tableStyles.row}>
           <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
             Paid Amount
           </Text>
           <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-            {rupee.format(invoice.paidAmount!)}
-          </Text>
-        </View>
-      ) : null}
-      {invoice.lostBottlesCount && invoice.lostBottleAmount ? (
-        <View style={tableStyles.row}>
-          <Text
-            style={[tableStyles.column, tableStyles.bold, styles.description, { width: '66%' }]}
-          >
-            Lost Bottles
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>
-            {invoice.lostBottlesCount}
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>
-            {rupee.format(invoice.lostBottleAmount)}
-          </Text>
-          <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-            {rupee.format(invoice.lostBottlesCount * invoice.lostBottleAmount)}
+            {rupee.format(invoice.totals?.paid || 0)}
           </Text>
         </View>
       ) : null}
       <View style={tableStyles.row}>
         <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
-          Amount to Pay
+          Balance
         </Text>
         <Text style={[tableStyles.column, tableStyles.bold, styles.total]}>
-          {invoice.status !== 'paid' && invoice.paidAmount
-            ? rupee.format(invoice.dueAmount! - invoice.paidAmount!)
-            : rupee.format(invoice.dueAmount!)}
+          {invoice.status !== 'paid' && invoice.totals?.paid
+            ? rupee.format(invoice.totals?.total! - invoice.totals?.paid)
+            : rupee.format(invoice.totals?.balance!)}
         </Text>
       </View>
     </>

@@ -4,18 +4,20 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, startOfQua
 import { 
   calculatePaymentMethodBreakdown, 
   calculateGeographicCollection, 
-  calculateDeliveryRevenue 
+  calculateDeliveryRevenue,
+  calculateInvoiceSalesRevenue
 } from '@/lib/performanceAggregations'
 
 /**
  * 🔄 Hook: updatePerformanceOverview (After Change)
  *
  * This hook runs after creating or updating an Invoice. It calculates delivery
- * revenue from invoice payments for the current month and updates the performance
- * overview global.
+ * revenue from invoice payments and sales revenue from invoice transactions
+ * for the current month and updates the performance overview global.
  *
- * 1. 💰 Aggregates invoice payments for the current month
- * 2. 🔄 Updates the performance overview global with "Delivery" channel
+ * 1. 💰 Aggregates invoice payments for the current month (Delivery channel)
+ * 2. 💰 Aggregates sales revenue from invoice transactions (Filler/Bottles channels)
+ * 3. 🔄 Updates the performance overview global with all channels
  */
 
 export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = async ({
@@ -45,18 +47,22 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     const thisYearStart = startOfYear(currentDate)
     const thisYearEnd = endOfYear(currentDate)
 
-    // Helper function to aggregate delivery revenue with enhanced breakdown for a time period
-    const aggregateDeliveryRevenueEnhanced = async (startDate: Date, endDate: Date) => {
-      const [totalRevenue, paymentMethods, geographicData] = await Promise.all([
+    // Helper function to aggregate delivery revenue and sales revenue with enhanced breakdown for a time period
+    const aggregateRevenueEnhanced = async (startDate: Date, endDate: Date) => {
+      const [deliveryRevenue, paymentMethods, geographicData, salesRevenue] = await Promise.all([
         calculateDeliveryRevenue(payload, startDate, endDate),
         calculatePaymentMethodBreakdown(payload, startDate, endDate),
         calculateGeographicCollection(payload, startDate, endDate),
+        calculateInvoiceSalesRevenue(payload, startDate, endDate),
       ])
 
       return {
-        total: totalRevenue,
-        paymentMethods,
-        areas: geographicData,
+        delivery: {
+          total: deliveryRevenue,
+          paymentMethods,
+          areas: geographicData,
+        },
+        sales: salesRevenue,
       }
     }
 
@@ -65,40 +71,58 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
       slug: 'performance-overview',
     })
 
-    // Aggregate delivery revenue for all time periods with enhanced breakdown
-    const [todayDelivery, thisMonthDelivery, lastMonthDelivery, thisWeekDelivery, thisQuarterDelivery, thisYearDelivery] = await Promise.all([
-      aggregateDeliveryRevenueEnhanced(todayStart, todayEnd),
-      aggregateDeliveryRevenueEnhanced(thisMonthStart, thisMonthEnd),
-      aggregateDeliveryRevenueEnhanced(lastMonthStart, lastMonthEnd),
-      aggregateDeliveryRevenueEnhanced(thisWeekStart, thisWeekEnd),
-      aggregateDeliveryRevenueEnhanced(thisQuarterStart, thisQuarterEnd),
-      aggregateDeliveryRevenueEnhanced(thisYearStart, thisYearEnd),
+    // Aggregate revenue for all time periods with enhanced breakdown
+    const [todayRevenue, thisMonthRevenue, lastMonthRevenue, thisWeekRevenue, thisQuarterRevenue, thisYearRevenue] = await Promise.all([
+      aggregateRevenueEnhanced(todayStart, todayEnd),
+      aggregateRevenueEnhanced(thisMonthStart, thisMonthEnd),
+      aggregateRevenueEnhanced(lastMonthStart, lastMonthEnd),
+      aggregateRevenueEnhanced(thisWeekStart, thisWeekEnd),
+      aggregateRevenueEnhanced(thisQuarterStart, thisQuarterEnd),
+      aggregateRevenueEnhanced(thisYearStart, thisYearEnd),
     ])
 
+    // Helper function to map sales channel values to labels
+    const getSalesChannelLabel = (channel: string): string => {
+      const channelLabels: Record<string, string> = {
+        'filler': 'Filler',
+        'bottles': 'Bottles Sold'
+      }
+      return channelLabels[channel] || channel
+    }
+
     // Helper function to update revenue for a time period with enhanced breakdown
-    const updateRevenueForPeriod = (period: any, deliveryData: any) => {
+    const updateRevenueForPeriod = (period: any, revenueData: any) => {
       if (!period) return period
 
       // Get existing channels and preserve them
       const existingChannels = period.revenue?.channels || []
       
-      // Remove any existing "Delivery" channel to avoid duplicates
-      const channelsWithoutDelivery = existingChannels.filter(
-        (channel: any) => channel.channel !== 'Delivery'
+      // Remove any existing invoice-related channels to avoid duplicates
+      const channelsToRemove = ['Delivery', 'Filler', 'Bottles Sold']
+      const channelsWithoutInvoice = existingChannels.filter(
+        (channel: any) => !channelsToRemove.includes(channel.channel)
       )
 
       // Add the new "Delivery" channel with enhanced breakdown
       const updatedChannels = [
-        ...channelsWithoutDelivery,
+        ...channelsWithoutInvoice,
         {
           channel: 'Delivery',
-          total: deliveryData.total,
-          paymentMethods: deliveryData.paymentMethods,
-          areas: deliveryData.areas,
+          total: revenueData.delivery.total,
+          paymentMethods: revenueData.delivery.paymentMethods,
+          areas: revenueData.delivery.areas,
         },
       ]
 
-      // Calculate total revenue including delivery
+      // Add sales channels (Filler and Bottles Sold)
+      revenueData.sales.forEach((salesChannel: any) => {
+        updatedChannels.push({
+          channel: getSalesChannelLabel(salesChannel.channel),
+          total: salesChannel.total,
+        })
+      })
+
+      // Calculate total revenue including delivery and sales
       const totalRevenue = updatedChannels.reduce((sum, { total }) => sum + total, 0)
 
       return {
@@ -114,16 +138,16 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     await payload.updateGlobal({
       slug: 'performance-overview',
       data: {
-        today: updateRevenueForPeriod(performanceOverview.today, todayDelivery),
-        thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthDelivery),
-        lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthDelivery),
-        thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekDelivery),
-        thisQuarter: updateRevenueForPeriod(performanceOverview.thisQuarter, thisQuarterDelivery),
-        thisYear: updateRevenueForPeriod(performanceOverview.thisYear, thisYearDelivery),
+        today: updateRevenueForPeriod(performanceOverview.today, todayRevenue),
+        thisMonth: updateRevenueForPeriod(performanceOverview.thisMonth, thisMonthRevenue),
+        lastMonth: updateRevenueForPeriod(performanceOverview.lastMonth, lastMonthRevenue),
+        thisWeek: updateRevenueForPeriod(performanceOverview.thisWeek, thisWeekRevenue),
+        thisQuarter: updateRevenueForPeriod(performanceOverview.thisQuarter, thisQuarterRevenue),
+        thisYear: updateRevenueForPeriod(performanceOverview.thisYear, thisYearRevenue),
       },
     })
 
-    console.log('✅ Performance overview updated with delivery revenue for all time periods (including today)')
+    console.log('✅ Performance overview updated with delivery and sales revenue for all time periods (including today)')
   } catch (error) {
     console.error('❌ Error updating performance overview:', error)
     // Don't throw the error to avoid breaking the invoice creation/update

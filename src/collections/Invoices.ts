@@ -25,9 +25,10 @@ export const Invoice: CollectionConfig = {
     defaultColumns: [
       'customer',
       'status',
-      'netTotal',
-      'dueAmount',
-      'paidAmount',
+      'totals.subtotal',
+      'totals.total',
+      'totals.paid',
+      'totals.balance',
       'dueAt',
       'payments',
       'sent',
@@ -75,7 +76,7 @@ export const Invoice: CollectionConfig = {
     {
       name: 'transactions',
       type: 'relationship',
-      relationTo: 'transaction',
+      relationTo: ['transaction', 'sales'],
       hasMany: true,
       required: true,
       filterOptions: ({ data }) => {
@@ -108,7 +109,6 @@ export const Invoice: CollectionConfig = {
         return true
       },
     },
-
     {
       name: 'status',
       type: 'select',
@@ -138,6 +138,7 @@ export const Invoice: CollectionConfig = {
       defaultValue: 0,
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -147,6 +148,7 @@ export const Invoice: CollectionConfig = {
       admin: {
         description:
           'This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )',
+          hidden: true,
       },
     },
     {
@@ -157,6 +159,7 @@ export const Invoice: CollectionConfig = {
         description:
           'Customer paid more then invoice amount in previous month which will be adjust on this invoice.',
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -165,6 +168,7 @@ export const Invoice: CollectionConfig = {
       label: 'Due Amount',
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -173,6 +177,7 @@ export const Invoice: CollectionConfig = {
       defaultValue: 0,
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -183,6 +188,7 @@ export const Invoice: CollectionConfig = {
         description:
           'Customer paid more then invoice amount which will be adjust on next billig/invoice.',
         readOnly: true,
+        hidden: true,
       },
     },
     {
@@ -192,7 +198,88 @@ export const Invoice: CollectionConfig = {
       admin: {
         description: 'Customer needs to pay this amount to clear billig/invoice.',
         readOnly: true,
+        hidden: true,
       },
+    },
+    {
+      name: 'totals',
+      type: 'group',
+      admin: {
+        description: 'Calculated totals for the sale',
+      },
+      fields: [
+        {
+          name: 'subtotal',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'discount',
+          type: 'number',
+          defaultValue: 0,
+          admin: {},
+        },
+        {
+          name: 'net',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'tax',
+          type: 'number',
+          defaultValue: 0,
+          admin: {},
+        },
+        {
+          name: 'previous',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'other',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+            description: 'Bottles lost/Damaged/Other',
+          },
+        },
+        {
+          label: 'Total',
+          name: 'total',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+            description: 'Final amount that customer needs to pay',
+          },
+        },
+        {
+          name: 'paid',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: 'balance',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+          },
+        },
+      ],
     },
     {
       name: 'paidAt',
@@ -269,21 +356,52 @@ export const Invoice: CollectionConfig = {
       ],
     },
     {
-      label: 'Lost Bottles',
+      label: 'Advance Features',
       type: 'collapsible',
       admin: {
         initCollapsed: true,
       },
       fields: [
         {
+          label: 'Lost Bottles',
+          name: 'lost',
+          type: 'group',
+          fields: [
+            {
+              name: 'count',
+              label: 'How Many Bottles are Lost?',
+              type: 'number',
+            },
+            {
+              name: 'amount',
+              label: 'Amount Per Bottle',
+              type: 'number',
+            },
+            {
+              name: 'total',
+              label: 'Total Amount',
+              type: 'number',
+              admin: {
+                readOnly: true,
+              },
+            },
+          ],
+        },
+        {
           name: 'lostBottlesCount',
           label: 'How Many Bottles are Lost?',
           type: 'number',
+          admin: {
+            hidden: true,
+          },
         },
         {
           name: 'lostBottleAmount',
           label: 'Amount Per Bottle',
           type: 'number',
+          admin: {
+            hidden: true,
+          },
         },
         {
           name: 'lostBottlesTotalAmount',
@@ -291,6 +409,7 @@ export const Invoice: CollectionConfig = {
           defaultValue: 0,
           admin: {
             readOnly: true,
+            hidden: true,
           },
         },
       ],
@@ -324,15 +443,15 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
-    {
-      name: 'Transactions',
-      type: 'ui',
-      admin: {
-         condition: (__, _, { operation }) => operation === 'update',
-        components: {
-          Field: '/components/Invoices#TransactionTable',
-        },
-      },
-    },
+    // {
+    //   name: 'Transactions',
+    //   type: 'ui',
+    //   admin: {
+    //      condition: (__, _, { operation }) => operation === 'update',
+    //     components: {
+    //       Field: '/components/Invoices#TransactionTable',
+    //     },
+    //   },
+    // },
   ],
 }

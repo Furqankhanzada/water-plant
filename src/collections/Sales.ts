@@ -13,7 +13,8 @@ export const Sales: CollectionConfig = {
   disableBulkEdit: true,
   admin: {
     defaultColumns: ['date', 'channel', 'customer',  'item.product', 'totals.gross', 'status'],
-    useAsTitle: 'channel',
+    useAsTitle: 'date',
+    listSearchableFields: ['channel'],
     groupBy: true,
   },
   access: {
@@ -108,11 +109,13 @@ export const Sales: CollectionConfig = {
           },
         },
         {
-          name: 'gross',
+          label: 'Total',
+          name: 'gross', // TODO: chnage it to total in future
           type: 'number',
           defaultValue: 0,
           admin: {
             readOnly: true,
+            description: 'Final amount that customer needs to pay',
           },
         },
       ],

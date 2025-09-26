@@ -22,9 +22,13 @@ const styles = StyleSheet.create({
     width: '12%',
     textAlign: 'right',
   },
+  discount: {
+    width: '25.34%',
+    textAlign: 'right',
+  },
 })
 
-const InvoiceTableHeader = () => (
+export const InvoiceTableTransactionHeader = () => (
   <View style={[tableStyles.row, styles.container]} fixed>
     <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
       Item - Delivery Date
@@ -37,4 +41,14 @@ const InvoiceTableHeader = () => (
   </View>
 )
 
-export default InvoiceTableHeader
+export const InvoiceTableSalesHeader = () => (
+  <View style={[tableStyles.row, styles.container]} fixed>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.description]}>
+      Item - Date
+    </Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.qty]}>Quantity</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.rate]}>Rate</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.discount]}>Discount</Text>
+    <Text style={[tableStyles.column, tableStyles.bold, styles.amount]}>Amount</Text>
+  </View>
+)

@@ -105,9 +105,7 @@ export const generateTripReport = async (tripId: string, payload: BasePayload) =
           {
             $project: {
               status: 1,
-              advanceAmount: 1,
-              remainingAmount: 1,
-              dueAmount: 1,
+              totals: 1,
               id: 1,
               dueAt: 1,
             },

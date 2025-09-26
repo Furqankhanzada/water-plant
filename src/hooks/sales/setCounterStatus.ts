@@ -13,7 +13,7 @@ export const setCounterStatus: CollectionBeforeChangeHook<Sale> = async ({
   data,
 }) => {
   // If channel is counter, automatically set status to paid
-  if (data.channel === 'counter') {
+  if (data.channel === 'counter' || data.channel === 'other') {
     data.status = 'paid'
   }
 
