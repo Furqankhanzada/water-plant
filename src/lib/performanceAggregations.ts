@@ -500,14 +500,25 @@ export const calculateInvoiceSalesRevenue = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active customers only
+      // Unwind customer info to work with single customer object
+      {
+        $unwind: '$customerInfo',
+      },
+      // Filter for active customers with specific types (filler and shop)
       {
         $match: {
           'customerInfo.status': 'active',
           'customerInfo.deletedAt': { $exists: false },
+          'customerInfo.type': {
+            $in: ['filler', 'shop'],
+          },
         },
       },
-      // Filter for invoices with payments in the date range
+      // Unwind payments to process each payment
+      {
+        $unwind: '$payments',
+      },
+      // Filter for payments in the date range
       {
         $match: {
           'payments.paidAt': {
@@ -516,42 +527,11 @@ export const calculateInvoiceSalesRevenue = async (
           },
         },
       },
-      // Unwind transactions to process each transaction/sale
-      {
-        $unwind: '$transactions',
-      },
-      // Filter for sales transactions only
-      {
-        $match: {
-          'transactions.relationTo': 'sales',
-        },
-      },
-      // Lookup sales data
-      {
-        $lookup: {
-          from: 'sales',
-          localField: 'transactions.value',
-          foreignField: '_id',
-          as: 'salesData',
-        },
-      },
-      // Unwind sales data
-      {
-        $unwind: '$salesData',
-      },
-      // Filter for filler and bottles channels only (exclude counter and other)
-      {
-        $match: {
-          'salesData.channel': {
-            $in: ['filler', 'bottles'],
-          },
-        },
-      },
-      // Group by channel and sum revenue
+      // Group by customer type and sum payment amounts
       {
         $group: {
-          _id: '$salesData.channel',
-          total: { $sum: '$salesData.totals.gross' },
+          _id: '$customerInfo.type',
+          total: { $sum: '$payments.amount' },
         },
       },
       // Project to match expected format
