@@ -338,6 +338,7 @@ export interface Employee {
   nic?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -937,6 +938,7 @@ export interface EmployeeSelect<T extends boolean = true> {
   nic?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

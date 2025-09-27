@@ -1,14 +1,21 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
+import { checkEmployeeDeletion } from '@/hooks/employees/checkEmployeeDeletion'
 
 export const Employee: CollectionConfig = {
   slug: 'employee',
   disableDuplicate: true,
+  trash: true,
   admin: {
     useAsTitle: 'name',
   },
   access: {
     delete: isAdmin,
+  },
+  hooks: {
+    beforeDelete: [
+      checkEmployeeDeletion,
+    ],
   },
   fields: [
     {
