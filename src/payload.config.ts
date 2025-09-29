@@ -11,8 +11,11 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
 import { isWhatsAppEnabled } from './lib/sendWhatsAppMessage'
+
 import { Company } from './globals/Company'
 import { PerformanceOverview } from './globals/PerformanceOverview'
+import { WhatsApp } from './globals/WhatsApp'
+
 import { sendEmailTask } from './tasks/sendEmail'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
@@ -30,7 +33,6 @@ import { Messages } from './collections/Messages'
 import { Requests } from './collections/Requests'
 import CronService from './services/cron'
 import { migrations } from './migrations'
-
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,7 +58,7 @@ export default buildConfig({
       },
     },
   },
-  globals: [Company, PerformanceOverview],
+  globals: [Company, PerformanceOverview, WhatsApp],
   collections: [
     Users,
     Customers,
