@@ -8,6 +8,9 @@ export const Employee: CollectionConfig = {
   trash: true,
   admin: {
     useAsTitle: 'name',
+    components: {
+      beforeListTable: ['/components/Employees#Info']
+    }
   },
   access: {
     delete: isAdmin,
@@ -95,6 +98,11 @@ export const Employee: CollectionConfig = {
 
         return true
       },
+    },
+    {
+      name: 'salary',
+      type: 'number',
+      required: true
     },
   ],
 }

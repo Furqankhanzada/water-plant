@@ -2,6 +2,7 @@ import { default as default_da483b7c37723cd1fb5962da39c4695f } from '../../../co
 import { ContactNumberCell as ContactNumberCell_73182a10d002044f26d480e9c0a389e0 } from '../../../components/Customers'
 import { GeneratePdfButton as GeneratePdfButton_91735f33071acecbd7cb388640edace0 } from '../../../components/Trips'
 import { Info as Info_91735f33071acecbd7cb388640edace0 } from '../../../components/Trips'
+import { Info as Info_488ef6f355413b33f772b45b13be87c2 } from '../../../components/Employees'
 import { DailyConsumptionCell as DailyConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0 } from '../../../components/Transactions'
 import { WeeklyConsumptionCell as WeeklyConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0 } from '../../../components/Transactions'
 import { AdjustedConsumptionCell as AdjustedConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0 } from '../../../components/Transactions'
@@ -23,6 +24,7 @@ export const importMap = {
   "/components/Customers#ContactNumberCell": ContactNumberCell_73182a10d002044f26d480e9c0a389e0,
   "/components/Trips#GeneratePdfButton": GeneratePdfButton_91735f33071acecbd7cb388640edace0,
   "/components/Trips#Info": Info_91735f33071acecbd7cb388640edace0,
+  "/components/Employees#Info": Info_488ef6f355413b33f772b45b13be87c2,
   "/components/Transactions#DailyConsumptionCell": DailyConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0,
   "/components/Transactions#WeeklyConsumptionCell": WeeklyConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0,
   "/components/Transactions#AdjustedConsumptionCell": AdjustedConsumptionCell_52e693fa1feaa9442d7f4ad03c5825c0,
