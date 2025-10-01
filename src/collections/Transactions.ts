@@ -16,6 +16,7 @@ export const Transaction: CollectionConfig = {
     defaultColumns: [
       'transactionAt',
       'customer',
+      'payment.amount',
       'bottleGiven',
       'bottleTaken',
       'remainingBottles',
@@ -248,6 +249,52 @@ export const Transaction: CollectionConfig = {
         disableListColumn: true,
         hidden: true,
       },
+    },
+    {
+      name: 'payment',
+      type: 'group',
+      fields: [
+        {
+          name: 'type',
+          type: 'select',
+          defaultValue: 'cash',
+          options: [
+            {
+              label: 'Online',
+              value: 'online',
+            },
+            {
+              label: 'Cash',
+              value: 'cash',
+            },
+          ],
+        },
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+          defaultValue: 0,
+        },
+        {
+          name: 'paidAt',
+          type: 'date',
+          required: true,
+          defaultValue: () => new Date(),
+          admin: {
+            date: {
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'd MMM yyyy',
+            },
+          },
+        },
+        {
+          name: 'comments',
+          type: 'textarea',
+          admin: {
+            description: 'Anything speacial that you want to mention?',
+          },
+        },
+      ],
     },
   ],
 }
