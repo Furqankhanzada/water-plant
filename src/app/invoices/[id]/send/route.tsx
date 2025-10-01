@@ -1,18 +1,11 @@
 import { getPayload } from 'payload'
-import { format } from 'date-fns'
 import configPromise from '@payload-config'
 
-import { isWhatsAppEnabled, sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
 import { Customer } from '@/payload-types'
-
-const rupee = new Intl.NumberFormat('en-PK', {
-  style: 'currency',
-  currency: 'PKR',
-  minimumFractionDigits: 0,
-})
+import { sendInvoice } from '@/services/whatsapp'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!isWhatsAppEnabled()) Response.json({ message: 'WhatsApp is not enabled!' })
+  // if (!isWhatsAppEnabled()) Response.json({ message: 'WhatsApp is not enabled!' })
 
   const payload = await getPayload({
     config: configPromise,
@@ -42,25 +35,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   if (!whatsAppContact?.contactNumber)
     return Response.json({ message: 'No WhatsApp Number Found In Customer' })
 
-  await sendInvoiceTemplate({
-    invoice: invoice,
-    to: whatsAppContact.contactNumber.replace('+', ''),
-    parameters: [
-      {
-        type: 'text',
-        text: customer.name,
-      },
-      {
-        type: 'text',
-        text: rupee.format(invoice.totals?.total || 0),
-      },
-      {
-        type: 'text',
-        text: format(invoice.dueAt, 'EEE, MMM dd, yyyy'),
-      },
-    ],
-  })
-
+  await sendInvoice(invoice, whatsAppContact.contactNumber)
   await payload.update({
     collection: 'invoice',
     id: invoice.id,

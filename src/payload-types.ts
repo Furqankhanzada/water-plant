@@ -79,8 +79,6 @@ export interface Config {
     media: Media;
     reports: Report;
     expenses: Expense;
-    messages: Message;
-    requests: Request;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -116,8 +114,6 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
     expenses: ExpensesSelect<false> | ExpensesSelect<true>;
-    messages: MessagesSelect<false> | MessagesSelect<true>;
-    requests: RequestsSelect<false> | RequestsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -130,10 +126,12 @@ export interface Config {
   globals: {
     company: Company;
     'performance-overview': PerformanceOverview;
+    whatsapp: Whatsapp;
   };
   globalsSelect: {
     company: CompanySelect<false> | CompanySelect<true>;
     'performance-overview': PerformanceOverviewSelect<false> | PerformanceOverviewSelect<true>;
+    whatsapp: WhatsappSelect<false> | WhatsappSelect<true>;
   };
   locale: null;
   user: User & {
@@ -555,42 +553,6 @@ export interface Expense {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "messages".
- */
-export interface Message {
-  id: string;
-  from?: (string | Customer)[] | null;
-  read?: boolean | null;
-  messages: {
-    fullMessage?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    id?: string | null;
-  }[];
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "requests".
- */
-export interface Request {
-  id: string;
-  from?: (string | Customer)[] | null;
-  phone?: string | null;
-  date: string;
-  fulfilled?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -735,14 +697,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'expenses';
         value: string | Expense;
-      } | null)
-    | ({
-        relationTo: 'messages';
-        value: string | Message;
-      } | null)
-    | ({
-        relationTo: 'requests';
-        value: string | Request;
       } | null)
     | ({
         relationTo: 'payload-jobs';
@@ -1113,34 +1067,6 @@ export interface ExpensesSelect<T extends boolean = true> {
   type?: T;
   expenseAt?: T;
   amount?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "messages_select".
- */
-export interface MessagesSelect<T extends boolean = true> {
-  from?: T;
-  read?: T;
-  messages?:
-    | T
-    | {
-        fullMessage?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "requests_select".
- */
-export interface RequestsSelect<T extends boolean = true> {
-  from?: T;
-  phone?: T;
-  date?: T;
-  fulfilled?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1697,6 +1623,22 @@ export interface PerformanceOverview {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp".
+ */
+export interface Whatsapp {
+  id: string;
+  adminPhones?:
+    | {
+        name: string;
+        phone: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "company_select".
  */
 export interface CompanySelect<T extends boolean = true> {
@@ -2201,6 +2143,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               customerCount?: T;
               id?: T;
             };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp_select".
+ */
+export interface WhatsappSelect<T extends boolean = true> {
+  adminPhones?:
+    | T
+    | {
+        name?: T;
+        phone?: T;
         id?: T;
       };
   updatedAt?: T;

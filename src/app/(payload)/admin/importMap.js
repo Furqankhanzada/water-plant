@@ -14,6 +14,7 @@ import { QueryPresetsWhereCell as QueryPresetsWhereCell_3817bf644402e67bfe6577f6
 import { QueryPresetsWhereField as QueryPresetsWhereField_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { QueryPresetsColumnsCell as QueryPresetsColumnsCell_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { QueryPresetsColumnField as QueryPresetsColumnField_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
+import { default as default_9fd2c1740c882e1d16745cda9662c7e6 } from '@/components/whatsapp/WhatsAppManager'
 import { Icon as Icon_f9f58eabab541759fc9306399f740359 } from '../../../graphics/Branding.tsx'
 import { Logo as Logo_f9f58eabab541759fc9306399f740359 } from '../../../graphics/Branding.tsx'
 import { default as default_233cffcda5b6a9cd29a5311e6976ccfd } from '../../../components/performance-overview/PerformanceOverview'
@@ -36,6 +37,7 @@ export const importMap = {
   "@payloadcms/ui#QueryPresetsWhereField": QueryPresetsWhereField_3817bf644402e67bfe6577f60ef982de,
   "@payloadcms/ui#QueryPresetsColumnsCell": QueryPresetsColumnsCell_3817bf644402e67bfe6577f60ef982de,
   "@payloadcms/ui#QueryPresetsColumnField": QueryPresetsColumnField_3817bf644402e67bfe6577f60ef982de,
+  "@/components/whatsapp/WhatsAppManager#default": default_9fd2c1740c882e1d16745cda9662c7e6,
   "/graphics/Branding.tsx#Icon": Icon_f9f58eabab541759fc9306399f740359,
   "/graphics/Branding.tsx#Logo": Logo_f9f58eabab541759fc9306399f740359,
   "/components/performance-overview/PerformanceOverview#default": default_233cffcda5b6a9cd29a5311e6976ccfd,

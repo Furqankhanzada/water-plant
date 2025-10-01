@@ -10,9 +10,10 @@ import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
-import { isWhatsAppEnabled } from './lib/sendWhatsAppMessage'
 import { Company } from './globals/Company'
 import { PerformanceOverview } from './globals/PerformanceOverview'
+import { WhatsApp } from './globals/WhatsApp'
+
 import { sendEmailTask } from './tasks/sendEmail'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
@@ -26,11 +27,7 @@ import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
-import { Messages } from './collections/Messages'
-import { Requests } from './collections/Requests'
-import CronService from './services/cron'
 import { migrations } from './migrations'
-
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,7 +53,7 @@ export default buildConfig({
       },
     },
   },
-  globals: [Company, PerformanceOverview],
+  globals: [Company, PerformanceOverview, WhatsApp],
   collections: [
     Users,
     Customers,
@@ -70,7 +67,6 @@ export default buildConfig({
     Media,
     Reports,
     Expenses,
-    ...(isWhatsAppEnabled() ? [Messages, Requests] : []),
   ],
   jobs: {
     autoRun: [
@@ -115,8 +111,13 @@ export default buildConfig({
       },
     }),
   }),
+  bin: [
+    {
+      scriptPath: path.resolve(dirname, 'bin/createAndSendInvoices.ts'),
+      key: 'invoices',
+    },
+  ],
   onInit: () => {
     console.log('### onInit ### PayloadCMS initiated ###')
-    new CronService()
   },
 })
