@@ -1,6 +1,5 @@
-import { BasePayload, getPayload } from 'payload'
+import { BasePayload } from 'payload'
 import { endOfMonth, isSameMonth, setDate, startOfMonth, subMonths } from 'date-fns'
-import configPromise from '@payload-config'
 
 import { Transaction, Customer, Invoice, Sale } from '@/payload-types'
 import { sendInvoice } from '@/services/whatsapp'
@@ -105,8 +104,8 @@ const createAndSendInvoice = async (
   let sent = false
   // if customer have whatsapp number
   if (whatsAppContact) {
-    await sendInvoice(newInvoice, whatsAppContact.contactNumber)
-    sent = true
+    // await sendInvoice(newInvoice, whatsAppContact.contactNumber)
+    // sent = true
   }
   // update invoice so that we know that its already sent to customer
   if (sent) {
@@ -120,11 +119,9 @@ const createAndSendInvoice = async (
   }
 }
 
-export const generateAndSendInvoices = async () => {
-  const payload = await getPayload({
-    config: configPromise,
-  })
-
+export const generateAndSendInvoices = async (
+  payload: BasePayload
+) => {
   const customers = await payload.find({
     collection: 'customers',
     pagination: false,

@@ -111,6 +111,12 @@ export default buildConfig({
       },
     }),
   }),
+  bin: [
+    {
+      scriptPath: path.resolve(dirname, 'bin/createAndSendInvoices.ts'),
+      key: 'invoices',
+    },
+  ],
   onInit: () => {
     console.log('### onInit ### PayloadCMS initiated ###')
   },
