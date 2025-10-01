@@ -104,8 +104,8 @@ const createAndSendInvoice = async (
   let sent = false
   // if customer have whatsapp number
   if (whatsAppContact) {
-    // await sendInvoice(newInvoice, whatsAppContact.contactNumber)
-    // sent = true
+    await sendInvoice(newInvoice, whatsAppContact.contactNumber)
+    sent = true
   }
   // update invoice so that we know that its already sent to customer
   if (sent) {
