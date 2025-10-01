@@ -31,7 +31,6 @@ import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
 import { Messages } from './collections/Messages'
 import { Requests } from './collections/Requests'
-import CronService from './services/cron'
 import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
@@ -119,6 +118,5 @@ export default buildConfig({
   }),
   onInit: () => {
     console.log('### onInit ### PayloadCMS initiated ###')
-    new CronService()
   },
 })
