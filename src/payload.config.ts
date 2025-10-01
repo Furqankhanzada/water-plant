@@ -27,8 +27,6 @@ import { Invoice } from './collections/Invoices'
 import { Media } from './collections/Media'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
-import { Messages } from './collections/Messages'
-import { Requests } from './collections/Requests'
 import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
