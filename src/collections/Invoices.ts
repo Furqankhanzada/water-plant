@@ -314,6 +314,35 @@ export const Invoice: CollectionConfig = {
       type: 'array',
       fields: [
         {
+          name: 'trip',
+          type: 'relationship',
+          relationTo: 'trips',
+          admin: {
+            readOnly: true,
+            condition: (_, siblingData) => Boolean(siblingData?.trip),
+            description: 'Trip associated with this payment',
+          },
+        },
+        {
+          name: 'employee',
+          type: 'relationship',
+          relationTo: 'employee',
+          admin: {
+            condition: (_, siblingData) => Boolean(siblingData?.employee),
+            description: 'Employee who received/processed this payment',
+          },
+        },
+        {
+          name: 'transaction',
+          type: 'relationship',
+          relationTo: 'transaction',
+          admin: {
+            readOnly: true,
+            condition: (_, siblingData) => Boolean(siblingData?.transaction),
+            description: 'Transaction associated with this payment',
+          },
+        },
+        {
           name: 'type',
           type: 'select',
           defaultValue: 'cash',
