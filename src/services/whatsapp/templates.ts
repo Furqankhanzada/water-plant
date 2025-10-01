@@ -84,9 +84,9 @@ export const invoiceCaption = (invoice: Invoice): string => {
 
   switch (invoice.status) {
     case 'unpaid':
-      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and total dues are *${formatCurrency(invoice.dueAmount!)}*/-.\n\nDue Date: *${dueDate}*`
+      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and total dues are *${formatCurrency(invoice.totals?.total ?? 0)}*/-.\n\nDue Date: *${dueDate}*`
     case 'partially-paid':
-      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and remaining dues are *${formatCurrency(invoice.dueAmount!)}*/-.\n\nDue Date: *${dueDate}*`
+      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and remaining dues are *${formatCurrency(invoice.totals?.balance ?? 0)}*/-.\n\nDue Date: *${dueDate}*`
     case 'paid':
       return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and all dues are paid.\n\nDue Date: *${dueDate}*`
     default:
@@ -123,7 +123,7 @@ export const paymentReminder = (invoice: Invoice): string => {
 
       ${urgencyLevel}
 
-      Your invoice ${format(parseISO(invoice.dueAt), 'MMMM')} has a remaining balance of *${formatCurrency(invoice.dueAmount!)}*.
+      Your invoice ${format(parseISO(invoice.dueAt), 'MMMM')} has a remaining balance of *${formatCurrency(invoice.totals?.total ?? 0)}*.
 
       📅 *Due Date:* ${dueAt}
 

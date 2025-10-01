@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Column, ServerComponentProps } from 'payload'
 
-import { isWhatsAppEnabled } from '@/lib/sendWhatsAppMessage'
 import { Pill, Table } from '@payloadcms/ui'
 
 export const GeneratePdfButton = async (
@@ -28,7 +27,7 @@ export const GeneratePdfButton = async (
 export const SendInvoiceButton = async (
   props: ServerComponentProps & { rowData: { id: string } },
 ) => {
-  if (!isWhatsAppEnabled()) return null
+  // if (!isWhatsAppEnabled()) return null
   if (!props.id && !props.rowData) {
     return null
   }

@@ -1,9 +1,9 @@
 import { BasePayload, getPayload } from 'payload'
-import { endOfMonth, format, isSameMonth, setDate, startOfMonth, subMonths } from 'date-fns'
+import { endOfMonth, isSameMonth, setDate, startOfMonth, subMonths } from 'date-fns'
 import configPromise from '@payload-config'
 
 import { Transaction, Customer, Invoice, Sale } from '@/payload-types'
-import { isWhatsAppEnabled, sendInvoiceTemplate } from '@/lib/sendWhatsAppMessage'
+import { sendInvoice } from '@/services/whatsapp'
 
 const getLastMonthTransactions = async (payload: BasePayload, customerId: string) => {
   const currentDate = new Date()
@@ -110,25 +110,26 @@ const createAndSendInvoice = async (
   )
   let sent = false
   // if customer have whatsapp number
-  if (whatsAppContact && isWhatsAppEnabled()) {
-    await sendInvoiceTemplate({
-      invoice: newInvoice,
-      to: whatsAppContact.contactNumber.replace('+', ''),
-      parameters: [
-        {
-          type: 'text',
-          text: customer.name!,
-        },
-        {
-          type: 'text',
-          text: rupee.format(newInvoice.totals?.total || 0),
-        },
-        {
-          type: 'text',
-          text: format(newInvoice.dueAt, 'EEE, MMM dd, yyyy'),
-        },
-      ],
-    })
+  if (whatsAppContact) {
+    // await sendInvoiceTemplate({
+    //   invoice: newInvoice,
+    //   to: whatsAppContact.contactNumber.replace('+', ''),
+    //   parameters: [
+    //     {
+    //       type: 'text',
+    //       text: customer.name!,
+    //     },
+    //     {
+    //       type: 'text',
+    //       text: rupee.format(newInvoice.totals?.total || 0),
+    //     },
+    //     {
+    //       type: 'text',
+    //       text: format(newInvoice.dueAt, 'EEE, MMM dd, yyyy'),
+    //     },
+    //   ],
+    // })
+    await sendInvoice(newInvoice, whatsAppContact.contactNumber)
     sent = true
   }
   // update invoice so that we know that its already sent to customer

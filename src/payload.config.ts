@@ -10,8 +10,6 @@ import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
-import { isWhatsAppEnabled } from './lib/sendWhatsAppMessage'
-
 import { Company } from './globals/Company'
 import { PerformanceOverview } from './globals/PerformanceOverview'
 import { WhatsApp } from './globals/WhatsApp'
@@ -71,7 +69,6 @@ export default buildConfig({
     Media,
     Reports,
     Expenses,
-    ...(isWhatsAppEnabled() ? [Messages, Requests] : []),
   ],
   jobs: {
     autoRun: [
