@@ -75,12 +75,6 @@ const getLastMonthSales = async (payload: BasePayload, customerId: string) => {
   return sales.docs
 }
 
-const rupee = new Intl.NumberFormat('en-PK', {
-  style: 'currency',
-  currency: 'PKR',
-  minimumFractionDigits: 0,
-})
-
 const createAndSendInvoice = async (
   payload: BasePayload,
   customer: Partial<Customer>,
@@ -111,24 +105,6 @@ const createAndSendInvoice = async (
   let sent = false
   // if customer have whatsapp number
   if (whatsAppContact) {
-    // await sendInvoiceTemplate({
-    //   invoice: newInvoice,
-    //   to: whatsAppContact.contactNumber.replace('+', ''),
-    //   parameters: [
-    //     {
-    //       type: 'text',
-    //       text: customer.name!,
-    //     },
-    //     {
-    //       type: 'text',
-    //       text: rupee.format(newInvoice.totals?.total || 0),
-    //     },
-    //     {
-    //       type: 'text',
-    //       text: format(newInvoice.dueAt, 'EEE, MMM dd, yyyy'),
-    //     },
-    //   ],
-    // })
     await sendInvoice(newInvoice, whatsAppContact.contactNumber)
     sent = true
   }
