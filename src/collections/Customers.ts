@@ -263,6 +263,20 @@ export const Customers: CollectionConfig = {
                 },
               ],
             },
+            {
+              name: 'coordinates',
+              type: 'group',
+              fields: [
+                {
+                  name: 'latitude',
+                  type: 'number',
+                },
+                {
+                  name: 'longitude',
+                  type: 'number',
+                },
+              ],
+            }
           ],
         },
         {
