@@ -79,12 +79,12 @@ const createAndSendInvoice = async (
   customer: Partial<Customer>,
   transactions: Partial<Transaction>[],
   sales: Partial<Sale>[],
-  currentDate: Date
+  currentDate: Date,
 ) => {
   // Create the transactions array with proper relationTo structure
   const invoiceTransactions = [
     ...transactions.map((t) => ({ relationTo: 'transaction' as const, value: t.id! })),
-    ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! }))
+    ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! })),
   ]
 
   const newInvoice = await payload.create({
@@ -95,26 +95,21 @@ const createAndSendInvoice = async (
       dueAt: setDate(currentDate, 10).toISOString(),
     },
   })
-  
+
   if (newInvoice.status === 'paid') return
-  
+
   const whatsAppContact = customer?.contactNumbers?.find(
     (contactNumber: any) => contactNumber.type === 'whatsapp',
   )
   let sent = false
   // if customer have whatsapp number
   if (whatsAppContact) {
-   if (whatsAppContact) {
--    await sendInvoice(newInvoice, whatsAppContact.contactNumber)
     try {
       await sendInvoice(newInvoice, whatsAppContact.contactNumber)
       sent = true
     } catch (error) {
       console.error(`Failed to send invoice to ${customer.name}:`, error)
-      // Continue processing other customers
     }
-   }
-    sent = true
   }
   // update invoice so that we know that its already sent to customer
   if (sent) {
@@ -128,9 +123,7 @@ const createAndSendInvoice = async (
   }
 }
 
-export const generateAndSendInvoices = async (
-  payload: BasePayload
-) => {
+export const generateAndSendInvoices = async (payload: BasePayload) => {
   const customers = await payload.find({
     collection: 'customers',
     pagination: false,
@@ -167,7 +160,7 @@ export const generateAndSendInvoices = async (
         continue
       }
     }
-    
+
     let transactions: Partial<Transaction>[] = []
     let sales: Partial<Sale>[] = []
 
@@ -190,7 +183,7 @@ export const generateAndSendInvoices = async (
       console.log(`Skipping ${customer.name} - unknown customer type: ${customer.type}`)
       continue
     }
-    
+
     await createAndSendInvoice(payload, customer, transactions, sales, currentDate)
     console.log(`completed for ${customer.name} (${customer.type}) - ${customer.id}`)
   }
