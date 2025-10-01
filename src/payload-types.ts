@@ -130,10 +130,12 @@ export interface Config {
   globals: {
     company: Company;
     'performance-overview': PerformanceOverview;
+    whatsapp: Whatsapp;
   };
   globalsSelect: {
     company: CompanySelect<false> | CompanySelect<true>;
     'performance-overview': PerformanceOverviewSelect<false> | PerformanceOverviewSelect<true>;
+    whatsapp: WhatsappSelect<false> | WhatsappSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1697,6 +1699,22 @@ export interface PerformanceOverview {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp".
+ */
+export interface Whatsapp {
+  id: string;
+  adminPhones?:
+    | {
+        name: string;
+        phone: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "company_select".
  */
 export interface CompanySelect<T extends boolean = true> {
@@ -2201,6 +2219,22 @@ export interface PerformanceOverviewSelect<T extends boolean = true> {
               customerCount?: T;
               id?: T;
             };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsapp_select".
+ */
+export interface WhatsappSelect<T extends boolean = true> {
+  adminPhones?:
+    | T
+    | {
+        name?: T;
+        phone?: T;
         id?: T;
       };
   updatedAt?: T;
