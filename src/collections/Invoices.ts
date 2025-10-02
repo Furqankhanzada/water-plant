@@ -7,6 +7,7 @@ import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
 import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
 import { populateCustomerFieldsHook } from '@/hooks/invoices/populateCustomerFields'
 import { updatePerformanceOverview } from '@/hooks/invoices/updatePerformanceOverview'
+import { syncPaymentsWithTransactionsHook } from '@/hooks/invoices/syncPaymentsWithTransactions'
 import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
@@ -18,7 +19,7 @@ export const Invoice: CollectionConfig = {
   hooks: {
     afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
     afterOperation: [changeTransactionsStatusHook],
-    beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
+    beforeChange: [syncPaymentsWithTransactionsHook, calculateAmountsHook, populateCustomerFieldsHook],
     beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
