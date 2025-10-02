@@ -34,6 +34,8 @@ const getLastMonthTransactions = async (payload: BasePayload, customerId: string
     select: {
       transactionAt: true,
       customer: true,
+      payment: true,
+      trip: true,
     },
   })
   return transactions.docs
@@ -87,11 +89,27 @@ const createAndSendInvoice = async (
     ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! })),
   ]
 
+  // Extract payments from transactions with trip relationship (for initial creation)
+  const payments = transactions
+    .filter(t => t.payment?.amount && t.payment.amount > 0)
+    .map(t => {
+      const payment = t.payment! // Type assertion after filter
+      return {
+        type: payment.type,
+        amount: payment.amount,
+        paidAt: payment.paidAt,
+        comments: payment.comments,
+        trip: t.trip,
+        transaction: t.id,
+      }
+    })
+
   const newInvoice = await payload.create({
     collection: 'invoice',
     data: {
       customer: customer.id!,
       transactions: invoiceTransactions,
+      payments: payments,
       dueAt: setDate(currentDate, 10).toISOString(),
     },
   })

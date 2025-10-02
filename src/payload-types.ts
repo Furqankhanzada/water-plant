@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    employee: EmployeeAuthOperations;
   };
   blocks: {};
   collections: {
@@ -134,9 +135,13 @@ export interface Config {
     whatsapp: WhatsappSelect<false> | WhatsappSelect<true>;
   };
   locale: null;
-  user: User & {
-    collection: 'users';
-  };
+  user:
+    | (User & {
+        collection: 'users';
+      })
+    | (Employee & {
+        collection: 'employee';
+      });
   jobs: {
     tasks: {
       sendEmail: TaskSendEmail;
@@ -164,6 +169,22 @@ export interface UserAuthOperations {
   unlock: {
     email: string;
     password: string;
+  };
+}
+export interface EmployeeAuthOperations {
+  forgotPassword: {
+    username: string;
+  };
+  login: {
+    password: string;
+    username: string;
+  };
+  registerFirstUser: {
+    password: string;
+    username: string;
+  };
+  unlock: {
+    username: string;
   };
 }
 /**
@@ -214,6 +235,10 @@ export interface Customer {
         id?: string | null;
       }[]
     | null;
+  coordinates?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
   transaction?: {
     docs?: (string | Transaction)[];
     hasNextPage?: boolean;
@@ -296,6 +321,15 @@ export interface Transaction {
     nextDeliveryDate?: string | null;
     priority?: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW') | null;
   };
+  payment: {
+    type?: ('online' | 'cash') | null;
+    amount: number;
+    paidAt: string;
+    /**
+     * Anything speacial that you want to mention?
+     */
+    comments?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -307,8 +341,8 @@ export interface Trip {
   id: string;
   from: string;
   areas: (string | Area)[];
-  blocks?: (string | Block)[] | null;
   bottles: number;
+  blocks?: (string | Block)[] | null;
   tripAt: string;
   employee: (string | Employee)[];
   /**
@@ -338,6 +372,22 @@ export interface Employee {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+  email?: string | null;
+  username: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -457,6 +507,18 @@ export interface Invoice {
   sent?: boolean | null;
   payments?:
     | {
+        /**
+         * Trip associated with this payment
+         */
+        trip?: (string | null) | Trip;
+        /**
+         * Employee who received/processed this payment
+         */
+        employee?: (string | null) | Employee;
+        /**
+         * Transaction associated with this payment
+         */
+        transaction?: (string | null) | Transaction;
         type?: ('online' | 'cash') | null;
         amount: number;
         paidAt: string;
@@ -703,10 +765,15 @@ export interface PayloadLockedDocument {
         value: string | PayloadJob;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: string | User;
+      }
+    | {
+        relationTo: 'employee';
+        value: string | Employee;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -716,10 +783,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: string;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: string | User;
+      }
+    | {
+        relationTo: 'employee';
+        value: string | Employee;
+      };
   key?: string | null;
   value?:
     | {
@@ -837,6 +909,12 @@ export interface CustomersSelect<T extends boolean = true> {
         contactNumber?: T;
         id?: T;
       };
+  coordinates?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
   transaction?: T;
   sales?: T;
   invoice?: T;
@@ -872,8 +950,8 @@ export interface BlocksSelect<T extends boolean = true> {
 export interface TripsSelect<T extends boolean = true> {
   from?: T;
   areas?: T;
-  blocks?: T;
   bottles?: T;
+  blocks?: T;
   tripAt?: T;
   employee?: T;
   status?: T;
@@ -895,6 +973,21 @@ export interface EmployeeSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+  email?: T;
+  username?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -925,6 +1018,14 @@ export interface TransactionSelect<T extends boolean = true> {
         daysUntilDelivery?: T;
         nextDeliveryDate?: T;
         priority?: T;
+      };
+  payment?:
+    | T
+    | {
+        type?: T;
+        amount?: T;
+        paidAt?: T;
+        comments?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1005,6 +1106,9 @@ export interface InvoiceSelect<T extends boolean = true> {
   payments?:
     | T
     | {
+        trip?: T;
+        employee?: T;
+        transaction?: T;
         type?: T;
         amount?: T;
         paidAt?: T;

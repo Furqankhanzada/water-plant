@@ -5,6 +5,8 @@ export const checkTransactionDeletion: CollectionBeforeDeleteHook = async ({ req
   const invoices = await req.payload.find({
     collection: 'invoice',
     where: {
+      // TODO: Update query for polymorphic transactions structure
+      // Should use: and: [{ 'transactions.relationTo': { equals: 'transaction' } }, { 'transactions.value': { equals: id } }]
       transactions: { in: [id] }
     },
     limit: 1,
