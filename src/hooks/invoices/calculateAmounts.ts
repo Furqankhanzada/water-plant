@@ -1,4 +1,4 @@
-import { Invoice } from '@/payload-types'
+import { Customer, Invoice } from '@/payload-types'
 import type { CollectionBeforeChangeHook } from 'payload'
 
 /**
@@ -49,6 +49,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
       },
     },
     pagination: false,
+    depth: 0
   })
 
   const sales = await payload.find({
@@ -59,6 +60,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
       },
     },
     pagination: false,
+    depth: 0
   })
 
   const invoices = await payload.find({
@@ -76,11 +78,17 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
     },
     limit: 1,
     sort: '-dueAt',
-    depth: 0,
+    depth: 1,
     select: {
+      customer: true,
       advanceAmount: true,
       remainingAmount: true,
       totals: true,
+    },
+    populate: {
+      customers: {
+        balance: true
+      }
     },
     pagination: false,
   })
@@ -91,6 +99,16 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
   if (invoices.docs.length) {
     const previousInvoice = invoices.docs[0]
     previous = (previousInvoice.totals?.balance || 0)
+  } else {
+    const customer = await payload.findByID({ 
+      collection: 'customers',
+      id: data.customer as string,
+      depth: 0,
+      select: {
+        balance: true
+      }
+    })
+    previous = customer.balance || 0
   }
 
   // Calculate transactions total from multiple transactions
