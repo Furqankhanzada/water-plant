@@ -68,6 +68,7 @@ export default buildConfig({
     Reports,
     Expenses,
   ],
+  cors: ['http://localhost:8081'],
   jobs: {
     autoRun: [
       {
