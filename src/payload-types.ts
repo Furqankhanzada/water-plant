@@ -512,10 +512,6 @@ export interface Invoice {
          */
         trip?: (string | null) | Trip;
         /**
-         * Employee who received/processed this payment
-         */
-        employee?: (string | null) | Employee;
-        /**
          * Transaction associated with this payment
          */
         transaction?: (string | null) | Transaction;
@@ -1107,7 +1103,6 @@ export interface InvoiceSelect<T extends boolean = true> {
     | T
     | {
         trip?: T;
-        employee?: T;
         transaction?: T;
         type?: T;
         amount?: T;

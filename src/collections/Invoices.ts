@@ -325,15 +325,6 @@ export const Invoice: CollectionConfig = {
           },
         },
         {
-          name: 'employee',
-          type: 'relationship',
-          relationTo: 'employee',
-          admin: {
-            condition: (_, siblingData) => Boolean(siblingData?.employee),
-            description: 'Employee who received/processed this payment',
-          },
-        },
-        {
           name: 'transaction',
           type: 'relationship',
           relationTo: 'transaction',

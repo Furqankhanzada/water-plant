@@ -2,10 +2,52 @@ import { type CollectionAfterChangeHook } from 'payload'
 import { Transaction } from '@/payload-types'
 
 /**
+ * Updates invoice payments based on transaction payment changes
+ */
+const updateInvoicePayments = (invoicePayments: any[] | undefined | null, transaction: Transaction) => {
+  if (!invoicePayments) return []
+
+  const transactionId = transaction.id
+  const paymentAmount = transaction.payment?.amount || 0
+  const hasValidPayment = paymentAmount > 0
+
+  const basePayment = {
+    ...transaction.payment,
+    trip: transaction.trip,
+    transaction: transactionId
+  }
+
+  console.log("basePayment", basePayment)
+
+  // Update existing payments or remove them
+  const updatedPayments = invoicePayments
+    .map(payment => {
+      return payment.transaction === transactionId
+        ? hasValidPayment
+          ? { ...payment, ...basePayment }
+          : null
+        : payment
+    })
+    .filter(Boolean)
+
+  // Add new payment if transaction has valid payment and no existing payment
+  const isExists = invoicePayments.some(p => p.transaction === transactionId)
+  const createNewPayment = !isExists && hasValidPayment
+
+  if (createNewPayment) {
+    updatedPayments.push({ ...basePayment })
+  }
+
+  console.log("updatedPayments", updatedPayments)
+
+  return updatedPayments
+}
+
+/**
  * Hook to sync transaction payment updates with invoice payments.
  *
  * When a transaction's payment is updated:
- * - Find a invoice that contain this transaction
+ * - Find invoices that contain this transaction
  * - Update the corresponding payment in those invoices
  */
 export const syncPaymentWithInvoicesHook: CollectionAfterChangeHook<Transaction> = async ({
@@ -14,19 +56,11 @@ export const syncPaymentWithInvoicesHook: CollectionAfterChangeHook<Transaction>
   operation,
   req: { payload },
 }) => {
-  // Only run on updates where payment has changed
-  if (operation !== 'update' || !previousDoc) {
-    return doc
-  }
+  // Early returns for non-update operations or unchanged payments
+  if (operation !== 'update' || !previousDoc) return doc
+  if (JSON.stringify(doc.payment) === JSON.stringify(previousDoc.payment)) return doc
 
-  // Check if payment has actually changed
-  const paymentChanged = JSON.stringify(doc.payment) !== JSON.stringify(previousDoc.payment)
-
-  if (!paymentChanged) {
-    return doc
-  }
-
-  // Find all invoices that contain this transaction
+  // Find invoices containing this transaction
   const invoices = await payload.find({
     collection: 'invoice',
     where: {
@@ -36,38 +70,19 @@ export const syncPaymentWithInvoicesHook: CollectionAfterChangeHook<Transaction>
       ]
     },
     depth: 0,
-    select: {
-      id: true,
-      payments: true,
-      transactions: true,
-    },
+    select: { id: true, payments: true },
   })
 
   // Update each invoice's payments
-  for (const invoice of invoices.docs) {
-    const updatedPayments =
-      invoice.payments?.map((payment) => {
-        // Check if this payment is associated with our transaction
-        // We'll use transaction ID to match since payments are created from transactions
-        if (payment.transaction === doc.id) {
-          return {
-            ...doc.payment,
-          }
-        }
-        return payment
-      }) || []
-
-    // Update the invoice with the modified payments
-    await payload.update({
-      collection: 'invoice',
-      id: invoice.id,
-      data: {
-        payments: updatedPayments,
-      },
-    })
-  }
-
-  console.log(`✅ Synced payment for transaction ${doc.id} with ${invoices.docs.length} invoices`)
+  await Promise.all(
+    invoices.docs.map(invoice =>
+      payload.update({
+        collection: 'invoice',
+        id: invoice.id,
+        data: { payments: updateInvoicePayments(invoice.payments, doc) },
+      })
+    )
+  )
 
   return doc
 }
