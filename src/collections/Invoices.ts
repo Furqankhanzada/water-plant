@@ -313,69 +313,12 @@ export const Invoice: CollectionConfig = {
     },
     {
       name: 'payments',
-      type: 'array',
-      fields: [
-        {
-          name: 'trip',
-          type: 'relationship',
-          relationTo: 'trips',
-          admin: {
-            readOnly: true,
-            condition: (_, siblingData) => Boolean(siblingData?.trip),
-            description: 'Trip associated with this payment',
-          },
-        },
-        {
-          name: 'transaction',
-          type: 'relationship',
-          relationTo: 'transaction',
-          admin: {
-            readOnly: true,
-            condition: (_, siblingData) => Boolean(siblingData?.transaction),
-            description: 'Transaction associated with this payment',
-          },
-        },
-        {
-          name: 'type',
-          type: 'select',
-          defaultValue: 'cash',
-          options: [
-            {
-              label: 'Online',
-              value: 'online',
-            },
-            {
-              label: 'Cash',
-              value: 'cash',
-            },
-          ],
-        },
-        {
-          name: 'amount',
-          type: 'number',
-          defaultValue: 0,
-          required: true,
-        },
-        {
-          name: 'paidAt',
-          type: 'date',
-          required: true,
-          defaultValue: () => new Date(),
-          admin: {
-            date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
-            },
-          },
-        },
-        {
-          name: 'comments',
-          type: 'textarea',
-          admin: {
-            description: 'Anything speacial that you want to mention?',
-          },
-        },
-      ],
+      type: 'relationship',
+      relationTo: 'payment',
+      hasMany: true,
+      admin: {
+        description: 'Payments associated with this invoice',
+      },
     },
     {
       label: 'Advance Features',
