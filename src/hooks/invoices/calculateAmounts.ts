@@ -86,7 +86,6 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
   })
 
   let previous = 0
-  let paid = 0;
   let other = 0;
   if (invoices.docs.length) {
     const previousInvoice = invoices.docs[0]
@@ -110,11 +109,21 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
     data.lost.total = 0
   }
 
-  if (data.payments) {
-    paid = data.payments.reduce((sum: number, payment: { amount: number }) => {
-      return sum + payment.amount
-    }, 0)
-  }
+  // Calculate paid amount from Payment documents
+  const payments = await payload.find({
+    collection: 'payment',
+    where: {
+      id: {
+        in: data.payments || [],
+      },
+    },
+    pagination: false,
+    select: {
+      amount: true,
+    },
+  })
+
+  const paid = payments.docs.reduce((sum, payment) => sum + payment.amount, 0)
 
   const subtotal = transactionsTotalAmount + salesTotalAmount;
   const net = subtotal - (data.totals?.discount || 0);
@@ -123,7 +132,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
   data.totals = {
     ...data.totals,
     subtotal,
-    net, 
+    net,
     previous,
     other,
     total,
