@@ -186,6 +186,23 @@ export const calculateGeographicCollection = async (
           preserveNullAndEmptyArrays: true,
         },
       },
+      // Calculate remaining amount before payments are unwound so we only count each invoice once
+      {
+        $addFields: {
+          remainingAmount: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ['$isLatest', true] },
+                  { $in: ['$status', ['unpaid', 'partially-paid']] },
+                ],
+              },
+              then: '$totals.balance',
+              else: 0,
+            },
+          },
+        },
+      },
       // Unwind payments for collected amount calculation
       {
         $unwind: {
@@ -210,20 +227,16 @@ export const calculateGeographicCollection = async (
               else: 0,
             },
           },
-          // Calculate remaining amount (only for latest invoices that are unpaid/partially paid)
-          // This ensures we only count outstanding amounts from the most recent invoice per customer
-          remainingAmount: {
-            $cond: {
-              if: {
-                $and: [
-                  { $eq: ['$isLatest', true] }, // Only latest invoices per customer
-                  { $in: ['$status', ['unpaid', 'partially-paid']] },
-                ],
-              },
-              then: '$totals.balance',
-              else: 0,
-            },
-          },
+        },
+      },
+      // Collapse payment rows back to a single invoice so remaining balance isn't duplicated
+      {
+        $group: {
+          _id: '$_id',
+          areaInfo: { $first: '$areaInfo' },
+          blockInfo: { $first: '$blockInfo' },
+          collected: { $sum: '$collectedAmount' },
+          remaining: { $first: '$remainingAmount' },
         },
       },
       // Group by area and block
@@ -235,8 +248,8 @@ export const calculateGeographicCollection = async (
             blockId: '$blockInfo._id',
             blockName: '$blockInfo.name',
           },
-          collected: { $sum: '$collectedAmount' },
-          remaining: { $sum: '$remainingAmount' },
+          collected: { $sum: '$collected' },
+          remaining: { $sum: '$remaining' },
         },
       },
       // Group by area to aggregate block data
