@@ -77,6 +77,7 @@ export interface Config {
     transaction: Transaction;
     sales: Sale;
     invoice: Invoice;
+    payment: Payment;
     media: Media;
     reports: Report;
     expenses: Expense;
@@ -112,6 +113,7 @@ export interface Config {
     transaction: TransactionSelect<false> | TransactionSelect<true>;
     sales: SalesSelect<false> | SalesSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
+    payment: PaymentSelect<false> | PaymentSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
     expenses: ExpensesSelect<false> | ExpensesSelect<true>;
@@ -539,6 +541,43 @@ export interface Invoice {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment".
+ */
+export interface Payment {
+  id: string;
+  /**
+   * Customer who made the payment
+   */
+  customer: string | Customer;
+  /**
+   * Associated invoice (only latest invoice shown)
+   */
+  invoice: string | Invoice;
+  /**
+   * Payment method
+   */
+  type: 'cash' | 'online';
+  /**
+   * Payment amount
+   */
+  amount: number;
+  /**
+   * Date when payment was received
+   */
+  paidAt: string;
+  /**
+   * Additional notes or comments about the payment
+   */
+  comments?: string | null;
+  /**
+   * Associated trip (if payment was made during delivery)
+   */
+  trip?: (string | null) | Trip;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -743,6 +782,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'invoice';
         value: string | Invoice;
+      } | null)
+    | ({
+        relationTo: 'payment';
+        value: string | Payment;
       } | null)
     | ({
         relationTo: 'media';
@@ -1123,6 +1166,21 @@ export interface InvoiceSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment_select".
+ */
+export interface PaymentSelect<T extends boolean = true> {
+  customer?: T;
+  invoice?: T;
+  type?: T;
+  amount?: T;
+  paidAt?: T;
+  comments?: T;
+  trip?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

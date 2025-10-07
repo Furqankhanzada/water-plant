@@ -23,6 +23,7 @@ export const Invoice: CollectionConfig = {
     beforeDelete: [checkInvoiceDeletion],
   },
   admin: {
+    useAsTitle: 'createdAt',
     defaultColumns: [
       'customer',
       'status',
