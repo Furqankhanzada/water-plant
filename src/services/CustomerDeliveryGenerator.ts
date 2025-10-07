@@ -356,12 +356,6 @@ export class CustomerDeliveryGenerator {
       },
     }
 
-    // Exclude customers who received water more than 2 days ago
-    const excludeRecentDeliveries = {
-      $match: {
-        daysSinceLastDelivery: { $gt: 2 },
-      },
-    }
 
     // Compute coverage from last delivery (with buffer bottles)
     const computeCoverageFromLastDelivery = {
@@ -408,6 +402,7 @@ export class CustomerDeliveryGenerator {
         priority: {
           $switch: {
             branches: [
+              { case: { $lte: ['$daysSinceLastDelivery', 2] }, then: 'LOW' },
               { case: { $eq: ['$isDeliveryFrequencyUrgent', true] }, then: 'URGENT' },
               { case: { $lte: ['$daysUntilDelivery', 1] }, then: 'URGENT' },
               { case: { $lte: ['$daysUntilDelivery', 2] }, then: 'HIGH' },
@@ -446,7 +441,6 @@ export class CustomerDeliveryGenerator {
       calculateRemainingBottles,
       computeDaysSinceLastDelivery,
       checkDeliveryFrequencyUrgency,
-      excludeRecentDeliveries,
       computeCoverageFromLastDelivery,
       computeDaysUntilDelivery,
       computeDeliveryAnalytics,
