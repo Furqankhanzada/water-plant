@@ -9,9 +9,6 @@ export const Payment: CollectionConfig = {
     group: 'Financial',
   },
   access: {
-    read: isAdmin,
-    create: isAdmin,
-    update: isAdmin,
     delete: isAdmin,
   },
   fields: [
