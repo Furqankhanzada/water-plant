@@ -11,7 +11,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
     },
     {
       $set: {
-        deliveryFrequencyDays: 4,
+        deliveryFrequencyDays: 0,
       },
     },
   )

@@ -177,6 +177,12 @@ export const insertCustomersTransactions = async (
         status: 'unpaid',
         bottleGiven: 0,
         bottleTaken: 0,
+        payment: {
+          type: 'cash',
+          amount: 0,
+          paidAt: new Date(tripResult.tripAt).toISOString(),
+          comments: '',
+        },
         total: 0,
         analytics: analytics,
         transactionAt: new Date(tripResult.tripAt).toISOString(),
