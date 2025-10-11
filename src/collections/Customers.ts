@@ -343,6 +343,27 @@ export const Customers: CollectionConfig = {
             },
           ],
         },
+        {
+          label: 'Payments',
+          fields: [
+            {
+              name: 'payments',
+              type: 'join',
+              on: 'customer',
+              collection: 'payments',
+              defaultSort: '-createdAt',
+              admin: {
+                defaultColumns: [
+                  'amount',
+                  'type',
+                  'paidAt',
+                  'invoice',
+                  'trip',
+                ],
+              },
+            },
+          ],
+        },
       ],
     },
   ],
