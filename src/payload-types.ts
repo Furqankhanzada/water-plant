@@ -77,7 +77,7 @@ export interface Config {
     transaction: Transaction;
     sales: Sale;
     invoice: Invoice;
-    payment: Payment;
+    payments: Payment;
     media: Media;
     reports: Report;
     expenses: Expense;
@@ -92,6 +92,7 @@ export interface Config {
       transaction: 'transaction';
       sales: 'sales';
       invoice: 'invoice';
+      payments: 'payments';
     };
     areas: {
       block: 'blocks';
@@ -101,6 +102,10 @@ export interface Config {
     };
     trips: {
       transactions: 'transaction';
+      payments: 'payments';
+    };
+    invoice: {
+      paymentRecords: 'payments';
     };
   };
   collectionsSelect: {
@@ -113,7 +118,7 @@ export interface Config {
     transaction: TransactionSelect<false> | TransactionSelect<true>;
     sales: SalesSelect<false> | SalesSelect<true>;
     invoice: InvoiceSelect<false> | InvoiceSelect<true>;
-    payment: PaymentSelect<false> | PaymentSelect<true>;
+    payments: PaymentsSelect<false> | PaymentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
     expenses: ExpensesSelect<false> | ExpensesSelect<true>;
@@ -256,6 +261,11 @@ export interface Customer {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  payments?: {
+    docs?: (string | Payment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -323,15 +333,6 @@ export interface Transaction {
     nextDeliveryDate?: string | null;
     priority?: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW') | null;
   };
-  payment: {
-    type?: ('online' | 'cash') | null;
-    amount: number;
-    paidAt: string;
-    /**
-     * Anything speacial that you want to mention?
-     */
-    comments?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -354,6 +355,11 @@ export interface Trip {
   priority: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW')[];
   transactions?: {
     docs?: (string | Transaction)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  payments?: {
+    docs?: (string | Payment)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
@@ -390,6 +396,133 @@ export interface Employee {
       }[]
     | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: string;
+  /**
+   * Customer who made the payment
+   */
+  customer: string | Customer;
+  /**
+   * Associated invoice (only latest invoice shown)
+   */
+  invoice: string | Invoice;
+  /**
+   * Payment method
+   */
+  type: 'cash' | 'online';
+  /**
+   * Payment amount
+   */
+  amount: number;
+  /**
+   * Date when payment was received
+   */
+  paidAt: string;
+  /**
+   * Associated trip (if payment was made during delivery)
+   */
+  trip?: (string | null) | Trip;
+  /**
+   * Additional notes or comments about the payment
+   */
+  comments?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoice".
+ */
+export interface Invoice {
+  id: string;
+  isLatest?: boolean | null;
+  customer: string | Customer;
+  /**
+   * Automatically populated from customer area
+   */
+  area?: (string | null) | Area;
+  /**
+   * Automatically populated from customer block
+   */
+  block?: (string | null) | Block;
+  transactions: (
+    | {
+        relationTo: 'transaction';
+        value: string | Transaction;
+      }
+    | {
+        relationTo: 'sales';
+        value: string | Sale;
+      }
+  )[];
+  /**
+   * Payments associated with this invoice
+   */
+  payments?: (string | Payment)[] | null;
+  status?: ('paid' | 'unpaid' | 'partially-paid') | null;
+  netTotal?: number | null;
+  /**
+   * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
+   */
+  previousBalance?: number | null;
+  /**
+   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
+   */
+  previousAdvanceAmount?: number | null;
+  dueAmount?: number | null;
+  paidAmount?: number | null;
+  /**
+   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
+   */
+  advanceAmount?: number | null;
+  /**
+   * Customer needs to pay this amount to clear billig/invoice.
+   */
+  remainingAmount?: number | null;
+  /**
+   * Calculated totals for the sale
+   */
+  totals?: {
+    subtotal?: number | null;
+    discount?: number | null;
+    net?: number | null;
+    tax?: number | null;
+    previous?: number | null;
+    /**
+     * Bottles lost/Damaged/Other
+     */
+    other?: number | null;
+    /**
+     * Final amount that customer needs to pay
+     */
+    total?: number | null;
+    paid?: number | null;
+    balance?: number | null;
+  };
+  paidAt?: string | null;
+  dueAt: string;
+  sent?: boolean | null;
+  lost?: {
+    count?: number | null;
+    amount?: number | null;
+    total?: number | null;
+  };
+  lostBottlesCount?: number | null;
+  lostBottleAmount?: number | null;
+  lostBottlesTotalAmount?: number | null;
+  paymentRecords?: {
+    docs?: (string | Payment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -437,144 +570,6 @@ export interface Sale {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "invoice".
- */
-export interface Invoice {
-  id: string;
-  isLatest?: boolean | null;
-  customer: string | Customer;
-  /**
-   * Automatically populated from customer area
-   */
-  area?: (string | null) | Area;
-  /**
-   * Automatically populated from customer block
-   */
-  block?: (string | null) | Block;
-  transactions: (
-    | {
-        relationTo: 'transaction';
-        value: string | Transaction;
-      }
-    | {
-        relationTo: 'sales';
-        value: string | Sale;
-      }
-  )[];
-  status?: ('paid' | 'unpaid' | 'partially-paid') | null;
-  netTotal?: number | null;
-  /**
-   * This field calculates automaticly based on previous invoice and you should add previous balance only in first invoice. ( Previous months balance which customer needs to pay )
-   */
-  previousBalance?: number | null;
-  /**
-   * Customer paid more then invoice amount in previous month which will be adjust on this invoice.
-   */
-  previousAdvanceAmount?: number | null;
-  dueAmount?: number | null;
-  paidAmount?: number | null;
-  /**
-   * Customer paid more then invoice amount which will be adjust on next billig/invoice.
-   */
-  advanceAmount?: number | null;
-  /**
-   * Customer needs to pay this amount to clear billig/invoice.
-   */
-  remainingAmount?: number | null;
-  /**
-   * Calculated totals for the sale
-   */
-  totals?: {
-    subtotal?: number | null;
-    discount?: number | null;
-    net?: number | null;
-    tax?: number | null;
-    previous?: number | null;
-    /**
-     * Bottles lost/Damaged/Other
-     */
-    other?: number | null;
-    /**
-     * Final amount that customer needs to pay
-     */
-    total?: number | null;
-    paid?: number | null;
-    balance?: number | null;
-  };
-  paidAt?: string | null;
-  dueAt: string;
-  sent?: boolean | null;
-  payments?:
-    | {
-        /**
-         * Trip associated with this payment
-         */
-        trip?: (string | null) | Trip;
-        /**
-         * Transaction associated with this payment
-         */
-        transaction?: (string | null) | Transaction;
-        type?: ('online' | 'cash') | null;
-        amount: number;
-        paidAt: string;
-        /**
-         * Anything speacial that you want to mention?
-         */
-        comments?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  lost?: {
-    count?: number | null;
-    amount?: number | null;
-    total?: number | null;
-  };
-  lostBottlesCount?: number | null;
-  lostBottleAmount?: number | null;
-  lostBottlesTotalAmount?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment".
- */
-export interface Payment {
-  id: string;
-  /**
-   * Customer who made the payment
-   */
-  customer: string | Customer;
-  /**
-   * Associated invoice (only latest invoice shown)
-   */
-  invoice: string | Invoice;
-  /**
-   * Payment method
-   */
-  type: 'cash' | 'online';
-  /**
-   * Payment amount
-   */
-  amount: number;
-  /**
-   * Date when payment was received
-   */
-  paidAt: string;
-  /**
-   * Additional notes or comments about the payment
-   */
-  comments?: string | null;
-  /**
-   * Associated trip (if payment was made during delivery)
-   */
-  trip?: (string | null) | Trip;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -784,7 +779,7 @@ export interface PayloadLockedDocument {
         value: string | Invoice;
       } | null)
     | ({
-        relationTo: 'payment';
+        relationTo: 'payments';
         value: string | Payment;
       } | null)
     | ({
@@ -957,6 +952,7 @@ export interface CustomersSelect<T extends boolean = true> {
   transaction?: T;
   sales?: T;
   invoice?: T;
+  payments?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -996,6 +992,7 @@ export interface TripsSelect<T extends boolean = true> {
   status?: T;
   priority?: T;
   transactions?: T;
+  payments?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1058,14 +1055,6 @@ export interface TransactionSelect<T extends boolean = true> {
         nextDeliveryDate?: T;
         priority?: T;
       };
-  payment?:
-    | T
-    | {
-        type?: T;
-        amount?: T;
-        paidAt?: T;
-        comments?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1118,6 +1107,7 @@ export interface InvoiceSelect<T extends boolean = true> {
   area?: T;
   block?: T;
   transactions?: T;
+  payments?: T;
   status?: T;
   netTotal?: T;
   previousBalance?: T;
@@ -1142,17 +1132,6 @@ export interface InvoiceSelect<T extends boolean = true> {
   paidAt?: T;
   dueAt?: T;
   sent?: T;
-  payments?:
-    | T
-    | {
-        trip?: T;
-        transaction?: T;
-        type?: T;
-        amount?: T;
-        paidAt?: T;
-        comments?: T;
-        id?: T;
-      };
   lost?:
     | T
     | {
@@ -1163,22 +1142,23 @@ export interface InvoiceSelect<T extends boolean = true> {
   lostBottlesCount?: T;
   lostBottleAmount?: T;
   lostBottlesTotalAmount?: T;
+  paymentRecords?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment_select".
+ * via the `definition` "payments_select".
  */
-export interface PaymentSelect<T extends boolean = true> {
+export interface PaymentsSelect<T extends boolean = true> {
   customer?: T;
   invoice?: T;
   type?: T;
   amount?: T;
   paidAt?: T;
-  comments?: T;
   trip?: T;
+  comments?: T;
   updatedAt?: T;
   createdAt?: T;
 }
