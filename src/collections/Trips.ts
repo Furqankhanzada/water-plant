@@ -157,7 +157,6 @@ export const Trips: CollectionConfig = {
         defaultColumns: [
           'transactionAt',
           'customer',
-          'payment.amount',
           'bottleGiven',
           'bottleTaken',
           'lastDelivered',
@@ -165,6 +164,21 @@ export const Trips: CollectionConfig = {
           'weeklyConsumption',
           'daysUntilDelivery',
           'consumptionRate',
+        ],
+      },
+    },
+    {
+      name: 'payments',
+      type: 'join',
+      on: 'trip',
+      collection: 'payments',
+      admin: {
+        defaultColumns: [
+          'customer',
+          'amount',
+          'type',
+          'paidAt',
+          'invoice',
         ],
       },
     },
