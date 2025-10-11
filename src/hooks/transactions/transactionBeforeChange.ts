@@ -24,17 +24,13 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
 }) => {
   const { payload, headers } = req
 
-  // ----------------------------
   // Extract customer ID
-  // ----------------------------
   const customerId = typeof data.customer === 'string' ? data.customer : data.customer?.id
 
   // If no customer is linked, skip all processing
   if (!customerId) return data
 
-  // ----------------------------
   // Fetch customer record (once only)
-  // ----------------------------
   const customer = await payload.findByID({
     collection: 'customers',
     id: customerId,
@@ -46,9 +42,7 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
     },
   })
 
-  // ----------------------------
   // ✅ 1. Prevent duplicate trip transactions (on create only)
-  // ----------------------------
   if (operation === 'create' && data.trip) {
     const existing = await payload.find({
       collection: 'transaction',
@@ -68,9 +62,7 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
     }
   }
 
-  // ----------------------------
   // ✅ 2. Calculate remaining bottles
-  // ----------------------------
   // Find the most recent transaction before this one
   const previousTransaction = await payload.find({
     collection: 'transaction',
@@ -92,14 +84,10 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
       previousTransaction.docs[0].remainingBottles + data.bottleGiven - data.bottleTaken
   }
 
-  // ----------------------------
   // ✅ 3. Calculate total price for this transaction
-  // ----------------------------
   data.total = data.bottleGiven * customer.rate
 
-  // ----------------------------
   // ✅ 4. Attach customer analytics
-  // ----------------------------
 
   const hasValidAnalytics = data.analytics && Object.values(data.analytics).some(Boolean)
 
@@ -107,9 +95,7 @@ export const transactionBeforeChange: CollectionBeforeChangeHook = async ({
     data.analytics = await customerDeliveryGenerator.fetchAnalyticsByCustomerId(customerId, payload)
   }
 
-  // ----------------------------
   // ✅ 5. Send update email (only if bottle counts changed)
-  // ----------------------------
   const bottlesChanged = data.bottleGiven > 0 || data.bottleTaken > 0
 
   const valuesDifferent =

@@ -33,7 +33,7 @@ const getLastMonthTransactions = async (payload: BasePayload, customerId: string
     depth: 0,
     select: {
       transactionAt: true,
-      customer: true,
+      customer: true
     },
   })
   return transactions.docs
@@ -87,6 +87,7 @@ const createAndSendInvoice = async (
     ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! })),
   ]
 
+  // Create the invoice first without payments
   const newInvoice = await payload.create({
     collection: 'invoice',
     data: {

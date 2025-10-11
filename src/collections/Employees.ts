@@ -6,6 +6,10 @@ export const Employee: CollectionConfig = {
   slug: 'employee',
   disableDuplicate: true,
   trash: true,
+  auth: {
+    loginWithUsername: true,
+    tokenExpiration: 60 * 60 * 24 * 30, // 30 days in seconds
+  },
   admin: {
     useAsTitle: 'name',
     components: {
