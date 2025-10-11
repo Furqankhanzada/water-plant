@@ -1,15 +1,23 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
+import { syncPaymentWithInvoiceHook } from '@/hooks/payments/syncPaymentWithInvoice'
+import { checkPaymentDeletion } from '@/hooks/payments/checkPaymentDeletion'
+import { injectInvoiceIdHook } from '@/hooks/payments/injectInvoiceId'
 
 export const Payment: CollectionConfig = {
-  slug: 'payment',
+  slug: 'payments',
   admin: {
-    useAsTitle: 'id',
-    defaultColumns: ['id', 'customer', 'amount', 'type', 'paidAt'],
+    useAsTitle: 'paidAt',
+    defaultColumns: ['customer', 'amount', 'type', 'paidAt'],
     group: 'Financial',
   },
   access: {
     delete: isAdmin,
+  },
+  hooks: {
+    beforeChange: [injectInvoiceIdHook],
+    afterChange: [syncPaymentWithInvoiceHook],
+    beforeDelete: [checkPaymentDeletion],
   },
   fields: [
     // Required Relationships
@@ -29,7 +37,6 @@ export const Payment: CollectionConfig = {
           name: 'invoice',
           type: 'relationship',
           relationTo: 'invoice',
-          required: true,
           filterOptions: ({ data }) => {
             if (!data?.customer) {
               return false // Return no results if no customer selected
@@ -40,6 +47,7 @@ export const Payment: CollectionConfig = {
             }
           },
           admin: {
+            hidden: true,
             description: 'Associated invoice (only latest invoice shown)',
           },
         },
@@ -86,24 +94,19 @@ export const Payment: CollectionConfig = {
       },
     },
     {
+      name: 'trip',
+      type: 'relationship',
+      relationTo: 'trips',
+      admin: {
+        description: 'Associated trip (if payment was made during delivery)',
+      },
+    },
+    {
       name: 'comments',
       type: 'textarea',
       admin: {
         description: 'Additional notes or comments about the payment',
       },
-    },
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'trip',
-          type: 'relationship',
-          relationTo: 'trips',
-          admin: {
-            description: 'Associated trip (if payment was made during delivery)',
-          },
-        },
-      ],
     },
   ],
 }
