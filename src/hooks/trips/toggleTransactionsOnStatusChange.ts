@@ -27,14 +27,13 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook<Tr
   if (data.status === 'complete') {
     const tripId = originalDoc.id
 
-    // Delete placeholder transactions (only if no payment or payment amount is 0)
+    // Delete placeholder transactions (0 bottles given and taken)
     await payload.delete({
       collection: 'transaction',
       where: {
         trip: { equals: tripId },
         bottleGiven: { equals: 0 },
         bottleTaken: { equals: 0 },
-        or: [{ 'payment.amount': { exists: false } }, { 'payment.amount': { less_than_equal: 0 } }],
       },
     })
   }

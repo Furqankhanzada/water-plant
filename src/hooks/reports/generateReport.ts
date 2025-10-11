@@ -20,13 +20,10 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
     },
   ])
 
-  const invoices = await payload.db.collections['invoice'].aggregate([
-    {
-      $unwind: '$payments',
-    },
+  const invoices = await payload.db.collections['payments'].aggregate([
     {
       $match: {
-        'payments.paidAt': {
+        paidAt: {
           $gte: from,
           $lt: to,
         },
@@ -35,7 +32,7 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
     {
       $group: {
         _id: null,
-        totalCollection: { $sum: '$payments.amount' },
+        totalCollection: { $sum: '$amount' },
       },
     },
   ])
