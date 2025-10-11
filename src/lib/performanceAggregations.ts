@@ -178,7 +178,24 @@ export const calculateGeographicCollection = async (
           preserveNullAndEmptyArrays: true,
         },
       },
-      // Lookup payments from the payment collection
+      // Calculate remaining amount before payments lookup so we only count each invoice once
+      {
+        $addFields: {
+          remainingAmount: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ['$isLatest', true] },
+                  { $in: ['$status', ['unpaid', 'partially-paid']] },
+                ],
+              },
+              then: '$totals.balance',
+              else: 0,
+            },
+          },
+        },
+      },
+      // Lookup payments from the payments collection
       {
         $lookup: {
           from: 'payments',
@@ -199,26 +216,23 @@ export const calculateGeographicCollection = async (
           as: 'paymentsInRange',
         },
       },
-      // Add fields for collected and remaining calculations
+      // Add fields for collected amount calculation
       {
         $addFields: {
           // Calculate collected amount from payments in date range
           collectedAmount: {
             $sum: '$paymentsInRange.amount',
           },
-          // Calculate remaining amount (only for latest invoices that are unpaid/partially paid)
-          remainingAmount: {
-            $cond: {
-              if: {
-                $and: [
-                  { $eq: ['$isLatest', true] },
-                  { $in: ['$status', ['unpaid', 'partially-paid']] },
-                ],
-              },
-              then: '$totals.balance',
-              else: 0,
-            },
-          },
+        },
+      },
+      // Group to ensure each invoice is counted once (avoids duplicating remaining balance)
+      {
+        $group: {
+          _id: '$_id',
+          areaInfo: { $first: '$areaInfo' },
+          blockInfo: { $first: '$blockInfo' },
+          collected: { $sum: '$collectedAmount' },
+          remaining: { $first: '$remainingAmount' },
         },
       },
       // Group by area and block
@@ -230,8 +244,8 @@ export const calculateGeographicCollection = async (
             blockId: '$blockInfo._id',
             blockName: '$blockInfo.name',
           },
-          collected: { $sum: '$collectedAmount' },
-          remaining: { $sum: '$remainingAmount' },
+          collected: { $sum: '$collected' },
+          remaining: { $sum: '$remaining' },
         },
       },
       // Group by area to aggregate block data
