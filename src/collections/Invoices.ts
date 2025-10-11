@@ -7,6 +7,7 @@ import { unsetOldLatestInvoices } from '@/hooks/invoices/unsetOldLatestInvoices'
 import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
 import { populateCustomerFieldsHook } from '@/hooks/invoices/populateCustomerFields'
 import { updatePerformanceOverview } from '@/hooks/invoices/updatePerformanceOverview'
+import { linkUnconnectedPaymentsHook } from '@/hooks/invoices/linkUnconnectedPayments'
 import { isAdmin } from './access/isAdmin'
 
 export const Invoice: CollectionConfig = {
@@ -16,7 +17,7 @@ export const Invoice: CollectionConfig = {
   disableDuplicate: true,
   disableBulkEdit: false,
   hooks: {
-    afterChange: [unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
+    afterChange: [linkUnconnectedPaymentsHook, unsetOldLatestInvoices, changeTransactionsStatusOnRemoval, updatePerformanceOverview],
     afterOperation: [changeTransactionsStatusHook],
     beforeChange: [calculateAmountsHook, populateCustomerFieldsHook],
     beforeDelete: [checkInvoiceDeletion],
@@ -108,6 +109,27 @@ export const Invoice: CollectionConfig = {
           return 'At least one transaction is required.'
         }
         return true
+      },
+    },
+    {
+      name: 'payments',
+      type: 'relationship',
+      relationTo: 'payments',
+      hasMany: true,
+      filterOptions: ({ data, id }) => {
+        if (!data?.customer) {
+          return false
+        }
+        if (!id) {
+          return false // Don't show payments for new invoices
+        }
+        return {
+          customer: { equals: data.customer },
+          invoice: { equals: id },
+        }
+      },
+      admin: {
+        description: 'Payments associated with this invoice',
       },
     },
     {
@@ -311,15 +333,6 @@ export const Invoice: CollectionConfig = {
       defaultValue: false,
     },
     {
-      name: 'payments',
-      type: 'relationship',
-      relationTo: 'payment',
-      hasMany: true,
-      admin: {
-        description: 'Payments associated with this invoice',
-      },
-    },
-    {
       label: 'Advance Features',
       type: 'collapsible',
       admin: {
@@ -377,6 +390,22 @@ export const Invoice: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'paymentRecords',
+      type: 'join',
+      on: 'invoice',
+      collection: 'payments',
+      defaultSort: '-createdAt',
+      admin: {
+        defaultColumns: [
+          'customer',
+          'amount',
+          'type',
+          'paidAt',
+          'trip',
+        ],
+      },
     },
     {
       name: 'pdf',
