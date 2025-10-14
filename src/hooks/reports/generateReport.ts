@@ -77,10 +77,10 @@ export const generateReport: CollectionBeforeChangeHook = async ({ data, req: { 
     },
   ])
 
-  data.totalCollection = invoices[0].totalCollection
-  data.totalDueAmount = customers[0].totalRemainingAmount
-  data.totalBottlesDelivered = transactions[0].totalBottlesDelivered
-  data.totalExpectedIncome = transactions[0].totalExpectedIncome
+  data.totalCollection = invoices[0]?.totalCollection || 0
+  data.totalDueAmount = customers[0]?.totalRemainingAmount || 0
+  data.totalBottlesDelivered = transactions[0]?.totalBottlesDelivered || 0
+  data.totalExpectedIncome = transactions[0]?.totalExpectedIncome || 0
   data.totalExpenses = expenses[0]?.totalExpense || 0
 
   return data
