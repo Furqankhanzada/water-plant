@@ -90,7 +90,7 @@ export const calculatePaymentMethodBreakdown = async (
       {
         $group: {
           _id: '$type',
-          total: { $sum: '$amount' },
+          total: { $sum: { $ifNull: ['$amount', 0] } },
         },
       },
     ])
@@ -221,7 +221,7 @@ export const calculateGeographicCollection = async (
         $addFields: {
           // Calculate collected amount from payments in date range
           collectedAmount: {
-            $sum: '$paymentsInRange.amount',
+            $ifNull: [{ $sum: '$paymentsInRange.amount' }, 0],
           },
         },
       },
