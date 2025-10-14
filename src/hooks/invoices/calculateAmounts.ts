@@ -55,7 +55,10 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
         collection: 'payments',
         where: {
           customer: { equals: customerId },
-          invoice: { exists: false },
+          or: [
+            { invoice: { exists: false } },
+            { invoice: { equals: null } },
+          ],
         },
         pagination: false,
         depth: 0,
