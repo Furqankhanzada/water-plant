@@ -23,26 +23,24 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook<Tr
   if (!(isUpdate && statusChanged)) {
     return data
   }
-  
-  switch (data.status) {
-    case 'complete': {
-      await payload.delete({
-        collection: 'transaction',
-        where: {
-          trip: { equals: originalDoc.id },
-          bottleGiven: { equals: 0 },
-          bottleTaken: { equals: 0 },
-        },
-      })
-      break
-    }
-    case 'inprogress': {
-      const tripCustomers = await generateTripCustomers(originalDoc, payload)
-      await insertCustomersTransactions(tripCustomers, originalDoc, payload)
-      break
-    }
-    default:
-      break
+
+  if (data.status === 'complete') {
+    const tripId = originalDoc.id
+
+    // Delete placeholder transactions (0 bottles given and taken)
+    await payload.delete({
+      collection: 'transaction',
+      where: {
+        trip: { equals: tripId },
+        bottleGiven: { equals: 0 },
+        bottleTaken: { equals: 0 },
+      },
+    })
+  }
+
+  if (data.status === 'inprogress') {
+    const tripCustomers = await generateTripCustomers(originalDoc, payload)
+    await insertCustomersTransactions(tripCustomers, originalDoc, payload)
   }
 
   return data

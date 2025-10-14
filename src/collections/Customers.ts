@@ -149,7 +149,7 @@ export const Customers: CollectionConfig = {
                 {
                   name: 'deliveryFrequencyDays',
                   type: 'number',
-                  defaultValue: 4,
+                  defaultValue: 0,
                   admin: {
                     placeholder: 'Enter number of delivery frequency days',
                     width: '50%',
@@ -263,6 +263,20 @@ export const Customers: CollectionConfig = {
                 },
               ],
             },
+            {
+              name: 'coordinates',
+              type: 'group',
+              fields: [
+                {
+                  name: 'latitude',
+                  type: 'number',
+                },
+                {
+                  name: 'longitude',
+                  type: 'number',
+                },
+              ],
+            }
           ],
         },
         {
@@ -324,6 +338,27 @@ export const Customers: CollectionConfig = {
                   'sent',
                   'pdf',
                   'sendInvoice',
+                ],
+              },
+            },
+          ],
+        },
+        {
+          label: 'Payments',
+          fields: [
+            {
+              name: 'payments',
+              type: 'join',
+              on: 'customer',
+              collection: 'payments',
+              defaultSort: '-createdAt',
+              admin: {
+                defaultColumns: [
+                  'amount',
+                  'type',
+                  'paidAt',
+                  'invoice',
+                  'trip',
                 ],
               },
             },
