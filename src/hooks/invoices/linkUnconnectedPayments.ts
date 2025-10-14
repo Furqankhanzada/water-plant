@@ -37,7 +37,10 @@ export const linkUnconnectedPaymentsHook: CollectionAfterChangeHook<Invoice> = a
     collection: 'payments',
     where: {
       id: { in: paymentIds },
-      invoice: { exists: false },
+      or: [
+        { invoice: { exists: false } },
+        { invoice: { equals: null } },
+      ],
     },
     pagination: false,
     depth: 0,
