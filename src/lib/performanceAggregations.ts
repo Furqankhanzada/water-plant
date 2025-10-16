@@ -77,11 +77,15 @@ export const calculatePaymentMethodBreakdown = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active customers only (not soft deleted or archived)
+      // Filter for active delivery customers, defaulting legacy customers without type to delivery
       {
         $match: {
           'customerInfo.status': 'active',
           'customerInfo.deletedAt': { $exists: false },
+          $or: [
+            { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
+            { 'customerInfo.type': { $exists: false } },
+          ],
         },
       },
       {
@@ -148,11 +152,15 @@ export const calculateGeographicCollection = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active customers only (not soft deleted or archived)
+      // Filter for active delivery customers, defaulting legacy customers without type to delivery
       {
         $match: {
           'customerInfo.status': 'active',
           'customerInfo.deletedAt': { $exists: false },
+          $or: [
+            { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
+            { 'customerInfo.type': { $exists: false } },
+          ],
         },
       },
       // Lookup area information
@@ -327,11 +335,15 @@ export const calculateDeliveryRevenue = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active customers only (not soft deleted or archived)
+      // Filter for active delivery customers, defaulting legacy customers without type to delivery
       {
         $match: {
           'customerInfo.status': 'active',
           'customerInfo.deletedAt': { $exists: false },
+          $or: [
+            { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
+            { 'customerInfo.type': { $exists: false } },
+          ],
         },
       },
       {
