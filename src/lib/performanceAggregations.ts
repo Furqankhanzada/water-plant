@@ -77,15 +77,11 @@ export const calculatePaymentMethodBreakdown = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active delivery customers, defaulting legacy customers without type to delivery
+      // Filter for active customers only (not soft deleted or archived)
       {
         $match: {
           'customerInfo.status': 'active',
           'customerInfo.deletedAt': { $exists: false },
-          $or: [
-            { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
-            { 'customerInfo.type': { $exists: false } },
-          ],
         },
       },
       {
