@@ -62,10 +62,13 @@ export const calculatePaymentMethodBreakdown = async (
   console.log('💳 Calculating payment method breakdown for period:', startDate.toISOString(), 'to', endDate.toISOString())
   
   try {
-    const result = await payload.db.collections['invoice'].aggregate([
+    const result = await payload.db.collections['payments'].aggregate([
       {
         $match: {
-          deletedAt: { $exists: false },
+          paidAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
         },
       },
       // Lookup customer information to filter by active customers
@@ -85,20 +88,9 @@ export const calculatePaymentMethodBreakdown = async (
         },
       },
       {
-        $unwind: '$payments',
-      },
-      {
-        $match: {
-          'payments.paidAt': {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        },
-      },
-      {
         $group: {
-          _id: '$payments.type',
-          total: { $sum: '$payments.amount' },
+          _id: '$type',
+          total: { $sum: { $ifNull: ['$amount', 0] } },
         },
       },
     ])
@@ -190,7 +182,7 @@ export const calculateGeographicCollection = async (
           preserveNullAndEmptyArrays: true,
         },
       },
-      // Calculate remaining amount before payments are unwound so we only count each invoice once
+      // Calculate remaining amount before payments lookup so we only count each invoice once
       {
         $addFields: {
           remainingAmount: {
@@ -207,33 +199,37 @@ export const calculateGeographicCollection = async (
           },
         },
       },
-      // Unwind payments for collected amount calculation
+      // Lookup payments from the payments collection
       {
-        $unwind: {
-          path: '$payments',
-          preserveNullAndEmptyArrays: true,
+        $lookup: {
+          from: 'payments',
+          let: { invoiceId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$invoice', '$$invoiceId'] },
+                    { $gte: ['$paidAt', startDate] },
+                    { $lte: ['$paidAt', endDate] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'paymentsInRange',
         },
       },
-      // Add fields for collected and remaining calculations
+      // Add fields for collected amount calculation
       {
         $addFields: {
-          // Calculate collected amount (payments within date range)
+          // Calculate collected amount from payments in date range
           collectedAmount: {
-            $cond: {
-              if: {
-                $and: [
-                  { $ne: ['$payments', null] },
-                  { $gte: ['$payments.paidAt', startDate] },
-                  { $lte: ['$payments.paidAt', endDate] },
-                ],
-              },
-              then: '$payments.amount',
-              else: 0,
-            },
+            $ifNull: [{ $sum: '$paymentsInRange.amount' }, 0],
           },
         },
       },
-      // Collapse payment rows back to a single invoice so remaining balance isn't duplicated
+      // Group to ensure each invoice is counted once (avoids duplicating remaining balance)
       {
         $group: {
           _id: '$_id',
@@ -316,10 +312,13 @@ export const calculateDeliveryRevenue = async (
   console.log('💰 Calculating delivery revenue for period:', startDate.toISOString(), 'to', endDate.toISOString())
   
   try {
-    const result = await payload.db.collections['invoice'].aggregate([
+    const result = await payload.db.collections['payments'].aggregate([
       {
         $match: {
-          deletedAt: { $exists: false },
+          paidAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
         },
       },
       // Lookup customer information to filter by active customers
@@ -343,20 +342,9 @@ export const calculateDeliveryRevenue = async (
         },
       },
       {
-        $unwind: '$payments',
-      },
-      {
-        $match: {
-          'payments.paidAt': {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        },
-      },
-      {
         $group: {
           _id: null,
-          total: { $sum: '$payments.amount' },
+          total: { $sum: '$amount' },
         },
       },
     ])
@@ -506,10 +494,13 @@ export const calculateInvoiceSalesRevenue = async (
   console.log('💰 Calculating invoice sales revenue for period:', startDate.toISOString(), 'to', endDate.toISOString())
   
   try {
-    const result = await payload.db.collections['invoice'].aggregate([
+    const result = await payload.db.collections['payments'].aggregate([
       {
         $match: {
-          deletedAt: { $exists: false },
+          paidAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
         },
       },
       // Lookup customer information to filter by active customers
@@ -535,24 +526,11 @@ export const calculateInvoiceSalesRevenue = async (
           },
         },
       },
-      // Unwind payments to process each payment
-      {
-        $unwind: '$payments',
-      },
-      // Filter for payments in the date range
-      {
-        $match: {
-          'payments.paidAt': {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        },
-      },
       // Group by customer type and sum payment amounts
       {
         $group: {
           _id: '$customerInfo.type',
-          total: { $sum: '$payments.amount' },
+          total: { $sum: '$amount' },
         },
       },
       // Project to match expected format
