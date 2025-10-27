@@ -4,6 +4,9 @@ import { endOfMonth, isSameMonth, setDate, startOfMonth, subMonths } from 'date-
 import { Transaction, Customer, Invoice, Sale } from '@/payload-types'
 import { sendInvoice } from '@/services/whatsapp'
 
+const SEND_DELAY_MS = 5 * 60 * 1000
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const getLastMonthTransactions = async (payload: BasePayload, customerId: string) => {
   const currentDate = new Date()
   const transactions = await payload.find({
@@ -121,6 +124,8 @@ const createAndSendInvoice = async (
       },
     })
   }
+
+  return sent
 }
 
 export const generateAndSendInvoices = async (payload: BasePayload) => {
@@ -184,7 +189,12 @@ export const generateAndSendInvoices = async (payload: BasePayload) => {
       continue
     }
 
-    await createAndSendInvoice(payload, customer, transactions, sales, currentDate)
+    const sent = await createAndSendInvoice(payload, customer, transactions, sales, currentDate)
     console.log(`completed for ${customer.name} (${customer.type}) - ${customer.id}`)
+
+    if (sent) {
+      console.log(`Waiting ${SEND_DELAY_MS / 1000} seconds before sending the next invoice`)
+      await delay(SEND_DELAY_MS)
+    }
   }
 }
