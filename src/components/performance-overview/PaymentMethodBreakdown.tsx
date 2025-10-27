@@ -17,8 +17,10 @@ export const PaymentMethodBreakdown: React.FC<PaymentMethodBreakdownProps> = ({
   total,
   secondaryDescription
 }) => {
-  const cashPercentage = total > 0 ? ((cash / total) * 100).toFixed(1) : '0.0'
-  const onlinePercentage = total > 0 ? ((online / total) * 100).toFixed(1) : '0.0'
+  const derivedTotal = cash + online
+  const denominator = derivedTotal > 0 ? derivedTotal : total
+  const cashPercentage = denominator > 0 ? ((cash / denominator) * 100).toFixed(1) : '0.0'
+  const onlinePercentage = denominator > 0 ? ((online / denominator) * 100).toFixed(1) : '0.0'
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
