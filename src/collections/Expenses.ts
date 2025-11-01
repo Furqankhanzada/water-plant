@@ -88,6 +88,18 @@ export const Expenses: CollectionConfig = {
           value: 'bottles',
         },
         {
+          label: 'Bottle Refils',
+          value: 'bottle_refils',
+        },
+        {
+          label: 'Commute',
+          value: 'commute',
+        },
+        {
+          label: 'Meals & Refreshments',
+          value: 'meals_refreshments',
+        },
+        {
           label: 'PSQCA',
           value: 'psqca',
         },
