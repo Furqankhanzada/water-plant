@@ -140,6 +140,7 @@ export interface Config {
   jobs: {
     tasks: {
       sendEmail: TaskSendEmail;
+      sendPendingInvoices: TaskSendPendingInvoices;
       inline: {
         input: unknown;
         output: unknown;
@@ -542,6 +543,9 @@ export interface Expense {
     | 'minerals'
     | 'bottle_caps'
     | 'bottles'
+    | 'bottle_refils'
+    | 'commute'
+    | 'meals_refreshments'
     | 'psqca';
   expenseAt: string;
   /**
@@ -603,7 +607,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'sendEmail';
+        taskSlug: 'inline' | 'sendEmail' | 'sendPendingInvoices';
         taskID: string;
         input?:
           | {
@@ -636,7 +640,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'sendEmail') | null;
+  taskSlug?: ('inline' | 'sendEmail' | 'sendPendingInvoices') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2184,6 +2188,14 @@ export interface TaskSendEmail {
       | boolean
       | null;
   };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSendPendingInvoices".
+ */
+export interface TaskSendPendingInvoices {
+  input?: unknown;
   output?: unknown;
 }
 /**

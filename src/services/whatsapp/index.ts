@@ -52,6 +52,11 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
     body: form,
   })
 
+  if(!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || 'Failed to send message')
+  }
+
   return res.json()
 }
 
@@ -60,7 +65,7 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
  * @param invoice Invoice payload
  * @param phone Phone number
  */
-export async function sendInvoice(invoice: Invoice, phone: string) {
+export async function sendInvoice(invoice: Invoice, phone: string, clientId: string) {
 
   if(!invoice) {
     throw new Error('Invoice is required')
@@ -70,13 +75,18 @@ export async function sendInvoice(invoice: Invoice, phone: string) {
     throw new Error('Phone number is required')
   }
 
-  const clientId = (await fetchWhatsAppGlobalDocument()).id
-
   if(!clientId) {
     throw new Error('Client ID is required')
   }
 
+  console.log('### process.env.URL ###', `${process.env.URL}/invoices/${invoice.id}/pdf`)
+
   const pdf = await fetch(`${process.env.URL}/invoices/${invoice.id}/pdf`)
+
+  if(!pdf.ok) {
+    throw new Error('Failed to fetch PDF')
+  }
+
   const blob = await pdf.blob()
 
   const file = {
@@ -91,6 +101,5 @@ export async function sendInvoice(invoice: Invoice, phone: string) {
     text: invoiceCaption(invoice),
     file: file,
   }
-
   return sendWhatsAppMessage(message)
 }
