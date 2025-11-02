@@ -15,6 +15,7 @@ import { PerformanceOverview } from './globals/PerformanceOverview'
 import { WhatsApp } from './globals/WhatsApp'
 
 import { sendEmailTask } from './tasks/sendEmail'
+import { sendPendingInvoicesTask } from './tasks/sendPendingInvoices'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { Areas } from './collections/Areas'
@@ -75,7 +76,7 @@ export default buildConfig({
         queue: 'default',
       },
     ],
-    tasks: [sendEmailTask],
+    tasks: [sendEmailTask, sendPendingInvoicesTask],
   },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -115,6 +116,10 @@ export default buildConfig({
     {
       scriptPath: path.resolve(dirname, 'bin/createAndSendInvoices.ts'),
       key: 'invoices',
+    },
+    {
+      scriptPath: path.resolve(dirname, 'bin/sendPendingInvoices.ts'),
+      key: 'send-pending-invoices',
     },
   ],
   onInit: () => {

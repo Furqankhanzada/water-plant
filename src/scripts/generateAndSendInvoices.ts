@@ -108,7 +108,8 @@ const createAndSendInvoice = async (
   // if customer have whatsapp number
   if (whatsAppContact) {
     try {
-      await sendInvoice(newInvoice, whatsAppContact.contactNumber)
+      const client = await payload.findGlobal({ slug: 'whatsapp' })
+      await sendInvoice(newInvoice, whatsAppContact.contactNumber, client.id)
       sent = true
     } catch (error) {
       console.error(`Failed to send invoice to ${customer.name}:`, error)

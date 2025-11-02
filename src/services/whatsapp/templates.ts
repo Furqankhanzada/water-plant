@@ -26,10 +26,19 @@ export const formatDate = (date: Date, options?: Intl.DateTimeFormatOptions): st
 }
 
 /**
- * Generate invoice filename
+ * Convert date string or Date object to Date
  */
-export const generateInvoiceFilename = (dueAt: string): string => {
-  return `${format(parseISO(dueAt), 'MMMM')}-Invoice.pdf`
+const toDate = (dateInput: string | Date): Date => {
+  return typeof dateInput === 'string' ? parseISO(dateInput) : dateInput
+}
+
+/**
+ * Generate invoice filename
+ * Handles Date objects, ISO strings, and display format strings
+ */
+export const generateInvoiceFilename = (dueAt: string | Date): string => {
+  const date = toDate(dueAt)
+  return `${format(date, 'MMMM')}-Invoice.pdf`
 }
 
 /**
@@ -76,7 +85,7 @@ export const dailySummary = (summary: any): string => {
  * Invoice caption for PDF
  */
 export const invoiceCaption = (invoice: Invoice): string => {
-  const dueDate = formatDate(parseISO(invoice.dueAt))
+  const dueDate = formatDate(toDate(invoice.dueAt as string | Date))
 
   if (typeof invoice.customer !== 'object') {
     throw new Error('Customer is required and must have name')

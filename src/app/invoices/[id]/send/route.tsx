@@ -35,7 +35,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   if (!whatsAppContact?.contactNumber)
     return Response.json({ message: 'No WhatsApp Number Found In Customer' })
 
-  await sendInvoice(invoice, whatsAppContact.contactNumber)
+  const client = await payload.findGlobal({ slug: 'whatsapp' })
+  await sendInvoice(invoice, whatsAppContact.contactNumber, client.id)
   await payload.update({
     collection: 'invoice',
     id: invoice.id,
