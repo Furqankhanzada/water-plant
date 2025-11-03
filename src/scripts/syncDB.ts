@@ -16,8 +16,8 @@ const DB_NAME = new URL(LOCAL_URI).pathname.replace(/^\//, '');
 
 
 try {
-  console.log("📤 Dumping 'All' database from remote...");
-  execSync(`mongodump --uri="${REMOTE_URI}" --out="${DUMP_DIR}"`, { stdio: "inherit" });
+  console.log(`📤 Dumping '${DB_NAME}' database from remote...`);
+  execSync(`mongodump --uri="${REMOTE_URI}" --db="${DB_NAME}" --out="${DUMP_DIR}"`, { stdio: "inherit" });
 
   console.log(`🗑 Dropping local ${DB_NAME} database...`);
   execSync(`mongosh "${LOCAL_URI}" --eval "db.dropDatabase()"`, { stdio: "inherit" });
