@@ -133,6 +133,8 @@ export const Sales: CollectionConfig = {
             { label: 'Filling 19L', value: 'filling-19L' },
             { label: 'Bottle 19L', value: 'bottle-19L' },
             { label: 'Bottle 6L', value: 'bottle-6L' },
+            { label: 'Bottle 1.5L', value: 'bottle-1.5L' },
+            { label: 'Bottle 500ML', value: 'bottle-500ML' },
             { label: 'Leaked Bottles and Caps', value: 'other-leaked-bottles' },
             { label: 'Plant Accessories', value: 'other-plant-accessories' },
             { label: 'Other', value: 'other-other' },
