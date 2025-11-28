@@ -25,6 +25,7 @@ import { Employee } from './collections/Employees'
 import { Transaction } from './collections/Transactions'
 import { Sales } from './collections/Sales'
 import { Invoice } from './collections/Invoices'
+import { Payment } from './collections/Payments'
 import { Media } from './collections/Media'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
@@ -65,10 +66,12 @@ export default buildConfig({
     Transaction,
     Sales,
     Invoice,
+    Payment,
     Media,
     Reports,
     Expenses,
   ],
+  cors: ['http://localhost:8081'],
   jobs: {
     autoRun: [
       {

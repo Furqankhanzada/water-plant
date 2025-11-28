@@ -31,11 +31,50 @@ import type { CollectionBeforeChangeHook } from 'payload'
  * reflect historical balances and real-time payments and losses.
  */
 
+/**
+ * Helper function to extract ID from relationship field
+ */
+const getRelationId = (relation: string | { id: string } | null | undefined): string | undefined => {
+  if (!relation) return undefined
+  return typeof relation === 'string' ? relation : relation.id
+}
+
 export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async ({
   data,
   originalDoc,
   req: { payload },
+  operation,
 }) => {
+  // 🔗 On CREATE: Find and link unconnected payments for this customer
+  if (operation === 'create') {
+    const customerId = getRelationId(data.customer)
+    
+    if (customerId) {
+      // Find all payments for this customer that don't have an invoice
+      const unconnectedPayments = await payload.find({
+        collection: 'payments',
+        where: {
+          customer: { equals: customerId },
+          or: [
+            { invoice: { exists: false } },
+            { invoice: { equals: null } },
+          ],
+        },
+        pagination: false,
+        depth: 0,
+      })
+
+      if (unconnectedPayments.totalDocs > 0) {
+        // Add unconnected payment IDs to the invoice's payments array
+        const unconnectedPaymentIds = unconnectedPayments.docs.map(p => p.id)
+        const existingPaymentIds = data.payments || []
+        data.payments = [...new Set([...existingPaymentIds, ...unconnectedPaymentIds])]
+        
+        console.log(`✅ Linked ${unconnectedPayments.totalDocs} unconnected payment(s) to new invoice for customer ${customerId}`)
+      }
+    }
+  }
+
   const transactionIds = data.transactions
     ?.filter((t) => t.relationTo === 'transaction')
     .map((t) => t.value)
@@ -94,7 +133,6 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
   })
 
   let previous = 0
-  let paid = 0;
   let other = 0;
   if (invoices.docs.length) {
     const previousInvoice = invoices.docs[0]
@@ -128,11 +166,22 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
     data.lost.total = 0
   }
 
-  if (data.payments) {
-    paid = data.payments.reduce((sum: number, payment: { amount: number }) => {
-      return sum + payment.amount
-    }, 0)
-  }
+  // Calculate paid amount from Payment documents
+  const payments = await payload.find({
+    collection: 'payments',
+    where: {
+      id: {
+        in: data.payments || [],
+      },
+    },
+    pagination: false,
+    depth: 0,
+    select: {
+      amount: true,
+    },
+  })
+
+  const paid = payments.docs.reduce((sum, payment) => sum + payment.amount, 0)
 
   const subtotal = transactionsTotalAmount + salesTotalAmount;
   const net = subtotal - (data.totals?.discount || 0);
@@ -141,7 +190,7 @@ export const calculateAmountsHook: CollectionBeforeChangeHook<Invoice> = async (
   data.totals = {
     ...data.totals,
     subtotal,
-    net, 
+    net,
     previous,
     other,
     total,

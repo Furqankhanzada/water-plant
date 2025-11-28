@@ -40,6 +40,16 @@ export const Trips: CollectionConfig = {
           required: true,
         },
         {
+          name: 'bottles',
+          type: 'number',
+          required: true,
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
+        {
           name: 'blocks',
           label: 'Blocks',
           type: 'relationship',
@@ -51,11 +61,6 @@ export const Trips: CollectionConfig = {
               area: { in: data.areas || '' },
             }
           },
-        },
-        {
-          name: 'bottles',
-          type: 'number',
-          required: true,
         },
       ],
     },
@@ -159,6 +164,21 @@ export const Trips: CollectionConfig = {
           'weeklyConsumption',
           'daysUntilDelivery',
           'consumptionRate',
+        ],
+      },
+    },
+    {
+      name: 'payments',
+      type: 'join',
+      on: 'trip',
+      collection: 'payments',
+      admin: {
+        defaultColumns: [
+          'customer',
+          'amount',
+          'type',
+          'paidAt',
+          'invoice',
         ],
       },
     },

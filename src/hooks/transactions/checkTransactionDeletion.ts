@@ -5,7 +5,9 @@ export const checkTransactionDeletion: CollectionBeforeDeleteHook = async ({ req
   const invoices = await req.payload.find({
     collection: 'invoice',
     where: {
-      transactions: { in: [id] }
+      and: [
+        { 'transactions.relationTo': { equals: 'transaction' } },
+        { 'transactions.value': { equals: id } }]
     },
     limit: 1,
     depth: 0,

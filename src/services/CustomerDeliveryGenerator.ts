@@ -343,6 +343,20 @@ export class CustomerDeliveryGenerator {
       },
     }
 
+    // Check if customer should be marked as URGENT based on deliveryFrequencyDays
+    // Only apply this logic if deliveryFrequencyDays > 0
+    const checkDeliveryFrequencyUrgency = {
+      $addFields: {
+        isDeliveryFrequencyUrgent: {
+          $and: [
+            { $gt: ['$deliveryFrequencyDays', 0] }, // Only if deliveryFrequencyDays > 0
+            { $gte: ['$daysSinceLastDelivery', '$deliveryFrequencyDays'] },
+          ],
+        },
+      },
+    }
+
+
     // Compute coverage from last delivery (with buffer bottles)
     const computeCoverageFromLastDelivery = {
       $addFields: {
@@ -388,6 +402,8 @@ export class CustomerDeliveryGenerator {
         priority: {
           $switch: {
             branches: [
+              { case: { $lte: ['$daysSinceLastDelivery', 2] }, then: 'LOW' },
+              { case: { $eq: ['$isDeliveryFrequencyUrgent', true] }, then: 'URGENT' },
               { case: { $lte: ['$daysUntilDelivery', 1] }, then: 'URGENT' },
               { case: { $lte: ['$daysUntilDelivery', 2] }, then: 'HIGH' },
               { case: { $lte: ['$daysUntilDelivery', 3] }, then: 'MEDIUM' },
@@ -424,6 +440,7 @@ export class CustomerDeliveryGenerator {
       computeAdjustedRateAndBottles,
       calculateRemainingBottles,
       computeDaysSinceLastDelivery,
+      checkDeliveryFrequencyUrgency,
       computeCoverageFromLastDelivery,
       computeDaysUntilDelivery,
       computeDeliveryAnalytics,
