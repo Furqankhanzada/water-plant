@@ -1,6 +1,7 @@
 import type { TaskConfig } from 'payload'
 import { Customer } from '@/payload-types'
 import { sendInvoice } from '@/services/whatsapp'
+import { startOfMonth } from 'date-fns'
 
 /**
  * Generate random delay up to 1 minute (0 to 60,000ms)
@@ -25,14 +26,17 @@ export const sendPendingInvoicesTask: TaskConfig<'sendPendingInvoices'> = {
   inputSchema: [],
   handler: async ({ req }) => {
     try {
+      // Calculate start of current month
+      const monthStart = startOfMonth(new Date())
+
       // Use MongoDB aggregation to find invoices where customer has WhatsApp contact
       const result = await req.payload.db.collections['invoice'].aggregate([
-        // Match pending, latest, unpaid invoices
+        // Match pending, latest, unpaid invoices created at start of month
         {
           $match: {
             sent: false,
-            isLatest: true,
             status: { $ne: 'paid' },
+            createdAt: { $gte: monthStart },
           },
         },
         // Sort by newest first

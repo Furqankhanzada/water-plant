@@ -114,7 +114,7 @@ export default buildConfig({
   }),
   bin: [
     {
-      scriptPath: path.resolve(dirname, 'bin/createAndSendInvoices.ts'),
+      scriptPath: path.resolve(dirname, 'bin/createInvoices.ts'),
       key: 'invoices',
     },
     {

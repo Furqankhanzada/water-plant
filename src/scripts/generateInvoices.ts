@@ -2,10 +2,6 @@ import { BasePayload } from 'payload'
 import { endOfMonth, isSameMonth, setDate, startOfMonth, subMonths } from 'date-fns'
 
 import { Transaction, Customer, Invoice, Sale } from '@/payload-types'
-import { sendInvoice } from '@/services/whatsapp'
-
-const SEND_DELAY_MS = 5 * 60 * 1000
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const getLastMonthTransactions = async (payload: BasePayload, customerId: string) => {
   const currentDate = new Date()
@@ -77,7 +73,7 @@ const getLastMonthSales = async (payload: BasePayload, customerId: string) => {
   return sales.docs
 }
 
-const createAndSendInvoice = async (
+const createInvoice = async (
   payload: BasePayload,
   customer: Partial<Customer>,
   transactions: Partial<Transaction>[],
@@ -90,7 +86,7 @@ const createAndSendInvoice = async (
     ...sales.map((s) => ({ relationTo: 'sales' as const, value: s.id! })),
   ]
 
-  const newInvoice = await payload.create({
+  await payload.create({
     collection: 'invoice',
     data: {
       customer: customer.id!,
@@ -98,38 +94,9 @@ const createAndSendInvoice = async (
       dueAt: setDate(currentDate, 10).toISOString(),
     },
   })
-
-  if (newInvoice.status === 'paid') return
-
-  const whatsAppContact = customer?.contactNumbers?.find(
-    (contactNumber: any) => contactNumber.type === 'whatsapp',
-  )
-  let sent = false
-  // if customer have whatsapp number
-  if (whatsAppContact) {
-    try {
-      const client = await payload.findGlobal({ slug: 'whatsapp' })
-      await sendInvoice(newInvoice, whatsAppContact.contactNumber, client.id)
-      sent = true
-    } catch (error) {
-      console.error(`Failed to send invoice to ${customer.name}:`, error)
-    }
-  }
-  // update invoice so that we know that its already sent to customer
-  if (sent) {
-    payload.update({
-      collection: 'invoice',
-      id: newInvoice.id,
-      data: {
-        sent,
-      },
-    })
-  }
-
-  return sent
 }
 
-export const generateAndSendInvoices = async (payload: BasePayload) => {
+export const generateInvoices = async (payload: BasePayload) => {
   const customers = await payload.find({
     collection: 'customers',
     pagination: false,
@@ -190,12 +157,7 @@ export const generateAndSendInvoices = async (payload: BasePayload) => {
       continue
     }
 
-    const sent = await createAndSendInvoice(payload, customer, transactions, sales, currentDate)
-    console.log(`completed for ${customer.name} (${customer.type}) - ${customer.id}`)
-
-    if (sent) {
-      console.log(`Waiting ${SEND_DELAY_MS / 1000} seconds before sending the next invoice`)
-      await delay(SEND_DELAY_MS)
-    }
+    await createInvoice(payload, customer, transactions, sales, currentDate)
+    console.log(`created invoice for ${customer.name} (${customer.type}) - ${customer.id}`)
   }
 }
