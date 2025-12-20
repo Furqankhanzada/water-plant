@@ -42,7 +42,7 @@
     "inline-css": "^4.0.3",
     "lucide-react": "^0.542.0",
     "mongoose": "^8.16.4",
-    "next": "15.3.2",
+    "next": "15.4.10",
     "nodemailer": "^6.10.0",
     "payload": "3.53.0",
     "postcss": "^8.5.6",
