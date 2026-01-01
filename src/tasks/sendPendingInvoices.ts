@@ -37,6 +37,7 @@ export const sendPendingInvoicesTask: TaskConfig<'sendPendingInvoices'> = {
             sent: false,
             status: { $ne: 'paid' },
             createdAt: { $gte: monthStart },
+            isLatest: true,
           },
         },
         // Sort by newest first

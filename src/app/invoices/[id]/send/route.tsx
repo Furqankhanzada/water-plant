@@ -36,7 +36,13 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return Response.json({ message: 'No WhatsApp Number Found In Customer' })
 
   const client = await payload.findGlobal({ slug: 'whatsapp' })
-  await sendInvoice(invoice, whatsAppContact.contactNumber, client.id)
+
+  const message = await sendInvoice(invoice, whatsAppContact.contactNumber, client.id)
+
+  if (!message.success) {
+    return Response.json({ message: 'Failed to send invoice', data: message })
+  }
+
   await payload.update({
     collection: 'invoice',
     id: invoice.id,
@@ -45,5 +51,5 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     },
   })
 
-  return Response.json({ message: 'Successfully Sent!' })
+  return Response.json({ message: 'Successfully Sent!', data: message })
 }

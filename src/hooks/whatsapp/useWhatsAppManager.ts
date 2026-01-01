@@ -14,7 +14,6 @@ import { fetchWhatsAppGlobalDocument } from '@/serverActions'
 interface QRCodeData {
   qrCode: string
   timestamp: string
-  clientId: string
   elapsed: number
 }
 
@@ -42,23 +41,20 @@ type WhatsAppAction =
   | { type: 'CLEAR_QR_AND_TIMER' }
 
 // WebSocket message types
-interface WebSocketQRCodeData {
-  type: 'qr-code'
-  clientId: string
-  timestamp: string
-  qrCode: string
-}
-
-interface WebSocketStatusUpdateData {
-  type: 'status-update'
-  clientId: string
-  status: WhatsAppStatus
-  timestamp: string
-}
+type WebSocketStatusMessage =
+  | { type: 'idle'; }
+  | { type: 'starting'; }
+  | { type: 'pairing_code'; code: string; timestamp: string }
+  | { type: 'connecting'; }
+  | { type: 'connected'; user?: any }
+  | { type: 'disconnected'; }
+  | { type: 'restarting'; }
+  | { type: 'logged_out'; }
+  | { type: 'error'; reason?: string; message?: string }
 
 // Initial state
 const initialState: WhatsAppState = {
-  status: 'UNKNOWN',
+  status: 'idle',
   qrCode: null,
   loading: false,
   statusLoading: false,
@@ -146,7 +142,7 @@ export const useWhatsAppManager = () => {
   useEffect(() => {
     if (!clientId) return // Wait for clientId to be fetched
     
-    const ws = new WebSocket(process.env.NEXT_PUBLIC_WHATSAPP_WS_URL!)
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WHATSAPP_API_URL}/?clientId=${clientId}`)
     wsRef.current = ws
 
     ws.onopen = () => {
@@ -166,9 +162,10 @@ export const useWhatsAppManager = () => {
 
     ws.onmessage = (event) => {
       try {
-        const data: WebSocketQRCodeData | WebSocketStatusUpdateData = JSON.parse(event.data)
+        const data: WebSocketStatusMessage = JSON.parse(event.data)
+        const status = data.type
         
-        if (data.type === 'qr-code') {
+        if (status === 'pairing_code') {
           console.log('📱 QR Code received via WebSocket, starting timer...')
           
           // Trigger QR animation
@@ -178,28 +175,22 @@ export const useWhatsAppManager = () => {
           dispatch({
             type: 'SET_QR_CODE',
             payload: {
-              qrCode: data.qrCode,
+              qrCode: data.code,
               timestamp: data.timestamp,
-              clientId: data.clientId,
               elapsed: 0
             }
           })
           
-          // Start 2-minute login timer when QR code is received
-          dispatch({ type: 'SET_LOGIN_TIMER', payload: 120 })
+          // Start 1-minute login timer when QR code is received
+          dispatch({ type: 'SET_LOGIN_TIMER', payload: 60 })
           dispatch({ type: 'SET_LOGIN_TIMER_ACTIVE', payload: true })
           
           toast.success('QR Code received via WebSocket')
-        } else if (data.type === 'status-update') {
-          console.log('📊 Status update received:', data.clientId, 'at', data.timestamp)
-          dispatch({ type: 'SET_STATUS', payload: data.status })
-          
+        } else if (status === 'connected') {
           // Clear QR code and stop timer when connected
-          if (data.status === 'CONNECTED') {
-            dispatch({ type: 'CLEAR_QR_AND_TIMER' })
-          }
-          
-          toast.success('Status updated via WebSocket')
+          dispatch({ type: 'CLEAR_QR_AND_TIMER' })
+        } else if (status) {
+          dispatch({ type: 'SET_STATUS', payload: status })         
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error)
@@ -246,12 +237,13 @@ export const useWhatsAppManager = () => {
     
     try {      
       const data = await fetchWhatsAppStatus(clientId)
-      const newStatus = data.data?.status || 'UNKNOWN'
+      console.log('WhatsApp status:', data)
+      const newStatus = data?.status || 'idle'
       
       dispatch({ type: 'SET_STATUS', payload: newStatus })
       
       // Clear QR code when connected
-      if (newStatus === 'CONNECTED') {
+      if (newStatus === 'connected') {
         dispatch({ type: 'CLEAR_QR_AND_TIMER' })
       }
       
@@ -259,7 +251,7 @@ export const useWhatsAppManager = () => {
         toast.success('Status refreshed successfully')
       }
     } catch (error) {
-      dispatch({ type: 'SET_STATUS', payload: 'ERROR' })
+      dispatch({ type: 'SET_STATUS', payload: 'error' })
       if (showLoading) {
         toast.error('Failed to refresh status')
       }
@@ -299,7 +291,7 @@ export const useWhatsAppManager = () => {
       if (data.success) {
         toast.success('Client logout successfully')
         dispatch({ type: 'CLEAR_QR_AND_TIMER' })
-        dispatch({ type: 'SET_STATUS', payload: 'DISCONNECTED' })
+        dispatch({ type: 'SET_STATUS', payload: 'disconnected' })
       } else {
         toast.error(data.message || 'Reset failed')
       }
