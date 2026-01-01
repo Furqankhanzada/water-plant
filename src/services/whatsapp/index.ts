@@ -1,7 +1,6 @@
 import { Invoice } from '@/payload-types'
 import { generateInvoiceFilename, invoiceCaption } from './templates'
 import { ApiResponse, QrResponse, Message, StatusResponse } from './types'
-import { fetchWhatsAppGlobalDocument } from '@/serverActions'
 
 const WHATSAPP_BACKEND_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL!
 
