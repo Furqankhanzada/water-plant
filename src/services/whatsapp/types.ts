@@ -37,7 +37,7 @@ export interface MessageFile {
 
 interface BaseMessage {
   clientId: string
-  phone: string
+  to: string
 }
 
 export interface TextMessage extends BaseMessage {

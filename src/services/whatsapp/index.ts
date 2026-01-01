@@ -32,7 +32,7 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
   const form = new FormData()
 
   form.append('clientId', message.clientId)
-  form.append('to', message.phone)
+  form.append('to', message.to)
 
   if (message.text) {
     form.append('text', message.text)
@@ -95,7 +95,7 @@ export async function sendInvoice(invoice: Invoice, phone: string, clientId: str
 
   const message: Message = {
     clientId: clientId,
-    phone: phone,
+    to: phone,
     text: invoiceCaption(invoice),
     file: file,
   }
