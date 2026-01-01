@@ -1,15 +1,16 @@
 
-export type WhatsAppStatus =
-  | 'CONNECTED'
-  | 'DISCONNECTED'
-  | 'AUTH_FAILED'
-  | 'TIMEOUT'
-  | 'ERROR'
-  | 'PAIRING'
-  | 'NOT_INITIALIZED'
-  | 'AWAITING_SCAN'
-  | 'LOADING'
-  | 'UNKNOWN'
+export type WAStatus =
+  | 'idle'
+  | 'starting'
+  | 'pairing_code'
+  | 'connecting'
+  | 'connected'
+  | 'disconnected'
+  | 'restarting'
+  | 'logged_out'
+  | 'error'
+
+export type WhatsAppStatus = WAStatus
 
 export interface ApiResponse<T> {
   success: boolean
@@ -36,7 +37,7 @@ export interface MessageFile {
 
 interface BaseMessage {
   clientId: string
-  phone: string
+  to: string
 }
 
 export interface TextMessage extends BaseMessage {

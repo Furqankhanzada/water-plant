@@ -22,18 +22,18 @@ export default function WhatsAppManager() {
   // Utility Functions
   const getStatusBadgeVariant = (status: WhatsAppStatus) => {
     switch (status) {
-      case 'CONNECTED':
+      case 'connected':
         return 'default'
-      case 'DISCONNECTED':
-      case 'AUTH_FAILED':
-      case 'TIMEOUT':
-      case 'ERROR':
+      case 'disconnected':
+      case 'error':
+      case 'logged_out':
         return 'destructive'
-      case 'PAIRING':
-      case 'AWAITING_SCAN':
-      case 'LOADING':
+      case 'pairing_code':
+      case 'connecting':
+      case 'starting':
+      case 'restarting':
         return 'secondary'
-      case 'NOT_INITIALIZED':
+      case 'idle':
         return 'secondary'
       default:
         return 'secondary'
@@ -42,26 +42,26 @@ export default function WhatsAppManager() {
 
   const getStatusLabel = (status: WhatsAppStatus) => {
     switch (status) {
-      case 'CONNECTED':
+      case 'connected':
         return 'Connected'
-      case 'DISCONNECTED':
+      case 'disconnected':
         return 'Disconnected'
-      case 'AUTH_FAILED':
-        return 'Auth Failed'
-      case 'TIMEOUT':
-        return 'Timeout'
-      case 'ERROR':
+      case 'error':
         return 'Error'
-      case 'PAIRING':
-        return 'Pairing'
-      case 'AWAITING_SCAN':
-        return 'Awaiting Scan'
-      case 'LOADING':
-        return 'Loading'
-      case 'NOT_INITIALIZED':
-        return 'Not Initialized'
+      case 'logged_out':
+        return 'Logged Out'
+      case 'pairing_code':
+        return 'Pairing Code'
+      case 'connecting':
+        return 'Connecting'
+      case 'starting':
+        return 'Starting'
+      case 'restarting':
+        return 'Restarting'
+      case 'idle':
+        return 'Idle'
       default:
-        return 'UNKNOWN'
+        return 'Unknown'
     }
   }
 
@@ -135,7 +135,7 @@ export default function WhatsAppManager() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-0">
             <Button
               onClick={handleSendPaymentReminder}
-              disabled={state.loading || state.status !== 'CONNECTED'}
+              disabled={state.loading || state.status !== 'connected'}
               buttonStyle="subtle"
               size="medium"
               className="w-full"
@@ -145,7 +145,7 @@ export default function WhatsAppManager() {
 
             <Button
               onClick={handleSendInvoice}
-              disabled={state.loading || state.status !== 'CONNECTED'}
+              disabled={state.loading || state.status !== 'connected'}
               buttonStyle="subtle"
               size="medium"
               className="w-full"
@@ -177,7 +177,7 @@ export default function WhatsAppManager() {
 
           {/* Connection Actions */}
           <div className="border-t border-border">
-            {state.status === 'CONNECTED' ? (
+            {state.status === 'connected' ? (
               <Button
                 onClick={handleLogout}
                 disabled={state.loading}

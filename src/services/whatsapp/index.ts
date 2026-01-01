@@ -1,18 +1,17 @@
 import { Invoice } from '@/payload-types'
 import { generateInvoiceFilename, invoiceCaption } from './templates'
 import { ApiResponse, QrResponse, Message, StatusResponse } from './types'
-import { fetchWhatsAppGlobalDocument } from '@/serverActions'
 
 const WHATSAPP_BACKEND_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL!
 
-export async function fetchWhatsAppStatus(clientId: string): Promise<ApiResponse<StatusResponse>> {
-  const res = await fetch(`${WHATSAPP_BACKEND_URL}/whatsapp/status?clientId=${clientId}`)
+export async function fetchWhatsAppStatus(clientId: string): Promise<StatusResponse> {
+  const res = await fetch(`${WHATSAPP_BACKEND_URL}/clients/${clientId}/status`)
   if (!res.ok) throw new Error('Failed to fetch status')
   return res.json()
 }
 
 export async function whatsAppLogin(clientId: string): Promise<ApiResponse<QrResponse>> {
-  const res = await fetch(`${WHATSAPP_BACKEND_URL}/whatsapp/login`, {
+  const res = await fetch(`${WHATSAPP_BACKEND_URL}/clients/${clientId}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ clientId }),
@@ -22,7 +21,7 @@ export async function whatsAppLogin(clientId: string): Promise<ApiResponse<QrRes
 }
 
 export async function logoutWhatsAppClient(clientId: string): Promise<ApiResponse<StatusResponse>> {
-  const res = await fetch(`${WHATSAPP_BACKEND_URL}/whatsapp/logout/${clientId}`, {
+  const res = await fetch(`${WHATSAPP_BACKEND_URL}/clients/${clientId}/logout`, {
     method: 'POST',
   })
   if (!res.ok) throw new Error('Failed to logout client')
@@ -33,7 +32,7 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
   const form = new FormData()
 
   form.append('clientId', message.clientId)
-  form.append('phone', message.phone)
+  form.append('to', message.to)
 
   if (message.text) {
     form.append('text', message.text)
@@ -47,7 +46,7 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
     )
   }
 
-  const res = await fetch(`${WHATSAPP_BACKEND_URL}/whatsapp/send`, {
+  const res = await fetch(`${WHATSAPP_BACKEND_URL}/clients/${message.clientId}/send-message`, {
     method: 'POST',
     body: form,
   })
@@ -56,7 +55,6 @@ export async function sendWhatsAppMessage(message: Message): Promise<ApiResponse
     const error = await res.json()
     throw new Error(error.message || 'Failed to send message')
   }
-
   return res.json()
 }
 
@@ -97,7 +95,7 @@ export async function sendInvoice(invoice: Invoice, phone: string, clientId: str
 
   const message: Message = {
     clientId: clientId,
-    phone: phone,
+    to: phone,
     text: invoiceCaption(invoice),
     file: file,
   }
