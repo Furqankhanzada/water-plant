@@ -22,6 +22,13 @@ import { PaymentMethodBreakdown } from './PaymentMethodBreakdown'
 import { GeographicCollection } from './GeographicCollection'
 import { BottlesDeliveredByArea } from './BottlesDeliveredByArea'
 import { CustomersByArea } from './CustomersByArea'
+import { endOfDay } from 'date-fns'
+import {
+  calculateDeliveryRevenue,
+  calculateGeographicCollection,
+  calculateInvoiceSalesRevenue,
+  calculateBottlesDeliveredByArea,
+} from '@/lib/performanceAggregations'
 
 /**
  * Generate readable date range for a given duration
@@ -82,9 +89,129 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
   })
 
   const duration = (searchParams?.duration as string) || 'this-month'
+  const startParam = (searchParams as any)?.start as string | undefined
+  const endParam = (searchParams as any)?.end as string | undefined
   const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-  const overview = performanceOverview[activeDuration as keyof PerformanceOverview] as any
-  const dateRange = getDateRangeForDuration(duration)
+  let overview = (performanceOverview[activeDuration as keyof PerformanceOverview] as any) || {}
+  let dateRange = getDateRangeForDuration(duration)
+
+  if (duration === 'custom' && startParam && endParam) {
+    const startDate = new Date(startParam)
+    const endDate = endOfDay(new Date(endParam))
+    dateRange = `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`
+
+    // Expenses by type (inline aggregation)
+    const aggregateExpensesByType = async () => {
+      const expenseTotals = await payload.db.collections['expenses'].aggregate([
+        {
+          $match: {
+            expenseAt: { $gte: startDate, $lte: endDate },
+          },
+        },
+        {
+          $group: {
+            _id: '$type',
+            total: { $sum: '$amount' },
+          },
+        },
+        {
+          $project: {
+            type: '$_id',
+            total: 1,
+            _id: 0,
+          },
+        },
+      ])
+      const totalExpenses = expenseTotals.reduce((sum: number, { total }: any) => sum + (total ?? 0), 0)
+      return { total: totalExpenses, types: expenseTotals }
+    }
+
+    // Sales (Counter, Other) by channel
+    const aggregateCounterOtherSales = async () => {
+      const channelTotals = await payload.db.collections['sales'].aggregate([
+        {
+          $match: {
+            date: { $gte: startDate, $lte: endDate },
+            deletedAt: { $exists: false },
+            channel: { $in: ['counter', 'other'] },
+          },
+        },
+        {
+          $group: {
+            _id: '$channel',
+            total: { $sum: '$totals.gross' },
+          },
+        },
+        {
+          $project: {
+            channel: '$_id',
+            total: 1,
+            _id: 0,
+          },
+        },
+      ])
+      const labelMap: Record<string, string> = { counter: 'Counter Sales', other: 'Other' }
+      return channelTotals.map((c: any) => ({ channel: labelMap[c.channel] || c.channel, total: c.total || 0 }))
+    }
+
+    // Transaction aggregates
+    const aggregateTxnTotals = async () => {
+      const result = await payload.db.collections['transaction'].aggregate([
+        { $match: { transactionAt: { $gte: startDate, $lte: endDate } } },
+        {
+          $group: {
+            _id: null,
+            totalBottlesDelivered: { $sum: '$bottleGiven' },
+            totalExpectedIncome: { $sum: '$total' },
+          },
+        },
+      ])
+      return result[0] || { totalBottlesDelivered: 0, totalExpectedIncome: 0 }
+    }
+
+    const [
+      deliveryTotal,
+      geographicData,
+      invoiceSales,
+      bottlesByArea,
+      expenses,
+      counterOtherSales,
+      txnTotals,
+    ] = await Promise.all([
+      calculateDeliveryRevenue(payload, startDate, endDate),
+      calculateGeographicCollection(payload, startDate, endDate),
+      calculateInvoiceSalesRevenue(payload, startDate, endDate),
+      calculateBottlesDeliveredByArea(payload, startDate, endDate),
+      aggregateExpensesByType(),
+      aggregateCounterOtherSales(),
+      aggregateTxnTotals(),
+    ])
+
+    const revenueChannels = [
+      { channel: 'Delivery', total: deliveryTotal, areas: geographicData },
+      ...invoiceSales.map((s) => ({
+        channel: s.channel === 'filler' ? 'Filler' : s.channel === 'bottles' ? 'Bottles Sold' : s.channel,
+        total: s.total,
+      })),
+      ...counterOtherSales,
+    ]
+    const revenueTotal = revenueChannels.reduce((sum, c: any) => sum + (c.total || 0), 0)
+    const totalBottles = txnTotals.totalBottlesDelivered || 0
+    const expectedRevenue = txnTotals.totalExpectedIncome || 0
+    const averageRevenue = totalBottles > 0 ? expectedRevenue / totalBottles : 0
+
+    overview = {
+      revenue: { total: revenueTotal, channels: revenueChannels },
+      expenses,
+      profit: revenueTotal - (expenses?.total || 0),
+      bottlesDelivered: {
+        total: totalBottles,
+        expectedRevenue,
+        averageRevenue,
+        byArea: bottlesByArea,
+      },
+    }
+  }
 
   if (typeof overview !== 'object' || !overview) {
     return null
