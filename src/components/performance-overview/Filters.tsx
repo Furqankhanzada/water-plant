@@ -15,6 +15,10 @@ export const Filters = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   
+  const formatDateYMD = (d: Date) => d.toISOString().split('T')[0]
+  const DEFAULT_START = '2025-08-01'
+  const DEFAULT_END = formatDateYMD(new Date())
+
   const timeRange = searchParams.get('duration') || 'this-month'
   const start = searchParams.get('start') || ''
   const end = searchParams.get('end') || ''
@@ -40,16 +44,24 @@ export const Filters = () => {
   }, [router, searchParams])
 
   const handleDurationChange = useCallback((value: string) => {
-    updateParams({ duration: value })
-  }, [updateParams])
+    if (value === 'custom') {
+      updateParams({
+        duration: value,
+        start: (searchParams.get('start') as string) || DEFAULT_START,
+        end: (searchParams.get('end') as string) || DEFAULT_END,
+      })
+    } else {
+      updateParams({ duration: value })
+    }
+  }, [updateParams, searchParams, DEFAULT_END])
 
   const handleStartChange = useCallback((value: string) => {
-    const endParam = searchParams.get('end') || value
+    const endParam = searchParams.get('end') || DEFAULT_END
     updateParams({ duration: 'custom', start: value || null, end: endParam || null })
-  }, [searchParams, updateParams])
+  }, [searchParams, updateParams, DEFAULT_END])
 
   const handleEndChange = useCallback((value: string) => {
-    const startParam = searchParams.get('start') || value
+    const startParam = searchParams.get('start') || DEFAULT_START
     updateParams({ duration: 'custom', end: value || null, start: startParam || null })
   }, [searchParams, updateParams])
 
@@ -106,7 +118,7 @@ export const Filters = () => {
         <div className="mt-2 flex items-center gap-2">
           <input
             type="date"
-            value={start}
+            value={start || DEFAULT_START}
             onChange={(e) => handleStartChange(e.target.value)}
             className="rounded-md border bg-transparent px-2 py-1 text-sm"
             aria-label="Start date"
@@ -114,7 +126,7 @@ export const Filters = () => {
           <span className="text-sm opacity-70">to</span>
           <input
             type="date"
-            value={end}
+            value={end || DEFAULT_END}
             onChange={(e) => handleEndChange(e.target.value)}
             className="rounded-md border bg-transparent px-2 py-1 text-sm"
             aria-label="End date"
