@@ -62,6 +62,7 @@ export const sendPendingInvoicesTask: TaskConfig<'sendPendingInvoices'> = {
                 contactNumber: { $exists: true, $ne: null },
               },
             },
+            'customer.type': { $ne: 'refill' }
           },
         },
         {
