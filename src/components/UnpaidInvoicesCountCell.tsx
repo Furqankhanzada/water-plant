@@ -17,7 +17,7 @@ const UnpaidInvoicesCountCell = async ({ rowData, payload }: DefaultServerCellCo
       },
     },
     sort: '-dueAt',
-    limit: 1000,
+    limit: 10,
     select: {
       status: true,
     }
