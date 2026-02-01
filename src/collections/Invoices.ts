@@ -25,6 +25,7 @@ export const Invoice: CollectionConfig = {
     defaultColumns: [
       'customer',
       'status',
+      'unpaidInvoicesCount',
       'totals.subtotal',
       'totals.total',
       'totals.paid',
@@ -41,6 +42,18 @@ export const Invoice: CollectionConfig = {
     delete: isAdmin,
   },
   fields: [
+    {
+      name: 'unpaidInvoicesCount',
+      type: 'number',
+      label: 'Unpaid',
+      virtual: true,
+      admin: {
+        disableListFilter: true,
+        components: {
+          Cell: '/components/UnpaidInvoicesCountCell',
+        },
+      },
+    },
     {
       name: 'isLatest',
       type: 'checkbox',
