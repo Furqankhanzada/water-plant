@@ -115,7 +115,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Sale> = async 
       // Get existing channels and preserve non-sales channels (like "Delivery", "Filler", "Bottles Sold")
       const existingChannels = period.revenue?.channels || []
       const nonSalesChannels = existingChannels.filter(
-        (channel: any) => !['Counter Sales', 'Other'].includes(channel.channel)
+        (channel: any) => !['Counter Sales', 'Other', 'shop'].includes(channel.channel)
       )
 
       // Combine sales channels with preserved non-sales channels

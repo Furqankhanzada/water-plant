@@ -85,6 +85,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
     const getSalesChannelLabel = (channel: string): string => {
       const channelLabels: Record<string, string> = {
         'filler': 'Filler',
+        'shop': 'Bottles Sold',
         'bottles': 'Bottles Sold'
       }
       return channelLabels[channel] || channel
@@ -98,7 +99,7 @@ export const updatePerformanceOverview: CollectionAfterChangeHook<Invoice> = asy
       const existingChannels = period.revenue?.channels || []
       
       // Remove any existing invoice-related channels to avoid duplicates
-      const channelsToRemove = ['Delivery', 'Filler', 'Bottles Sold']
+      const channelsToRemove = ['Delivery', 'Filler', 'Bottles Sold', 'shop']
       const channelsWithoutInvoice = existingChannels.filter(
         (channel: any) => !channelsToRemove.includes(channel.channel)
       )
