@@ -369,6 +369,10 @@ export interface Sale {
       | 'filling-19L'
       | 'bottle-19L'
       | 'bottle-6L'
+      | 'bottle-1.5L-carton-6'
+      | 'bottle-500ML-carton-12'
+      | 'bottle-1.5L'
+      | 'bottle-500ML'
       | 'other-leaked-bottles'
       | 'other-plant-accessories'
       | 'other-other';
