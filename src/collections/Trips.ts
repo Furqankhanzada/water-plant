@@ -108,9 +108,49 @@ export const Trips: CollectionConfig = {
           },
         },
         {
+          name: 'deliveryDay',
+          label: 'Preferred Delivery Day',
+          type: 'select',
+          options: [
+            {
+              label: 'Monday',
+              value: 'monday',
+            },
+            {
+              label: 'Tuesday',
+              value: 'tuesday',
+            },
+            {
+              label: 'Wednesday',
+              value: 'wednesday',
+            },
+            {
+              label: 'Thursday',
+              value: 'thursday',
+            },
+            {
+              label: 'Friday',
+              value: 'friday',
+            },
+            {
+              label: 'Saturday',
+              value: 'saturday',
+            },
+            {
+              label: 'Sunday',
+              value: 'sunday',
+            },
+          ],
+          admin: {
+            placeholder: 'Select preferred delivery day',
+            width: '33.33%',
+          },
+        },
+        {
           name: 'priority',
           type: 'select',
           hasMany: true,
+          defaultValue: ['URGENT', 'HIGH'],
           options: ['URGENT', 'HIGH', 'MEDIUM', 'LOW'],
           required: true,
         },

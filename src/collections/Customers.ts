@@ -157,6 +157,7 @@ export const Customers: CollectionConfig = {
                 },
                 {
                   name: 'deliveryDay',
+                  label: 'Preferred Delivery Day',
                   type: 'select',
                   options: [
                     {

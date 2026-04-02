@@ -206,6 +206,7 @@ export interface Customer {
   advance?: number | null;
   bottlesAtHome?: number | null;
   deliveryFrequencyDays?: number | null;
+  deliveryDay?: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday') | null;
   status: 'active' | 'archive';
   type: 'delivery' | 'refill' | 'filler' | 'shop';
   contactNumbers?:
@@ -316,6 +317,7 @@ export interface Trip {
    * Set the status to In Progress or Complete.
    */
   status?: ('inprogress' | 'complete') | null;
+  deliveryDay?: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday') | null;
   priority: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW')[];
   transactions?: {
     docs?: (string | Transaction)[];
@@ -369,6 +371,10 @@ export interface Sale {
       | 'filling-19L'
       | 'bottle-19L'
       | 'bottle-6L'
+      | 'bottle-1.5L-carton-6'
+      | 'bottle-500ML-carton-12'
+      | 'bottle-1.5L'
+      | 'bottle-500ML'
       | 'other-leaked-bottles'
       | 'other-plant-accessories'
       | 'other-other';
@@ -393,6 +399,7 @@ export interface Sale {
  */
 export interface Invoice {
   id: string;
+  unpaidInvoicesCount?: number | null;
   isLatest?: boolean | null;
   customer: string | Customer;
   /**
@@ -832,6 +839,7 @@ export interface CustomersSelect<T extends boolean = true> {
   advance?: T;
   bottlesAtHome?: T;
   deliveryFrequencyDays?: T;
+  deliveryDay?: T;
   status?: T;
   type?: T;
   contactNumbers?:
@@ -881,6 +889,7 @@ export interface TripsSelect<T extends boolean = true> {
   tripAt?: T;
   employee?: T;
   status?: T;
+  deliveryDay?: T;
   priority?: T;
   transactions?: T;
   updatedAt?: T;
@@ -977,6 +986,7 @@ export interface SalesSelect<T extends boolean = true> {
  * via the `definition` "invoice_select".
  */
 export interface InvoiceSelect<T extends boolean = true> {
+  unpaidInvoicesCount?: T;
   isLatest?: T;
   customer?: T;
   area?: T;
