@@ -143,16 +143,47 @@ export const Customers: CollectionConfig = {
                   defaultValue: 0,
                   admin: {
                     placeholder: 'Enter number of bottles at home',
-                    width: '50%',
+                    width: '33.33%',
                   },
                 },
                 {
-                  name: 'deliveryFrequencyDays',
-                  type: 'number',
-                  defaultValue: 4,
+                  name: 'deliveryDay',
+                  label: 'Preferred Delivery Day',
+                  type: 'select',
+                  hasMany: true,
+                  options: [
+                    {
+                      label: 'Monday',
+                      value: 'monday',
+                    },
+                    {
+                      label: 'Tuesday',
+                      value: 'tuesday',
+                    },
+                    {
+                      label: 'Wednesday',
+                      value: 'wednesday',
+                    },
+                    {
+                      label: 'Thursday',
+                      value: 'thursday',
+                    },
+                    {
+                      label: 'Friday',
+                      value: 'friday',
+                    },
+                    {
+                      label: 'Saturday',
+                      value: 'saturday',
+                    },
+                    {
+                      label: 'Sunday',
+                      value: 'sunday',
+                    },
+                  ],
                   admin: {
-                    placeholder: 'Enter number of delivery frequency days',
-                    width: '50%',
+                    placeholder: 'Select preferred delivery day',
+                    width: '33.33%',
                   },
                 },
               ],

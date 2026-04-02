@@ -18,32 +18,47 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook<Tr
   req: { payload },
 }) => {
   const isUpdate = operation === 'update'
-  const statusChanged = originalDoc && originalDoc.status !== data.status
-
-  if (!(isUpdate && statusChanged)) {
+  if (!(isUpdate && originalDoc)) {
     return data
   }
-  
-  switch (data.status) {
-    case 'complete': {
-      await payload.delete({
-        collection: 'transaction',
-        where: {
-          trip: { equals: originalDoc.id },
-          bottleGiven: { equals: 0 },
-          bottleTaken: { equals: 0 },
-        },
-      })
-      break
-    }
-    case 'inprogress': {
-      const tripCustomers = await generateTripCustomers(originalDoc, payload)
-      await insertCustomersTransactions(tripCustomers, originalDoc, payload)
-      break
-    }
-    default:
-      break
+
+  const nextTrip = { ...originalDoc, ...data, id: originalDoc.id } as Trip
+
+  const toIds = (value?: (string | { id: string })[] | null) =>
+    (value || [])
+      .map((item) => (typeof item === 'string' ? item : item.id))
+      .sort()
+
+  const originalAreaIds = toIds(originalDoc.areas)
+  const nextAreaIds = toIds(nextTrip.areas)
+  const areasChanged = JSON.stringify(originalAreaIds) !== JSON.stringify(nextAreaIds)
+
+  const originalBlockIds = toIds(originalDoc.blocks || [])
+  const nextBlockIds = toIds(nextTrip.blocks || [])
+  const blocksChanged = JSON.stringify(originalBlockIds) !== JSON.stringify(nextBlockIds)
+
+  const statusChanged = originalDoc.status !== nextTrip.status
+  const deliveryDayChanged = originalDoc.deliveryDay !== nextTrip.deliveryDay
+
+  if (!(areasChanged || blocksChanged || statusChanged || deliveryDayChanged)) {
+    return data
   }
+
+  await payload.delete({
+    collection: 'transaction',
+    where: {
+      trip: { equals: originalDoc.id },
+      bottleGiven: { equals: 0 },
+      bottleTaken: { equals: 0 },
+    },
+  })
+
+  if (nextTrip.status !== 'inprogress') {
+    return data
+  }
+
+  const tripCustomers = await generateTripCustomers(nextTrip, payload)
+  await insertCustomersTransactions(tripCustomers, nextTrip, payload)
 
   return data
 }

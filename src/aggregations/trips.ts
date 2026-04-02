@@ -19,6 +19,7 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
     status: 'active',
     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     ...(blockIds.length && { block: { $in: blockIds } }),
+    ...(trip.deliveryDay ? { deliveryDay: { $in: [trip.deliveryDay] } } : {}),
   }
 
   const customers = await customerDeliveryGenerator.fetchAnalyticsWithAggregation(
@@ -183,7 +184,6 @@ export const insertCustomersTransactions = async (
       }))
 
     // console.log('transactions', transactions)
-
     // Insert all transactions in parallel
     await Promise.all(
       transactions.map((tx) =>
