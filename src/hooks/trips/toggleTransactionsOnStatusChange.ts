@@ -53,6 +53,10 @@ export const toggleTransactionsOnStatusChangeHook: CollectionBeforeChangeHook<Tr
     },
   })
 
+  if (nextTrip.status !== 'inprogress') {
+    return data
+  }
+
   const tripCustomers = await generateTripCustomers(nextTrip, payload)
   await insertCustomersTransactions(tripCustomers, nextTrip, payload)
 
