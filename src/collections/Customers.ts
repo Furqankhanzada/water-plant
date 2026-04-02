@@ -147,18 +147,10 @@ export const Customers: CollectionConfig = {
                   },
                 },
                 {
-                  name: 'deliveryFrequencyDays',
-                  type: 'number',
-                  defaultValue: 4,
-                  admin: {
-                    placeholder: 'Enter number of delivery frequency days',
-                    width: '33.33%',
-                  },
-                },
-                {
                   name: 'deliveryDay',
                   label: 'Preferred Delivery Day',
                   type: 'select',
+                  hasMany: true,
                   options: [
                     {
                       label: 'Monday',

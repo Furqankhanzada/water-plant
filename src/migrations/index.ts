@@ -1,5 +1,4 @@
 import * as migration_20260402_120000_customers_delivery_day_from_transactions from './20260402_120000_customers_delivery_day_from_transactions';
-import * as migration_20250725_204953_customers_deliveryFrequencyDays from './20250725_204953_customers_deliveryFrequencyDays';
 import * as migration_20250728_143449_invoices_isLatest from './20250728_143449_invoices_isLatest';
 import * as migration_20250127_000000_populate_invoice_area_block from './20250127_000000_populate_invoice_area_block';
 import * as migration_20250128_120000_migrate_invoice_transactions_structure from './20250128_120000_migrate_invoice_transactions_structure';
@@ -10,11 +9,6 @@ export const migrations = [
     up: migration_20260402_120000_customers_delivery_day_from_transactions.up,
     down: migration_20260402_120000_customers_delivery_day_from_transactions.down,
     name: '20260402_120000_customers_delivery_day_from_transactions',
-  },
-  {
-    up: migration_20250725_204953_customers_deliveryFrequencyDays.up,
-    down: migration_20250725_204953_customers_deliveryFrequencyDays.down,
-    name: '20250725_204953_customers_deliveryFrequencyDays',
   },
   {
     up: migration_20250728_143449_invoices_isLatest.up,

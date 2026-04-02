@@ -205,8 +205,7 @@ export interface Customer {
   balance?: number | null;
   advance?: number | null;
   bottlesAtHome?: number | null;
-  deliveryFrequencyDays?: number | null;
-  deliveryDay?: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday') | null;
+  deliveryDay?: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[] | null;
   status: 'active' | 'archive';
   type: 'delivery' | 'refill' | 'filler' | 'shop';
   contactNumbers?:
@@ -838,7 +837,6 @@ export interface CustomersSelect<T extends boolean = true> {
   balance?: T;
   advance?: T;
   bottlesAtHome?: T;
-  deliveryFrequencyDays?: T;
   deliveryDay?: T;
   status?: T;
   type?: T;

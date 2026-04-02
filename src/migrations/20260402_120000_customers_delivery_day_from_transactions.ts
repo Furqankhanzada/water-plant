@@ -59,10 +59,15 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       updateOne: {
         filter: {
           _id: row._id,
-          $or: [{ deliveryDay: { $exists: false } }, { deliveryDay: null }, { deliveryDay: '' }],
+          $or: [
+            { deliveryDay: { $exists: false } },
+            { deliveryDay: null },
+            { deliveryDay: '' },
+            { deliveryDay: { $size: 0 } },
+          ],
         },
         update: {
-          $set: { deliveryDay },
+          $set: { deliveryDay: [deliveryDay] },
         },
       },
     })

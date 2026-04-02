@@ -19,7 +19,7 @@ export const generateTripCustomers = async (trip: Trip, payload: BasePayload) =>
     status: 'active',
     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     ...(blockIds.length && { block: { $in: blockIds } }),
-    ...(trip.deliveryDay ? { deliveryDay: trip.deliveryDay } : {}),
+    ...(trip.deliveryDay ? { deliveryDay: { $in: [trip.deliveryDay] } } : {}),
   }
 
   const customers = await customerDeliveryGenerator.fetchAnalyticsWithAggregation(
