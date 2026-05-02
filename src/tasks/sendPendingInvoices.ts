@@ -40,8 +40,8 @@ export const sendPendingInvoicesTask: TaskConfig<'sendPendingInvoices'> = {
             isLatest: true,
           },
         },
-        // Sort by newest first
-        { $sort: { createdAt: -1 } },
+        // Prioritize invoices with highest total, then newest first
+        { $sort: { 'totals.total': -1, createdAt: -1 } },
         // Lookup customer
         {
           $lookup: {
