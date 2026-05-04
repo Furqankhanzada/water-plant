@@ -141,6 +141,7 @@ export interface Config {
     tasks: {
       sendEmail: TaskSendEmail;
       sendPendingInvoices: TaskSendPendingInvoices;
+      updatePerformanceOverview: TaskUpdatePerformanceOverview;
       inline: {
         input: unknown;
         output: unknown;
@@ -613,7 +614,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'sendEmail' | 'sendPendingInvoices';
+        taskSlug: 'inline' | 'sendEmail' | 'sendPendingInvoices' | 'updatePerformanceOverview';
         taskID: string;
         input?:
           | {
@@ -646,7 +647,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'sendEmail' | 'sendPendingInvoices') | null;
+  taskSlug?: ('inline' | 'sendEmail' | 'sendPendingInvoices' | 'updatePerformanceOverview') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2203,6 +2204,14 @@ export interface TaskSendEmail {
  * via the `definition` "TaskSendPendingInvoices".
  */
 export interface TaskSendPendingInvoices {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskUpdatePerformanceOverview".
+ */
+export interface TaskUpdatePerformanceOverview {
   input?: unknown;
   output?: unknown;
 }
