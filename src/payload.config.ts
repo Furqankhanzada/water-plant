@@ -16,6 +16,7 @@ import { WhatsApp } from './globals/WhatsApp'
 
 import { sendEmailTask } from './tasks/sendEmail'
 import { sendPendingInvoicesTask } from './tasks/sendPendingInvoices'
+import { updatePerformanceOverviewTask } from './tasks/updatePerformanceOverview'
 import { Users } from './collections/Users'
 import { Customers } from './collections/Customers'
 import { Areas } from './collections/Areas'
@@ -76,7 +77,7 @@ export default buildConfig({
         queue: 'default',
       },
     ],
-    tasks: [sendEmailTask, sendPendingInvoicesTask],
+    tasks: [sendEmailTask, sendPendingInvoicesTask, updatePerformanceOverviewTask],
   },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
