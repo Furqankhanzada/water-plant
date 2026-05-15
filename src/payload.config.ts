@@ -101,6 +101,7 @@ export default buildConfig({
     }),
   ],
   email: nodemailerAdapter({
+    skipVerify: true,
     defaultFromAddress: process.env.FROM_EMAIL!,
     defaultFromName: process.env.FROM_NAME!,
     transport: nodemailer.createTransport({
