@@ -8,6 +8,7 @@ const nextConfig = {
       '.cjs': ['.cts', '.cjs'],
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
+      handlebars: "handlebars/dist/handlebars.js",
     }
 
     return webpackConfig
