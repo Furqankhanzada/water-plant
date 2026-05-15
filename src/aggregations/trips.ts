@@ -183,7 +183,6 @@ export const insertCustomersTransactions = async (
         transactionAt: new Date(tripResult.tripAt).toISOString(),
       }))
 
-    // console.log('transactions', transactions)
     // Insert all transactions in parallel
     await Promise.all(
       transactions.map((tx) =>
