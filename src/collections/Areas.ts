@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Areas: CollectionConfig = {
   slug: 'areas',
@@ -23,5 +24,6 @@ export const Areas: CollectionConfig = {
       on: 'area',
       collection: 'blocks', // Specify the collection being related to
     },
+    tenantField,
   ],
 }

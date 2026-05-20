@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isAdmin, isAdminFieldLevel } from './access/isAdmin'
 import { isAdminOrSelf } from './access/isAdminOrSelf'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -39,5 +40,6 @@ export const Users: CollectionConfig = {
       ],
       defaultValue: 'editor',
     },
+    tenantField,
   ],
 }

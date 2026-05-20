@@ -79,6 +79,7 @@ export interface Config {
     media: Media;
     reports: Report;
     expenses: Expense;
+    tenants: Tenant;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -115,6 +116,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
     expenses: ExpensesSelect<false> | ExpensesSelect<true>;
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -179,6 +181,7 @@ export interface User {
   id: string;
   fullName?: string | null;
   roles: ('admin' | 'editor')[];
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
   enableAPIKey?: boolean | null;
@@ -196,11 +199,24 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  name: string;
+  slug: string;
+  domain: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers".
  */
 export interface Customer {
   id: string;
   lastDelivered?: number | null;
+  tenant: string | Tenant;
   name: string;
   email?: string | null;
   address?: string | null;
@@ -251,6 +267,7 @@ export interface Area {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -267,6 +284,7 @@ export interface Block {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -302,6 +320,7 @@ export interface Transaction {
     nextDeliveryDate?: string | null;
     priority?: ('URGENT' | 'HIGH' | 'MEDIUM' | 'LOW') | null;
   };
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -328,6 +347,7 @@ export interface Trip {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -393,6 +413,7 @@ export interface Sale {
       reason?: ('loyalty' | 'promotion' | 'other') | null;
     };
   };
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -487,6 +508,7 @@ export interface Invoice {
   lostBottlesCount?: number | null;
   lostBottleAmount?: number | null;
   lostBottlesTotalAmount?: number | null;
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -498,6 +520,7 @@ export interface Invoice {
 export interface Media {
   id: string;
   alt: string;
+  tenant: string | Tenant;
   _key?: string | null;
   prefix?: string | null;
   updatedAt: string;
@@ -527,6 +550,7 @@ export interface Report {
    * Needs to recover overall due amount
    */
   totalDueAmount?: string | null;
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -564,6 +588,7 @@ export interface Expense {
    * Amount that you spent
    */
   amount: number;
+  tenant: string | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -730,6 +755,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'expenses';
         value: string | Expense;
+      } | null)
+    | ({
+        relationTo: 'tenants';
+        value: string | Tenant;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -829,6 +858,7 @@ export interface PayloadQueryPreset {
 export interface UsersSelect<T extends boolean = true> {
   fullName?: T;
   roles?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
   enableAPIKey?: T;
@@ -848,6 +878,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   lastDelivered?: T;
+  tenant?: T;
   name?: T;
   email?: T;
   address?: T;
@@ -881,6 +912,7 @@ export interface CustomersSelect<T extends boolean = true> {
 export interface AreasSelect<T extends boolean = true> {
   name?: T;
   block?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -892,6 +924,7 @@ export interface BlocksSelect<T extends boolean = true> {
   name?: T;
   area?: T;
   customers?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -910,6 +943,7 @@ export interface TripsSelect<T extends boolean = true> {
   deliveryDay?: T;
   priority?: T;
   transactions?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -957,6 +991,7 @@ export interface TransactionSelect<T extends boolean = true> {
         nextDeliveryDate?: T;
         priority?: T;
       };
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -995,6 +1030,7 @@ export interface SalesSelect<T extends boolean = true> {
               reason?: T;
             };
       };
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1053,6 +1089,7 @@ export interface InvoiceSelect<T extends boolean = true> {
   lostBottlesCount?: T;
   lostBottleAmount?: T;
   lostBottlesTotalAmount?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1063,6 +1100,7 @@ export interface InvoiceSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  tenant?: T;
   _key?: T;
   prefix?: T;
   updatedAt?: T;
@@ -1088,6 +1126,7 @@ export interface ReportsSelect<T extends boolean = true> {
   totalBottlesDelivered?: T;
   totalExpectedIncome?: T;
   totalDueAmount?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1100,6 +1139,18 @@ export interface ExpensesSelect<T extends boolean = true> {
   type?: T;
   expenseAt?: T;
   amount?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  domain?: T;
   updatedAt?: T;
   createdAt?: T;
 }

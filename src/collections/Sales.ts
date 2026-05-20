@@ -4,6 +4,7 @@ import { calculateSalesTotals } from '@/hooks/sales/calculateSalesTotals'
 import { setCounterStatus } from '@/hooks/sales/setCounterStatus'
 import { updatePerformanceOverview } from '@/hooks/sales/updatePerformanceOverview'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Sales: CollectionConfig = {
   slug: 'sales',
@@ -234,5 +235,6 @@ export const Sales: CollectionConfig = {
         }
       ],
     },
+    tenantField,
   ],
 }

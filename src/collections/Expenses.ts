@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
 import { updatePerformanceOverview } from '@/hooks/expenses/updatePerformanceOverview'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Expenses: CollectionConfig = {
   slug: 'expenses',
@@ -125,5 +126,6 @@ export const Expenses: CollectionConfig = {
         description: 'Amount that you spent',
       },
     },
+    tenantField,
   ],
 }

@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 
 import { generateReport } from '@/hooks/reports/generateReport'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const rupee = new Intl.NumberFormat('en-PK', {
   style: 'currency',
@@ -106,5 +107,6 @@ export const Reports: CollectionConfig = {
         description: 'Needs to recover overall due amount',
       },
     },
+    tenantField,
   ],
 }

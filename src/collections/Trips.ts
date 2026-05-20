@@ -5,6 +5,7 @@ import { createTransactionsOnTripCreate } from '@/hooks/trips/createTransactions
 import { toggleTransactionsOnStatusChangeHook } from '@/hooks/trips/toggleTransactionsOnStatusChange'
 import { checkTripDeletion } from '@/hooks/trips/checkTripDeletion'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Trips: CollectionConfig = {
   slug: 'trips',
@@ -202,5 +203,6 @@ export const Trips: CollectionConfig = {
         ],
       },
     },
+    tenantField,
   ],
 }

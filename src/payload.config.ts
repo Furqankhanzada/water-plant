@@ -3,12 +3,16 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, Migration } from 'payload'
+import type { Config } from './payload-types'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import nodemailer from 'nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
+import { isAdmin } from '@/collections/access/isAdmin'
+
 
 import { Company } from './globals/Company'
 import { PerformanceOverview } from './globals/PerformanceOverview'
@@ -29,6 +33,7 @@ import { Media } from './collections/Media'
 import { Reports } from './collections/Reports'
 import { Expenses } from './collections/Expenses'
 import { migrations } from './migrations'
+import { Tenants } from '@/collections/Tenants/Tanants'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -68,6 +73,7 @@ export default buildConfig({
     Media,
     Reports,
     Expenses,
+    Tenants
   ],
   jobs: {
     autoRun: [
@@ -99,6 +105,14 @@ export default buildConfig({
         acl: 'public-read',
       },
     }),
+    // multiTenantPlugin<Config>({
+    //   collections: {
+    //     customers: {}
+    //   },
+    //   tenantField: {
+    //
+    //   }
+    // }),
   ],
   email: nodemailerAdapter({
     skipVerify: true,

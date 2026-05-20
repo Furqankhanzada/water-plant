@@ -3,6 +3,7 @@ import { transactionBeforeChange } from '@/hooks/transactions/transactionBeforeC
 import { checkTransactionDeletion } from '@/hooks/transactions/checkTransactionDeletion'
 import { updatePerformanceOverview } from '@/hooks/transactions/updatePerformanceOverview'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Transaction: CollectionConfig = {
   slug: 'transaction',
@@ -249,5 +250,6 @@ export const Transaction: CollectionConfig = {
         hidden: true,
       },
     },
+    tenantField,
   ],
 }

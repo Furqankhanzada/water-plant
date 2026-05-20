@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
 import { checkCustomerDeletion } from '@/hooks/customers/checkCustomerDeletion'
 import { updatePerformanceOverview } from '@/hooks/customers/updatePerformanceOverview'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
@@ -37,6 +38,7 @@ export const Customers: CollectionConfig = {
         },
       },
     },
+    tenantField,
     {
       type: 'tabs',
       tabs: [

@@ -8,6 +8,7 @@ import { checkInvoiceDeletion } from '@/hooks/invoices/checkInvoiceDeletion'
 import { populateCustomerFieldsHook } from '@/hooks/invoices/populateCustomerFields'
 import { updatePerformanceOverview } from '@/hooks/invoices/updatePerformanceOverview'
 import { isAdmin } from './access/isAdmin'
+import { tenantField } from '@/collections/Tenants/helpers'
 
 export const Invoice: CollectionConfig = {
   slug: 'invoice',
@@ -456,6 +457,7 @@ export const Invoice: CollectionConfig = {
         },
       },
     },
+    tenantField,
     // {
     //   name: 'Transactions',
     //   type: 'ui',
