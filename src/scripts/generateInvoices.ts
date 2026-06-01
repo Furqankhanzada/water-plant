@@ -93,6 +93,9 @@ const createInvoice = async (
       transactions: invoiceTransactions,
       dueAt: setDate(currentDate, 10).toISOString(),
     },
+    context: {
+      disablePerformanceOverview: true,
+    },
   })
 }
 
@@ -160,4 +163,10 @@ export const generateInvoices = async (payload: BasePayload) => {
     await createInvoice(payload, customer, transactions, sales, currentDate)
     console.log(`created invoice for ${customer.name} (${customer.type}) - ${customer.id}`)
   }
+  const job = await payload.jobs.queue({
+    task: 'updatePerformanceOverview',
+    input: {},
+  })
+
+  await payload.jobs.runByID({ id: job.id })
 }
