@@ -81,6 +81,14 @@ export const dailySummary = (summary: any): string => {
         .join('\n')}`
 }
 
+/** Matches PDF "Balance" row in InvoiceTableFooter */
+const getInvoiceBalanceDue = (invoice: Invoice): number => {
+  if (invoice.status !== 'paid' && invoice.totals?.paid) {
+    return Math.max(0, (invoice.totals?.total ?? 0) - (invoice.totals?.paid ?? 0))
+  }
+  return invoice.totals?.balance ?? 0
+}
+
 /**
  * Invoice caption for PDF
  */
@@ -91,11 +99,13 @@ export const invoiceCaption = (invoice: Invoice): string => {
     throw new Error('Customer is required and must have name')
   }
 
+  const balanceDue = formatCurrency(getInvoiceBalanceDue(invoice))
+
   switch (invoice.status) {
     case 'unpaid':
-      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and total dues are *${formatCurrency(invoice.totals?.total ?? 0)}*/-.\n\nDue Date: *${dueDate}*`
+      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and total dues are *${balanceDue}*/-.\n\nDue Date: *${dueDate}*`
     case 'partially-paid':
-      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and remaining dues are *${formatCurrency(invoice.totals?.balance ?? 0)}*/-.\n\nDue Date: *${dueDate}*`
+      return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and remaining dues are *${balanceDue}*/-.\n\nDue Date: *${dueDate}*`
     case 'paid':
       return `Dear *${invoice.customer.name}*,\n\nYour invoice is attached and all dues are paid.\n\nDue Date: *${dueDate}*`
     default:
