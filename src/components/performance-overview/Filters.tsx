@@ -38,6 +38,7 @@ export const Filters = () => {
         <ToggleGroupItem value="last-month">Last Month</ToggleGroupItem>
         <ToggleGroupItem value="this-quarter">This Quarter</ToggleGroupItem>
         <ToggleGroupItem value="this-year">This Year</ToggleGroupItem>
+        <ToggleGroupItem value="till-today">Till Today</ToggleGroupItem>
       </ToggleGroup>
       <Select value={timeRange} onValueChange={handleDurationChange}>
         <SelectTrigger
@@ -65,6 +66,9 @@ export const Filters = () => {
           </SelectItem>
           <SelectItem value="this-year" className="rounded-lg">
             This Year
+          </SelectItem>
+          <SelectItem value="till-today" className="rounded-lg">
+            Till Today
           </SelectItem>
         </SelectContent>
       </Select>

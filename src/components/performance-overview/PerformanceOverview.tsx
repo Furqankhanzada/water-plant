@@ -1,6 +1,5 @@
 import React from 'react'
 import { CustomComponent, PayloadServerReactComponent } from 'payload'
-import { PerformanceOverview } from '@/payload-types'
 import { rupee } from '@/collections/Reports'
 import {
   startOfWeek,
@@ -12,6 +11,8 @@ import {
   endOfQuarter,
   startOfYear,
   endOfYear,
+  startOfDay,
+  endOfDay,
   format,
 } from 'date-fns'
 
@@ -22,6 +23,13 @@ import { PaymentMethodBreakdown } from './PaymentMethodBreakdown'
 import { GeographicCollection } from './GeographicCollection'
 import { BottlesDeliveredByArea } from './BottlesDeliveredByArea'
 import { CustomersByArea } from './CustomersByArea'
+import {
+  calculateBottlesDeliveredByArea as calculateBottlesDeliveredByAreaAgg,
+  calculateDeliveryRevenue,
+  calculateGeographicCollection,
+  calculateInvoiceSalesRevenue,
+  calculatePaymentMethodBreakdown,
+} from '@/lib/performanceAggregations'
 
 /**
  * Generate readable date range for a given duration
@@ -68,8 +76,182 @@ const getDateRangeForDuration = (duration: string): string => {
       // Show: "Jan 1 - Dec 31, 2024"
       return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
     }
+    case 'till-today': {
+      // Show: "Aug 1, 2025 - Apr 2, 2026"
+      const start = new Date(2025, 7, 1) // Aug (0-based month index)
+      const end = currentDate
+      return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`
+    }
     default:
       return 'For selected period'
+  }
+}
+
+const computeTillTodayOverview = async (payload: any) => {
+  const currentDate = new Date()
+  const startDate = startOfDay(new Date(2025, 7, 1)) // Aug 1, 2025
+  const endDate = endOfDay(currentDate)
+
+  // Expense type mapping is based on `src/collections/Expenses.ts`
+  const expenseTypeLabels: Record<string, string> = {
+    daily_miscellaneous: 'Daily Miscellaneous',
+    fuel: 'Fuel',
+    salary: 'Salary',
+    'plant-accessories': 'Plant Accessories',
+    rent: 'Rent',
+    'utility_bills': 'Utility Bills',
+    laboratory: 'Laboratory',
+    gate_pass: 'Gate Pass',
+    maintenance_plant: 'Maintenance of Plant',
+    maintenance_vehicle: 'Maintenance of Vehicle',
+    parking: 'Parking',
+    minerals: 'Minerals',
+    bottle_caps: 'Bottle Caps',
+    bottles: 'Bottles',
+    bottle_refils: 'Bottle Refils',
+    commute: 'Commute',
+    meals_refreshments: 'Meals & Refreshments',
+    psqca: 'PSQCA',
+  }
+
+  const getCounterOtherSales = async () => {
+    const result = await payload.db.collections['sales'].aggregate([
+      {
+        $match: {
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+          deletedAt: { $exists: false },
+          channel: { $in: ['counter', 'other'] },
+        },
+      },
+      {
+        $group: {
+          _id: '$channel',
+          total: { $sum: '$totals.gross' },
+        },
+      },
+      {
+        $project: {
+          channel: '$_id',
+          total: 1,
+          _id: 0,
+        },
+      },
+    ])
+
+    return (result || []).map((row: any) => ({
+      channel: row.channel === 'counter' ? 'Counter Sales' : 'Other',
+      total: row.total || 0,
+    }))
+  }
+
+  const [deliveryRevenue, paymentMethods, geographicAreas, invoiceSalesRevenue, counterOtherSales] = await Promise.all([
+    calculateDeliveryRevenue(payload, startDate, endDate),
+    calculatePaymentMethodBreakdown(payload, startDate, endDate),
+    calculateGeographicCollection(payload, startDate, endDate),
+    calculateInvoiceSalesRevenue(payload, startDate, endDate),
+    getCounterOtherSales(),
+  ])
+
+  const invoiceSalesChannels = (invoiceSalesRevenue || []).map((row: any) => {
+    const label =
+      row.channel === 'filler'
+        ? 'Filler'
+        : row.channel === 'shop' || row.channel === 'bottles'
+          ? 'Bottles Sold'
+          : row.channel
+
+    return { channel: label, total: row.total || 0 }
+  })
+
+  const revenueChannels = [
+    ...counterOtherSales,
+    {
+      channel: 'Delivery',
+      total: deliveryRevenue,
+      paymentMethods,
+      areas: geographicAreas,
+    },
+    ...invoiceSalesChannels,
+  ]
+
+  const revenueTotal = revenueChannels.reduce((sum: number, ch: any) => sum + (ch.total || 0), 0)
+
+  const [expensesAgg, bottlesTotals, bottlesByArea] = await Promise.all([
+    payload.db.collections['expenses'].aggregate([
+      {
+        $match: {
+          expenseAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$type',
+          total: { $sum: '$amount' },
+        },
+      },
+      {
+        $project: {
+          type: '$_id',
+          total: 1,
+          _id: 0,
+        },
+      },
+    ]),
+    payload.db.collections['transaction'].aggregate([
+      {
+        $match: {
+          transactionAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalBottlesDelivered: { $sum: '$bottleGiven' },
+          totalExpectedIncome: { $sum: '$total' },
+        },
+      },
+    ]),
+    calculateBottlesDeliveredByAreaAgg(payload, startDate, endDate),
+  ])
+
+  const expenseRows = expensesAgg || []
+  const expensesTotal = expenseRows.reduce((sum: number, row: any) => sum + (row.total || 0), 0)
+  const expensesTypes = expenseRows.map((row: any) => ({
+    type: expenseTypeLabels[row.type] || row.type,
+    total: row.total || 0,
+  }))
+
+  const bottlesData = bottlesTotals?.[0] || {
+    totalBottlesDelivered: 0,
+    totalExpectedIncome: 0,
+  }
+
+  const totalBottles = bottlesData.totalBottlesDelivered || 0
+  const expectedRevenue = bottlesData.totalExpectedIncome || 0
+  const averageRevenue = totalBottles > 0 ? expectedRevenue / totalBottles : 0
+
+  return {
+    revenue: {
+      total: revenueTotal,
+      channels: revenueChannels,
+    },
+    expenses: {
+      total: expensesTotal,
+      types: expensesTypes,
+    },
+    profit: revenueTotal - expensesTotal,
+    bottlesDelivered: {
+      total: totalBottles,
+      expectedRevenue,
+      averageRevenue,
+      byArea: bottlesByArea,
+    },
   }
 }
 
@@ -83,12 +265,22 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
 
   const duration = (searchParams?.duration as string) || 'this-month'
   const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-  const overview = performanceOverview[activeDuration as keyof PerformanceOverview] as any
+  // Some buckets (like the newly added `tillToday`) might not exist yet on the
+  // stored global document; fall back to `{}` but compute till-today on-demand.
+  const storedOverview = (performanceOverview as any)?.[activeDuration]
+  let overview = storedOverview ?? {}
   const dateRange = getDateRangeForDuration(duration)
 
-  if (typeof overview !== 'object' || !overview) {
-    return null
+  if (
+    duration === 'till-today' &&
+    (!storedOverview ||
+      storedOverview?.revenue?.total == null ||
+      storedOverview?.expenses?.total == null ||
+      storedOverview?.bottlesDelivered?.total == null)
+  ) {
+    overview = await computeTillTodayOverview(payload)
   }
+  // `overview` is always an object here (fallback to `{}`).
   const deliveryChannel = overview?.revenue?.channels?.find(
     (channel: any) => channel?.channel === 'Delivery',
   )
