@@ -1,6 +1,5 @@
 import { CollectionConfig } from 'payload'
 import { isAdmin } from './access/isAdmin'
-import { updatePerformanceOverview } from '@/hooks/expenses/updatePerformanceOverview'
 
 export const Expenses: CollectionConfig = {
   slug: 'expenses',
@@ -12,9 +11,6 @@ export const Expenses: CollectionConfig = {
   },
   access: {
     delete: isAdmin,
-  },
-  hooks: {
-    afterChange: [updatePerformanceOverview],
   },
   fields: [
     {

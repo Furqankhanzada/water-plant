@@ -34,6 +34,9 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  // Unique per app so the auth cookie doesn't clash with the other app on localhost
+  // (cookies are scoped by hostname, not port). Default prefix is 'payload'.
+  cookiePrefix: 'water-plant-old',
   admin: {
     user: Users.slug,
     importMap: {

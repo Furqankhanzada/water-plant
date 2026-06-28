@@ -68,22 +68,7 @@ export const calculatePaymentMethodBreakdown = async (
           deletedAt: { $exists: false },
         },
       },
-      // Lookup customer information to filter by active customers
-      {
-        $lookup: {
-          from: 'customers',
-          localField: 'customer',
-          foreignField: '_id',
-          as: 'customerInfo',
-        },
-      },
-      // Filter for active customers only (not soft deleted or archived)
-      {
-        $match: {
-          'customerInfo.status': 'active',
-          'customerInfo.deletedAt': { $exists: false },
-        },
-      },
+      // ponytail: count payments from all customers (incl. archived) — money is money
       {
         $unwind: '$payments',
       },
@@ -148,11 +133,9 @@ export const calculateGeographicCollection = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active delivery customers, defaulting legacy customers without type to delivery
+      // Delivery-channel customers (all statuses); legacy customers without type default to delivery
       {
         $match: {
-          'customerInfo.status': 'active',
-          'customerInfo.deletedAt': { $exists: false },
           $or: [
             { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
             { 'customerInfo.type': { $exists: false } },
@@ -331,11 +314,9 @@ export const calculateDeliveryRevenue = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active delivery customers, defaulting legacy customers without type to delivery
+      // Delivery-channel customers (all statuses); legacy customers without type default to delivery
       {
         $match: {
-          'customerInfo.status': 'active',
-          'customerInfo.deletedAt': { $exists: false },
           $or: [
             { 'customerInfo.type': { $in: ['delivery', 'refill'] } },
             { 'customerInfo.type': { $exists: false } },
@@ -389,7 +370,7 @@ export const calculateBottlesDeliveredByArea = async (
           transactionAt: { $gte: startDate, $lte: endDate },
         },
       },
-      // Lookup customer information to filter by active customers
+      // Lookup customer information (for area/block grouping; all statuses counted)
       {
         $lookup: {
           from: 'customers',
@@ -398,13 +379,7 @@ export const calculateBottlesDeliveredByArea = async (
           as: 'customerInfo',
         },
       },
-      // Filter for active customers only (not soft deleted or archived)
-      {
-        $match: {
-          'customerInfo.status': 'active',
-          'customerInfo.deletedAt': { $exists: false },
-        },
-      },
+      { $unwind: { path: '$customerInfo', preserveNullAndEmptyArrays: true } },
       // Lookup area information from customer
       {
         $lookup: {
@@ -525,11 +500,9 @@ export const calculateInvoiceSalesRevenue = async (
       {
         $unwind: '$customerInfo',
       },
-      // Filter for active customers with specific types (filler and shop)
+      // Filler and shop customers (all statuses)
       {
         $match: {
-          'customerInfo.status': 'active',
-          'customerInfo.deletedAt': { $exists: false },
           'customerInfo.type': {
             $in: ['filler', 'shop'],
           },

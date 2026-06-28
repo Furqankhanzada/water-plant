@@ -1,13 +1,9 @@
 import { GlobalConfig } from 'payload'
-import { calculateProfit } from '@/hooks/performanceOverview/calculateProfit'
 
 export const PerformanceOverview: GlobalConfig = {
   slug: 'performance-overview',
   admin: {
     hidden: true,
-  },
-  hooks: {
-    beforeChange: [calculateProfit],
   },
   fields: [
     {

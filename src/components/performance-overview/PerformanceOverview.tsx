@@ -1,6 +1,5 @@
 import React from 'react'
 import { CustomComponent, PayloadServerReactComponent } from 'payload'
-import { PerformanceOverview } from '@/payload-types'
 import { rupee } from '@/collections/Reports'
 import {
   startOfWeek,
@@ -15,6 +14,7 @@ import {
   format,
 } from 'date-fns'
 
+import { computePeriod, computeGlobals, getDateBounds } from '@/lib/computePerformanceOverview'
 import { Filters } from './Filters'
 import { OverviewCard } from './OverviewCard'
 import { BarChartHorizontal } from './BarChartHorizontal'
@@ -68,6 +68,8 @@ const getDateRangeForDuration = (duration: string): string => {
       // Show: "Jan 1 - Dec 31, 2024"
       return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
     }
+    case 'all-time':
+      return 'All time'
     default:
       return 'For selected period'
   }
@@ -77,14 +79,17 @@ const PerformanceOverviewContainer: PayloadServerReactComponent<CustomComponent>
   payload,
   searchParams,
 }) => {
-  const performanceOverview = await payload.findGlobal({
-    slug: 'performance-overview',
-  })
-
   const duration = (searchParams?.duration as string) || 'this-month'
-  const activeDuration = duration.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-  const overview = performanceOverview[activeDuration as keyof PerformanceOverview] as any
   const dateRange = getDateRangeForDuration(duration)
+
+  // Compute live for the selected window so numbers are never stale or mixed
+  // across different write times (replaces the hook-written snapshot).
+  const { startDate, endDate } = getDateBounds(duration)
+  const [overview, globals] = await Promise.all([
+    computePeriod(payload, startDate, endDate),
+    computeGlobals(payload),
+  ])
+  const performanceOverview = globals as any
 
   if (typeof overview !== 'object' || !overview) {
     return null
